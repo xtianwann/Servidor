@@ -27,7 +27,7 @@ public class Servidor {
 
     public static void main(String[] args) {
         new Servidor();
-        System.out.println("Servidor iniciado...");
+        System.out.println("Servidor iniciado y esperando...");
     }
     
     /* Hilo principal del servidor */
