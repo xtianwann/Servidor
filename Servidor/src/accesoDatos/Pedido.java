@@ -7,20 +7,30 @@ package accesoDatos;
 public class Pedido {
 
     private int idMenu;
-    private int unidades;
     private String nombreProducto;
     private String nombreCantidad;
     private int idDestino;
     private String nombreDestino;
-
-    public Pedido(int idMenu, int unidades) {
-        Oraculo oraculo = new Oraculo();
+    private int unidades;
+    
+    public Pedido(int idMenu){
+    	Oraculo oraculo = new Oraculo();
         this.idMenu = idMenu;
-        this.unidades = unidades;
         this.nombreProducto = oraculo.getNombreProductoPorIdMenu(this.idMenu);
         this.nombreCantidad = oraculo.getNombreCantidadPorIdMenu(this.idMenu);
         this.idDestino = Integer.parseInt(oraculo.getIdDestinoPorIdMenu(this.idMenu));
         this.nombreDestino = oraculo.getNombreDestinoPorIdMenu(this.idMenu);
+        this.unidades = 0;
+    }
+
+	public Pedido(int idMenu, int unidades) {
+        Oraculo oraculo = new Oraculo();
+        this.idMenu = idMenu;
+        this.nombreProducto = oraculo.getNombreProductoPorIdMenu(this.idMenu);
+        this.nombreCantidad = oraculo.getNombreCantidadPorIdMenu(this.idMenu);
+        this.idDestino = Integer.parseInt(oraculo.getIdDestinoPorIdMenu(this.idMenu));
+        this.nombreDestino = oraculo.getNombreDestinoPorIdMenu(this.idMenu);
+        this.unidades = unidades;
     }
 
     public int getIdDestino() {
@@ -35,10 +45,6 @@ public class Pedido {
         return idMenu;
     }
 
-    public int getUnidades() {
-        return unidades;
-    }
-
     public String getNombreProducto() {
         return nombreProducto;
     }
@@ -46,5 +52,9 @@ public class Pedido {
     public String getNombreCantidad() {
         return nombreCantidad;
     }
+    
+    public int getUnidades() {
+		return unidades;
+	}
     
 }

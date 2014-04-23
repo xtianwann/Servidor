@@ -44,12 +44,11 @@ public class PedidosComanda extends Thread {
     }
 
     private void dividirYEnviarSubcomandas(String recibido) {
-        System.out.println(recibido);
         Document dom = XML.stringToXml(recibido);
         String resultado = "";
         String explicacion = "";
 
-        /* Obtenemos idMes */
+        /* Obtenemos los datos de la mesa */
         NodeList nodeListIdMes = dom.getElementsByTagName("idMes");
         idMes = Integer.parseInt(nodeListIdMes.item(0).getChildNodes().item(0).getNodeValue());
         Mesa mesa = new Mesa(idMes);
@@ -66,18 +65,17 @@ public class PedidosComanda extends Thread {
             pedidos.add(new Pedido(idMenu, unidades));
         }
 
-        /* Comprobamos si la mesa estÃ¡ activa */
-//        Inserciones insertor = new Inserciones();
-//        if(mesa.isActiva()){
-//            insertor.insertarPedidos(mesa, pedidos.toArray(new Pedido[0]));
-//            resultado = "SI";
-//        } else {
-//            insertor.insertarNuevaComanda(mesa, dispositivo);
-//            insertor.insertarPedidos(mesa, pedidos.toArray(new Pedido[0]));
-//            resultado = "SI";
-//        }
+        /* Comprobamos si la mesa está activa */
+        Inserciones insertor = new Inserciones();
+        int idComanda = 0;
+        if(mesa.isActiva()){
+            idComanda = insertor.insertarPedidos(mesa, pedidos.toArray(new Pedido[0]));
+        } else {
+            insertor.insertarNuevaComanda(mesa, dispositivo);
+            idComanda = insertor.insertarPedidos(mesa, pedidos.toArray(new Pedido[0]));
+        }
 
-        /* Dividimos los pedidos segÃºn su destino y los almacenamos en un ArrayList */
+        /* Dividimos los pedidos según su destino y los almacenamos en un ArrayList */
         ArrayList<XMLPedidoMesaServer> xmlPedidos = new ArrayList<>();
         ArrayList<Integer> destinos = new ArrayList<>();
         for (Pedido p : pedidos) {
@@ -98,7 +96,7 @@ public class PedidosComanda extends Thread {
             xmlPedidos.add(xmlPedidoMesaServer);
         }
 
-        /* Finalmente se envÃ­a cada parte del pedido a su destino */
+        /* Finalmente se envía cada parte del pedido a su destino */
         for (int contadorPedidos = 0; contadorPedidos < xmlPedidos.size(); contadorPedidos++) {
             String mensaje = xmlPedidos.get(contadorPedidos).xmlToString(xmlPedidos.get(contadorPedidos).getDOM());
 //            Cliente cliente = new Cliente(dispositivoDestino, mensaje);
@@ -108,7 +106,7 @@ public class PedidosComanda extends Thread {
         }
         String respuesta = xmlPedidos.get(0).xmlToString(xmlPedidos.get(0).getDOM());
 
-        /* Se envÃ­a acuse de recibo al que pidiÃ³ la comanda */
+        /* Se envía acuse de recibo al que pidió la comanda */
 //        XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer(resultado, explicacion);
 //        String respuesta = xmlAcuse.xmlToString(xmlAcuse.getDOM());
 //        System.out.println("Acuse: " + respuesta); // borrar al terminar de testear

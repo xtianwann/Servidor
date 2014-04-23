@@ -179,13 +179,12 @@ public class Oraculo {
         String consultaComandaActiva = "select idCom from COMANDAS where pagado = 0 and cerrada = 0 and mesa = " + idMesa;
         int idCom = Integer.parseInt(gestorBD.consulta(consultaComandaActiva)[0]);
         
-        String consulta = "select menu, unidades from PEDIDOS where comanda = " + idCom;
+        String consulta = "select menu from PEDIDOS where comanda = " + idCom;
         String[] resultados = gestorBD.consulta(consulta, 2);
         
-        for(int i = 0; i < resultados.length; i+=2){
+        for(int i = 0; i < resultados.length; i++){
             int idMenu = Integer.parseInt(resultados[i]);
-            int unidades = Integer.parseInt(resultados[i+1]);
-            listaPedidos.add(new Pedido(idMenu, unidades));
+            listaPedidos.add(new Pedido(idMenu));
         }
         
         return listaPedidos.toArray(new Pedido[0]);

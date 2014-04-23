@@ -7,9 +7,15 @@ package accesoDatos;
 public class Inserciones {
 
     private GestorBD gestorBD = new GestorBD();
+    private Oraculo oraculo = new Oraculo();
 
+    /**
+     * Crea una nueva comanda en la base de datos.
+     * 
+     * @param mesa objeto Mesa al que está asociada la comanda
+     * @param dispositivo objeto Dispositivo desde el que se tomó la comanda
+     */
     public void insertarNuevaComanda(Mesa mesa, Dispositivo dispositivo) {
-        Oraculo oraculo = new Oraculo();
         String fechaComanda = oraculo.getFechaYHoraActual();
         int idMesa = mesa.getIdMes();
         int idDispositivo = dispositivo.getIdDisp();
@@ -18,20 +24,28 @@ public class Inserciones {
         gestorBD.actualizar(sentencia);
     }
 
-    public void insertarPedidos(Mesa mesa, Pedido[] pedidos) {
-        Oraculo oraculo = new Oraculo();
+    /**
+     * Inserta un grupo de pedidos de una mesa y devuelve la id de la comanda a la que pertenecen.
+     * 
+     * @param mesa objeto Mesa para el que se han realizado los pedidos
+     * @param pedidos lista de objetos Pedido con los datos a insertar
+     * 
+     * @return id de la comanda a la que pertenecen los pedidos
+     */
+    public int insertarPedidos(Mesa mesa, Pedido[] pedidos) {
         int idMenu;
-        int comanda;
-        int unidades;
+        int idCom = oraculo.getIdComandaPorIdMesa(mesa.getIdMes());
         String estado = "pedido";
 
         for (Pedido p : pedidos) {
             idMenu = p.getIdMenu();
-            comanda = oraculo.getIdComandaPorIdMesa(mesa.getIdMes());
-            unidades = p.getUnidades();
-
-            String sentencia = "insert into PEDIDOS (menu, comanda, unidades, estado) values (" + idMenu + ", " + comanda + ", " + unidades + ", '" + estado + "')";
-            gestorBD.actualizar(sentencia);
+            int unidades = p.getUnidades();
+            for(int unidad = 0; unidad < unidades; unidad++){
+	            String sentencia = "insert into PEDIDOS (menu, comanda, estado) values (" + idMenu + ", " + idCom + ", " + estado + "')";
+	            gestorBD.actualizar(sentencia);
+            }
         }
+        
+        return idCom;
     }
 }

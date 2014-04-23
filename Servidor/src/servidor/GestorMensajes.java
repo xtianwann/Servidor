@@ -37,7 +37,6 @@ public class GestorMensajes extends Thread {
 
     public void run() {
         try {
-            System.out.println("GestorMesaje: Mensaje!");
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder;
             mensaje = mensaje.substring(mensaje.indexOf("<"));
@@ -46,6 +45,8 @@ public class GestorMensajes extends Thread {
 
             NodeList nodo = dom.getElementsByTagName("tipo");
             String tipo = nodo.item(0).getChildNodes().item(0).getNodeValue();
+            
+            System.out.println("Mensaje recibido tipo: " + tipo);
 
             switch (tipo) {
                 case "DameloTodo":
