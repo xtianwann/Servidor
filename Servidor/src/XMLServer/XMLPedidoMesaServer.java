@@ -21,6 +21,7 @@ public class XMLPedidoMesaServer extends XML{
             addNodo("producto", pedidos[contadorPedidos].getNombreProducto(), "menu");
             addNodo("cantidad", pedidos[contadorPedidos].getNombreCantidad(), "menu");
             addNodo("unidades", pedidos[contadorPedidos].getUnidades()+"", "menu");
+            addNodo("listos", "0", "menu");
         }
     }
     

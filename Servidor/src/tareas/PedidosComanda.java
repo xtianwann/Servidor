@@ -2,23 +2,32 @@ package tareas;
 
 import Conexion.Conexion;
 import XML.XML;
-import XMLServer.XMLAcuseReciboServer;
 import XMLServer.XMLPedidoMesaServer;
+import XMLServer.XMLPedidosPendientesCamarero;
 import accesoDatos.Dispositivo;
 import accesoDatos.Inserciones;
 import accesoDatos.Mesa;
 import accesoDatos.Oraculo;
 import accesoDatos.Pedido;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
+ * Esta clase es la encargada de recibir la comanda enviada por el camarero, 
+ * insertar la información correspondiente en la base de datos, divide los pedidos
+ * según el destino (cocina, barra, etc), genera los mensajes y los envía a los
+ * correspondientes destinos. Finalmente, devuelve al camarero un acuse de recibo
+ * con la información necesaria para que el camarero tenga una lista de los pedidos
+ * pendientes de servir.
+ * 
  * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
@@ -76,7 +85,7 @@ public class PedidosComanda extends Thread {
         }
 
         /* Dividimos los pedidos según su destino y los almacenamos en un ArrayList */
-        ArrayList<XMLPedidoMesaServer> xmlPedidos = new ArrayList<>();
+        ArrayList<XMLPedidoMesaServer> listaXMLPedidos = new ArrayList<>();
         ArrayList<Integer> destinos = new ArrayList<>();
         for (Pedido p : pedidos) {
             int idDest = p.getIdDestino();
@@ -93,26 +102,25 @@ public class PedidosComanda extends Thread {
                 }
             }
             XMLPedidoMesaServer xmlPedidoMesaServer = new XMLPedidoMesaServer(mesa, nombreSeccion, pedidosDestino.toArray(new Pedido[0]));
-            xmlPedidos.add(xmlPedidoMesaServer);
+            listaXMLPedidos.add(xmlPedidoMesaServer);
         }
 
-        /* Finalmente se envía cada parte del pedido a su destino */
-        for (int contadorPedidos = 0; contadorPedidos < xmlPedidos.size(); contadorPedidos++) {
-            String mensaje = xmlPedidos.get(contadorPedidos).xmlToString(xmlPedidos.get(contadorPedidos).getDOM());
+        /* Se envía cada parte del pedido a su destino */
+        for (int contadorPedidos = 0; contadorPedidos < listaXMLPedidos.size(); contadorPedidos++) {
+            String mensaje = listaXMLPedidos.get(contadorPedidos).xmlToString(listaXMLPedidos.get(contadorPedidos).getDOM());
 //            Cliente cliente = new Cliente(dispositivoDestino, mensaje);
 //            cliente.run();
             System.out.println(mensaje); // mensaje de prueba para ver los distintos subpedidos, borrar al terminar de testear
             
         }
-        String respuesta = xmlPedidos.get(0).xmlToString(xmlPedidos.get(0).getDOM());
 
-        /* Se envía acuse de recibo al que pidió la comanda */
-//        XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer(resultado, explicacion);
-//        String respuesta = xmlAcuse.xmlToString(xmlAcuse.getDOM());
-//        System.out.println("Acuse: " + respuesta); // borrar al terminar de testear
+        /* Finalmente se envía acuse de recibo al que pidió la comanda */
+        XMLPedidosPendientesCamarero xmlPendientes = new XMLPedidosPendientesCamarero(mesa.getNomMes(), nombreSeccion, idComanda, pedidos.toArray(new Pedido[0]));
+        String acuse = xmlPendientes.xmlToString(xmlPendientes.getDOM());
+        System.out.println("Acuse: " + acuse); // borrar al terminar de testear
         try {
             Conexion conn = new Conexion(socket);
-            conn.escribirMensaje(respuesta);
+            conn.escribirMensaje(acuse);
             conn.cerrarConexion();
         } catch (IOException ex) {
             Logger.getLogger(PedidosComanda.class.getName()).log(Level.SEVERE, null, ex);
