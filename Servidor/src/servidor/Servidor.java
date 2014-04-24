@@ -18,7 +18,7 @@ public class Servidor {
     
     public Servidor(){
         try {
-            hiloPrincipal = new HiloPrincipal(27015);
+            hiloPrincipal = new HiloPrincipal(27014);
             hiloPrincipal.start();
         } catch (IOException ex) {
             Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
