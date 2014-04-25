@@ -41,7 +41,7 @@ public class Inserciones {
             idMenu = p.getIdMenu();
             int unidades = p.getUnidades();
             for(int unidad = 0; unidad < unidades; unidad++){
-	            String sentencia = "insert into PEDIDOS (menu, comanda, estado) values (" + idMenu + ", " + idCom + ", " + estado + "')";
+	            String sentencia = "insert into PEDIDOS (menu, comanda, estado) values ('" + idMenu + "', '" + idCom + "', '" + estado + "')";
 	            gestorBD.actualizar(sentencia);
             }
         }
