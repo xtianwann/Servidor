@@ -108,8 +108,14 @@ public class PedidosComanda extends Thread {
         /* Se envía cada parte del pedido a su destino */
         for (int contadorPedidos = 0; contadorPedidos < listaXMLPedidos.size(); contadorPedidos++) {
             String mensaje = listaXMLPedidos.get(contadorPedidos).xmlToString(listaXMLPedidos.get(contadorPedidos).getDOM());
-//            Cliente cliente = new Cliente(dispositivoDestino, mensaje);
-//            cliente.run();
+            Conexion conexion = null;
+            try {
+				conexion = new Conexion("127.0.0.1",5050);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            conexion.escribirMensaje(mensaje);
             System.out.println(mensaje); // mensaje de prueba para ver los distintos subpedidos, borrar al terminar de testear
             
         }
