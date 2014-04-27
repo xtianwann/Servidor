@@ -1,20 +1,25 @@
 package servidor;
 
 import Conexion.Conexion;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
 import tareas.DameloTodo;
 import tareas.PedidosComanda;
+import tareas.PedidosListos;
 import tareas.ResumenMesa;
 
 /**
@@ -61,6 +66,10 @@ public class GestorMensajes extends Thread {
                     ResumenMesa resumenMesa = new ResumenMesa(socket, mensaje);
                     resumenMesa.run();
                     break;
+                case "PedidosListos":
+                	PedidosListos pedidosListos = new PedidosListos(socket, mensaje);
+                	pedidosListos.run();
+                	break;
             }
 
         } catch (SAXException ex) {

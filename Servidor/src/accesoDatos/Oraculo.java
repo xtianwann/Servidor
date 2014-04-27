@@ -202,6 +202,32 @@ public class Oraculo {
         return resultado;
     }
     
+    /**
+     * Obtiene una lista de pedidos pertenecientes a una comanda y de unos
+     * productos concretos que se encuentren en estado "pedido"
+     * 
+     * @param idMenu id del producto por el que se quiere filtrar
+     * @param idComanda id de la comanda por la que se quiere filtrar
+     * @return lista con las id de los pedidos que coincidan con la búsqueda
+     */
+    public String[] getIdPedidoPorIdMenuYIdComanda(int idMenu, int idComanda){
+    	String consulta = "select idPed from PEDIDOS where idCom = " + idComanda + " and idMenu = " + idMenu + " and estado = 'pedido'";
+    	String[] resultado = gestorBD.consulta(consulta);
+    	return resultado;
+    }
+    
+    /**
+     * Obtiene el dispositivo desde el que se emitió una comanda
+     * 
+     * @param idComanda id de la comanda de la que se quiere conocer el camarero que la creó
+     * @return ip del dispositivo del camarero
+     */
+    public String getCamareroPorComanda(int idComanda){
+    	String consulta = "select ip from DISPOSITIVOS inner join COMANDAS on idDisp = dispositivo where idCom = " + idComanda;
+    	String resultado = gestorBD.consulta(consulta)[0];
+    	return resultado;
+    }
+    
     /* Funcion de prueba, borrar al acabar los test */
     public void test(){
         

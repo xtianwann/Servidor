@@ -48,4 +48,13 @@ public class Inserciones {
         
         return idCom;
     }
+    
+    public void modificarEstadoPedido(String[] idPedidos){
+    	String sentencia = "";
+    	
+    	for(int pedido = 0; pedido < idPedidos.length; pedido++){
+    		sentencia = "update PEDIDOS set estado = 'listo' where idPed = " + idPedidos[pedido];
+    		gestorBD.actualizar(sentencia);
+    	}
+    }
 }
