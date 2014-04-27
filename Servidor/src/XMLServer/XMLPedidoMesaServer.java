@@ -10,11 +10,12 @@ import accesoDatos.Pedido;
  */
 public class XMLPedidoMesaServer extends XML{
 
-    public XMLPedidoMesaServer(Mesa mesa, String seccion, Pedido[] pedidos) {
+    public XMLPedidoMesaServer(Mesa mesa, String seccion,int idComanda, Pedido[] pedidos) {
         init();
         addNodo("tipo", "PedidoMesa", "paquete");
         addNodoConAtributos("mesa", new String[]{"idMes"}, new String[]{mesa.getIdMes()+""}, mesa.getNomMes(), "paquete");
         addNodo("seccion", seccion, "paquete");
+        addNodo("idComanda", idComanda+"", "paquete");
         addNodo("pedidos", null, "paquete");
         for(int contadorPedidos = 0; contadorPedidos < pedidos.length; contadorPedidos++){
             addNodoConAtributos("menu", new String[]{"idMenu"}, new String[]{pedidos[contadorPedidos].getIdMenu()+""}, null, "pedidos");

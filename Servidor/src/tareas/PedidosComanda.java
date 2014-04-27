@@ -101,7 +101,7 @@ public class PedidosComanda extends Thread {
                     pedidosDestino.add(pedidos.get(contadorPedidos));
                 }
             }
-            XMLPedidoMesaServer xmlPedidoMesaServer = new XMLPedidoMesaServer(mesa, nombreSeccion, pedidosDestino.toArray(new Pedido[0]));
+            XMLPedidoMesaServer xmlPedidoMesaServer = new XMLPedidoMesaServer(mesa, nombreSeccion, idComanda,pedidosDestino.toArray(new Pedido[0]));
             listaXMLPedidos.add(xmlPedidoMesaServer);
         }
 
