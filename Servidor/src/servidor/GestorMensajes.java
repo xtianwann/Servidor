@@ -20,6 +20,7 @@ import org.xml.sax.SAXException;
 import tareas.DameloTodo;
 import tareas.PedidosComanda;
 import tareas.PedidosListos;
+import tareas.PedidosServidos;
 import tareas.ResumenMesa;
 
 /**
@@ -69,6 +70,10 @@ public class GestorMensajes extends Thread {
                 case "PedidosListos":
                 	PedidosListos pedidosListos = new PedidosListos(socket, mensaje);
                 	pedidosListos.run();
+                	break;
+                case "PedidosServidos":
+                	PedidosServidos pedidosServidos = new PedidosServidos(socket, mensaje);
+                	pedidosServidos.run();
                 	break;
             }
 

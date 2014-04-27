@@ -84,7 +84,7 @@ public class PedidosListos extends Thread{
 			for(int pedido = 0; pedido < pedidosAModificar.length; pedido++){
 				pedidosAModificar[pedido] = pedidosPendientes[pedido];
 			}
-			modificador.modificarEstadoPedido(pedidosAModificar);
+			modificador.modificarEstadoPedido(pedidosAModificar, "listo");
 			
 			/* Lo añadimos a la lista de pedidos según la ip que le corresponda */
 			PedidoListo pedidoListo = new PedidoListo(idComanda, idMenu, listos);
