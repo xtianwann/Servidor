@@ -49,7 +49,6 @@ public class PedidosListos extends Thread{
 	
 	private void anotarYComunicar(){
 		Document dom = XML.stringToXml(recibido);
-		
 		NodeList nodeListPedidos = dom.getElementsByTagName("pedido");
 		Node nodePedido = null;
 		Element elementoPedido = null;

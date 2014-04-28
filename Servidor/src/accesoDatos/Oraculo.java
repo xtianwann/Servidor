@@ -211,7 +211,7 @@ public class Oraculo {
      * @return lista con las id de los pedidos que coincidan con la búsqueda
      */
     public String[] getIdPedidoPorIdMenuYIdComanda(int idMenu, int idComanda){
-    	String consulta = "select idPed from PEDIDOS where idCom = " + idComanda + " and idMenu = " + idMenu + " and estado = 'pedido'";
+    	String consulta = "select idPed from PEDIDOS where comanda = " + idComanda + " and menu = " + idMenu + " and estado = 'pedido'";
     	String[] resultado = gestorBD.consulta(consulta);
     	return resultado;
     }

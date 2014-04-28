@@ -53,7 +53,7 @@ public class GestorMensajes extends Thread {
             String tipo = nodo.item(0).getChildNodes().item(0).getNodeValue();
             
             System.out.println("Mensaje recibido tipo: " + tipo);
-
+            System.out.println(mensaje);
             switch (tipo) {
                 case "DameloTodo":
                     DameloTodo dameloTodo = new DameloTodo(socket);
