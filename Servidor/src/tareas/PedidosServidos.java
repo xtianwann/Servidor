@@ -44,8 +44,8 @@ public class PedidosServidos extends Thread{
 			int idMenu = Integer.parseInt(nodePedido.getChildNodes().item(0).getFirstChild().getNodeValue());
 			int servidos = Integer.parseInt(nodePedido.getChildNodes().item(1).getFirstChild().getNodeValue());
 			
-			String[] idPedidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda);
-			String[] pedidosAModificar = new String[servidos];
+			String[] idPedidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "servidos");
+			String[] pedidosAModificar = new String[servidos - idPedidos.length];
 			for(int servido = 0; servido < servidos; servido++){
 				pedidosAModificar[servido] = idPedidos[servido];
 			}

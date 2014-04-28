@@ -210,8 +210,8 @@ public class Oraculo {
      * @param idComanda id de la comanda por la que se quiere filtrar
      * @return lista con las id de los pedidos que coincidan con la búsqueda
      */
-    public String[] getIdPedidoPorIdMenuYIdComanda(int idMenu, int idComanda){
-    	String consulta = "select idPed from PEDIDOS where comanda = " + idComanda + " and menu = " + idMenu + " and estado = 'pedido'";
+    public String[] getIdPedidoPorIdMenuYIdComanda(int idMenu, int idComanda, String estado){
+    	String consulta = "select idPed from PEDIDOS where comanda = " + idComanda + " and menu = " + idMenu + " and estado = '"+ estado +"'";
     	String[] resultado = gestorBD.consulta(consulta);
     	return resultado;
     }

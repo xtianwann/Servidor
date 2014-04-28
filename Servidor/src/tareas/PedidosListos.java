@@ -78,8 +78,8 @@ public class PedidosListos extends Thread{
 			int listos = Integer.parseInt(nodePedido.getChildNodes().item(1).getFirstChild().getNodeValue());
 			
 			/* Con estos datos modificamos el estado de lo que corresponda en la base de datos */
-			String[] pedidosPendientes = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda);
-			String[] pedidosAModificar = new String[listos];
+			String[] pedidosPendientes = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listo");
+			String[] pedidosAModificar = new String[listos-pedidosPendientes.length];
 			for(int pedido = 0; pedido < pedidosAModificar.length; pedido++){
 				pedidosAModificar[pedido] = pedidosPendientes[pedido];
 			}
