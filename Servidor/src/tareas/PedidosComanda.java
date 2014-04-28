@@ -110,7 +110,7 @@ public class PedidosComanda extends Thread {
             String mensaje = listaXMLPedidos.get(contadorPedidos).xmlToString(listaXMLPedidos.get(contadorPedidos).getDOM());
             Conexion conexion = null;
             try {
-				conexion = new Conexion("127.0.0.1",5050);
+				conexion = new Conexion("192.168.20.2",27013);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

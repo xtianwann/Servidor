@@ -78,8 +78,9 @@ public class PedidosListos extends Thread{
 			int listos = Integer.parseInt(nodePedido.getChildNodes().item(1).getFirstChild().getNodeValue());
 			
 			/* Con estos datos modificamos el estado de lo que corresponda en la base de datos */
-			String[] pedidosPendientes = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listo");
-			String[] pedidosAModificar = new String[listos-pedidosPendientes.length];
+			String[] pedidosListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda,"listo");
+			String[] pedidosPendientes = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda,"pedido");
+			String[] pedidosAModificar = new String[listos-pedidosListos.length];
 			for(int pedido = 0; pedido < pedidosAModificar.length; pedido++){
 				pedidosAModificar[pedido] = pedidosPendientes[pedido];
 			}
@@ -95,6 +96,15 @@ public class PedidosListos extends Thread{
 		for(int destino = 0; destino < listaIp.size(); destino++){
 			PedidoListo[] pedidos = mapaDestino.get(listaIp.get(destino)).toArray(new PedidoListo[0]);
 			XMLPedidosListosServer xmlPedidosListos = new XMLPedidosListosServer(pedidos);
+			Conexion conexion = null;
+			try {
+				conexion = new Conexion("127.0.0.1",5051);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
+			//			
 //			Cliente cliente = new Cliente();
 //			cliente.run();
 		}

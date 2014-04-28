@@ -11,8 +11,8 @@ public class XMLPedidosListosServer extends XML{
 		addNodo("salen", null, "paquete");
 		for(int contadorPedidos = 0; contadorPedidos < pedidos.length; contadorPedidos++){
 			addNodoConAtributos("pedido", new String[]{"idCom"}, new String[]{pedidos[contadorPedidos].getIdComanda()+""}, null, "salen");
-			addNodo("idMenu", pedidos[contadorPedidos].getIdMenu()+"", "salen");
-			addNodo("listos", pedidos[contadorPedidos].getListos()+"", "salen");
+			addNodo("idMenu", pedidos[contadorPedidos].getIdMenu()+"", "pedido");
+			addNodo("listos", pedidos[contadorPedidos].getListos()+"", "pedido");
 		}
 	}
 	
