@@ -85,6 +85,7 @@ public class ModificacionCB extends Thread{
 				e.printStackTrace();
 			}
 			conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
+			// en este caso, como recibe el mensaje por servidor, aunque se el mismo puede hacer algo distinto y reciclamos el xml
 			
 //			Cliente cliente = new Cliente();
 //			cliente.run();
