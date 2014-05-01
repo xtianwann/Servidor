@@ -18,8 +18,17 @@ import accesoDatos.PedidoListo;
 import Conexion.Conexion;
 import XML.XML;
 import XMLServer.XMLAcuseReciboServer;
+import XMLServer.XMLModificacionCBServer;
 import XMLServer.XMLPedidosListosServer;
 
+/**
+ * Recibe uno o varios pedidos procedentes de cocina/barra para ser modificados.
+ * Realiza los cambios pertinentes en la base de datos y finalmente envía la información
+ * necesaria a los camareros implicados. 
+ * 
+ * @author Juan Gabriel Pérez Leo
+ * @author Cristian Marín Honor
+ */
 public class ModificacionCB extends Thread{
 	
 	private Socket socket;
@@ -76,7 +85,7 @@ public class ModificacionCB extends Thread{
 		/* Finalmente se le envía a cada camarero la modificación */
 		for(int destino = 0; destino < listaIp.size(); destino++){
 			PedidoListo[] pedidos = mapaDestino.get(listaIp.get(destino)).toArray(new PedidoListo[0]);
-			XMLPedidosListosServer xmlPedidosListos = new XMLPedidosListosServer(pedidos);
+			XMLModificacionCBServer xmlModificacionesCB = new XMLModificacionCBServer(pedidos);
 			Conexion conexion = null;
 			try {
 				conexion = new Conexion("127.0.0.1",5051);
@@ -84,8 +93,7 @@ public class ModificacionCB extends Thread{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
-			// en este caso, como recibe el mensaje por servidor, aunque se el mismo puede hacer algo distinto y reciclamos el xml
+			conexion.escribirMensaje(xmlModificacionesCB.xmlToString(xmlModificacionesCB.getDOM()));
 			
 //			Cliente cliente = new Cliente();
 //			cliente.run();

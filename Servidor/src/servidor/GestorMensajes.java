@@ -19,6 +19,7 @@ import org.xml.sax.SAXException;
 
 import tareas.DameloTodo;
 import tareas.ModificacionCB;
+import tareas.ModificacionCamarero;
 import tareas.PedidosComanda;
 import tareas.PedidosListos;
 import tareas.PedidosServidos;
@@ -79,6 +80,10 @@ public class GestorMensajes extends Thread {
                 case "ModificacionCB":
                 	ModificacionCB modificacionCB = new ModificacionCB(socket, mensaje);
                 	modificacionCB.run();
+                	break;
+                case "ModificacionCamarero":
+                	ModificacionCamarero modificacionCamarero = new ModificacionCamarero(socket, mensaje);
+                	modificacionCamarero.run();
                 	break;
             }
 
