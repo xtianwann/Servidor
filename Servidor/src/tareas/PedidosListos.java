@@ -98,16 +98,25 @@ public class PedidosListos extends Thread{
 			XMLPedidosListosServer xmlPedidosListos = new XMLPedidosListosServer(pedidos);
 			Conexion conexion = null;
 			try {
-				conexion = new Conexion("127.0.0.1",5051);
+				conexion = new Conexion("192.168.1.6",27012);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
-			//			
+						
 //			Cliente cliente = new Cliente();
 //			cliente.run();
 		}
+//		XMLPedidosListosServer xmlPedidosListos = new XMLPedidosListosServer(pedidos);
+//		Conexion conexion = null;
+//		try {
+//			conexion = new Conexion("192.168.1.6",27012);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
 		
 		/* Finalmente enviamos un acuse de recibo al emisor del mensaje recibido */
 		XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer("OK", "");

@@ -88,7 +88,7 @@ public class ModificacionCB extends Thread{
 			XMLModificacionCBServer xmlModificacionesCB = new XMLModificacionCBServer(pedidos);
 			Conexion conexion = null;
 			try {
-				conexion = new Conexion("127.0.0.1",5051);
+				conexion = new Conexion("192.168.1.6",27012);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
