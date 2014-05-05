@@ -17,6 +17,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import tareas.CancelarPedido;
 import tareas.DameloTodo;
 import tareas.ModificacionCB;
 import tareas.ModificacionCamarero;
@@ -84,6 +85,10 @@ public class GestorMensajes extends Thread {
                 case "ModificacionCamarero":
                 	ModificacionCamarero modificacionCamarero = new ModificacionCamarero(socket, mensaje);
                 	modificacionCamarero.run();
+                	break;
+                case "CancelarPedido":
+                	CancelarPedido cancelarPedido = new CancelarPedido(socket, mensaje);
+                	cancelarPedido.run();
                 	break;
             }
 
