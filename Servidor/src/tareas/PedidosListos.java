@@ -97,12 +97,7 @@ public class PedidosListos extends Thread{
 			PedidoListo[] pedidos = mapaDestino.get(listaIp.get(destino)).toArray(new PedidoListo[0]);
 			XMLPedidosListosServer xmlPedidosListos = new XMLPedidosListosServer(pedidos);
 			Conexion conexion = null;
-			try {
-				conexion = new Conexion("192.168.1.6",27012);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			conexion = new Conexion("192.168.43.102",27012);
 			conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
 						
 //			Cliente cliente = new Cliente();

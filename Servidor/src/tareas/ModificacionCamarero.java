@@ -110,12 +110,7 @@ public class ModificacionCamarero extends Thread {
 			PedidoListo[] pedidos = mapaDestino.get(ipDestino.get(destino)).toArray(new PedidoListo[0]);
 			XMLModificacionCamarero xmlModificacion = new XMLModificacionCamarero(pedidos);
 			Conexion conexion = null;
-			try {
-				conexion = new Conexion("192.168.1.2", 27013);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			conexion = new Conexion("192.168.43.55", 27013);
 			conexion.escribirMensaje(xmlModificacion
 					.xmlToString(xmlModificacion.getDOM()));
 
