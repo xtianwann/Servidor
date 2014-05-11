@@ -12,7 +12,7 @@ import org.w3c.dom.Document;
 import Conexion.Conexion;
 import XML.XML;
 import XMLServer.XMLAcuseReciboServer;
-import XMLServer.XMLModificacionCamarero;
+import XMLServer.XMLDevolverServer;
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
 import accesoDatos.PedidoListo;
@@ -53,7 +53,7 @@ public class CancelarPedido extends Thread{
 		}
 		modificador.modificarEstadoPedido(aBorrar, "cancelado");
 		
-		/* Enviamos la información a cocina/barra */
+		/* Enviamos la informaciï¿½n a cocina/barra */
 		String ip = oraculo.getIdDestinoPorIdMenu(idMenu);
 		if (!ipDestino.contains(ip)) {
 			ipDestino.add(ip);
@@ -63,12 +63,12 @@ public class CancelarPedido extends Thread{
 		
 		for (int destino = 0; destino < ipDestino.size(); destino++) {
 			PedidoListo[] pedidos = mapaDestino.get(ipDestino.get(destino)).toArray(new PedidoListo[0]);
-			XMLModificacionCamarero xmlModificacion = new XMLModificacionCamarero(pedidos);
-			System.out.println(xmlModificacion.xmlToString(xmlModificacion.getDOM()));
+			XMLDevolverServer xmlDevolver = new XMLDevolverServer(pedidos);
+			System.out.println(xmlDevolver.xmlToString(xmlDevolver.getDOM()));
 			Conexion conexion = null;
-			conexion = new Conexion("192.168.43.55", 27013);
-			conexion.escribirMensaje(xmlModificacion
-					.xmlToString(xmlModificacion.getDOM()));
+			conexion = new Conexion("192.168.43.184", 27012);
+			conexion.escribirMensaje(xmlDevolver
+					.xmlToString(xmlDevolver.getDOM()));
 
 			// Cliente cliente = new Cliente();
 			// cliente.run();

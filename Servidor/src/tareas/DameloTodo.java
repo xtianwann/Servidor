@@ -2,7 +2,6 @@ package tareas;
 
 import Conexion.Conexion;
 import XMLServer.XMLDameloTodoServer;
-
 import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -24,14 +23,11 @@ public class DameloTodo extends Thread{
         try {
             XMLDameloTodoServer xml = new XMLDameloTodoServer();
             String respuesta = xml.xmlToString(xml.getDOM());
-//            Thread.sleep(10000);
             Conexion conn = new Conexion(socket);
             conn.escribirMensaje(respuesta);
             conn.cerrarConexion();
         } catch (IOException ex) {
             Logger.getLogger(DameloTodo.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (InterruptedException e) {
-//			e.printStackTrace();
 		}
     }
     

@@ -1,6 +1,8 @@
 package accesoDatos;
 
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Juan G. Pérez Leo
@@ -224,6 +226,154 @@ public class Oraculo {
      */
     public String getCamareroPorComanda(int idComanda){
     	String consulta = "select ip from DISPOSITIVOS inner join COMANDAS on idDisp = dispositivo where idCom = " + idComanda;
+    	String resultado = gestorBD.consulta(consulta)[0];
+    	return resultado;
+    }
+    
+    /**
+     * 
+     * @param idUsu
+     * @return
+     */
+    public Usuario getUsuarioById(int idUsu){
+    	String consulta = "select * from USUARIOS where idUsu = " + idUsu;
+    	String[] datosUsu = gestorBD.consulta(consulta);
+    	consulta = "select ip from DISPOSITIVOS where idDisp = " + datosUsu[2];
+    	String ip = gestorBD.consulta(consulta)[0];
+    	
+    	return new Usuario(Integer.parseInt(datosUsu[0]), datosUsu[1], Integer.parseInt(datosUsu[2]), ip);
+    }
+    
+    /**
+     * 
+     * @param socket
+     * @return
+     */
+    public Usuario getUsuarioByIp(Socket socket){
+    	System.out.println(socket.getInetAddress());
+    	String consulta = "select idUsu, nomUsu, dispositivo, ip USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + socket.getInetAddress() + "'";
+    	String[] resultado = gestorBD.consulta(consulta);
+    	
+    	return new Usuario(Integer.parseInt(resultado[0]), resultado[1], Integer.parseInt(resultado[2]), resultado[3]);
+    }
+    
+    /**
+     * 
+     * @param idMenu
+     * @return
+     */
+    public Dispositivo getDispositivoPorIdMenu(int idMenu){
+    	String consulta = "select idDisp, conectado, ip, nomDest from DISPOSITIVOS d inner join DESTINOS on destino = idDest inner join MENUS m on destino = idDest where idMenu = " + idMenu;
+    	String[] resultado = gestorBD.consulta(consulta);
+    	
+    	return new Dispositivo(Integer.parseInt(resultado[0]), Integer.parseInt(resultado[1]), resultado[2], resultado[3]);
+    }
+    
+    /**
+     * 
+     * 
+     * @param dispositivo
+     * @return
+     */
+    public PedidoPendiente[] getPedidosPendientes(Dispositivo dispositivo){
+    	ArrayList<PedidoPendiente> pedidosPendientes = new ArrayList<>();
+    	HashMap<Integer, ArrayList<Pedido>> mapaPedidosComanda = new HashMap<>();
+    	ArrayList<Integer> comandas = new ArrayList<>();
+    	
+    	/* Obtenemos todos los menús distintos de las comandas activas */
+    	String consulta = "select distinct menu from PEDIDOS inner join MENUS on menu = idMenu inner join DESTINOS on destino = idDest where nomDest = '" + dispositivo.getNombreDestino() + "'";
+    	String[] idMenus = gestorBD.consulta(consulta);
+    	
+    	/* Obtenemos todos los pedidos de las comandas activas y los 
+    	 * separamos por comanda */
+    	Pedido[] pedidos = getPedidos(idMenus);
+    	for(Pedido pedido : pedidos){
+    		if(!mapaPedidosComanda.containsKey(pedido.getComanda())){
+    			comandas.add(pedido.getComanda());
+    			mapaPedidosComanda.put(pedido.getComanda(), new ArrayList<Pedido>());
+    		}
+    		mapaPedidosComanda.get(pedido.getComanda()).add(pedido);
+    	}
+    	
+    	ArrayList<Pedido> pedidosComanda = new ArrayList<>();
+    	for(int contadorComanda = 0; contadorComanda < comandas.size(); contadorComanda++){
+    		pedidosComanda = mapaPedidosComanda.get(comandas.get(contadorComanda));
+    		for(int contadorMenu = 0; contadorMenu < idMenus.length; contadorMenu++){
+    			int udTotales = 0;
+    			int udPedido = 0;
+    			int udListo = 0;
+    			int udServido = 0;
+    			Pedido pEnv = null; // aquí guardo la información de pedido que debo pasar a pedidoPendiente
+    			for(int contadorPedido = 0; contadorPedido < pedidosComanda.size(); contadorPedido++){
+    				Pedido p = pedidosComanda.get(contadorPedido);
+    				if(p.getIdMenu() == Integer.parseInt(idMenus[contadorMenu])){
+    					pEnv = p; // si hay coincidencia guardo la info y empiezo a contar
+    					if(p.getEstado().equals("Pedido")){
+    						udPedido++;
+    						udTotales++;
+    					} else if(p.getEstado().equals("Listo")){
+    						udListo++;
+    						udTotales++;
+    					} else if(p.getEstado().equals("Servido")){
+    						udServido++;
+    						udTotales++;
+    					}
+    				}
+    			}
+    			pedidosPendientes.add(new PedidoPendiente(pEnv, udTotales, udPedido, udListo, udServido));
+    		}
+    	}
+    	
+    	return pedidosPendientes.toArray(new PedidoPendiente[0]);
+    }
+    
+    /**
+     * Devuelve todos los pedidos de un menú en concreto de aquellas comandas 
+     * que estén activas.
+     * 
+     * @return array de Pedido
+     */
+    public Pedido[] getPedidos(String[] idMenus){
+    	String consulta = "";
+    	String[] datos;
+    	ArrayList<String> tuplas = new ArrayList<>();
+    	ArrayList<Pedido> pedidos = new ArrayList<>();
+    	
+    	for(String menu : idMenus){
+    		consulta = "select idPed, menu, comanda, estado from PEDIDOS where menu = " + menu;
+    		datos = gestorBD.consulta(consulta);
+    		for(int contador = 0; contador < datos.length; contador++){
+    			tuplas.add(datos[contador]);
+    		}
+    	}
+    	
+    	for(int contador = 0; contador < tuplas.size(); contador+=4){
+    		pedidos.add(new Pedido(Integer.parseInt(tuplas.get(contador)), Integer.parseInt(tuplas.get(contador+1)), Integer.parseInt(tuplas.get(contador+2)), tuplas.get(contador+3)));
+    	}
+    	
+    	return pedidos.toArray(new Pedido[0]);
+    }
+    
+    /**
+     * Obtiene el nombre de una mesa a partir de una comanda
+     * 
+     * @param idComanda comanda que pertenece a la mesa de la que queremos obtener el nombre
+     * @return nombre de la mesa
+     */
+    public String getNombreMesa(int idComanda){
+    	String consulta = "select nomMes from MESAS inner join COMANDAS on mesa = idMes where idCom = " + idComanda;
+    	String resultado = gestorBD.consulta(consulta)[0];
+    	return resultado;
+    }
+    
+    /**
+     * Obtiene el nombre de una sección a partir de una comanda
+     * 
+     * @param idComanda comanda que pertenece a una mesa y sección concreta
+     * @return nombre de la sección
+     */
+    public String getNombreSeccion(int idComanda){
+    	String consulta = "select nomSec from SECCIONES inner join MESAS on idSec = seccion inner join COMANDAS on mesa = idMes where idCom = " + idComanda;
     	String resultado = gestorBD.consulta(consulta)[0];
     	return resultado;
     }

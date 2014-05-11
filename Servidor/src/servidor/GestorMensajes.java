@@ -19,6 +19,7 @@ import org.xml.sax.SAXException;
 
 import tareas.CancelarPedido;
 import tareas.DameloTodo;
+import tareas.HiloInsistente;
 import tareas.ModificacionCB;
 import tareas.ModificacionCamarero;
 import tareas.PedidosComanda;

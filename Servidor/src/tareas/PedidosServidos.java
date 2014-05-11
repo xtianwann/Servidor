@@ -59,21 +59,21 @@ public class PedidosServidos extends Thread {
 				}
 				modificador.modificarEstadoPedido(cambiar, "listo");
 			} else if (servidos > idServido.length) {
-				String[] idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listos");
+				String[] idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listo");
 				int nuevos = servidos - idServido.length;
-				if (nuevos > idListos.length) { // no debería darse nunca
+				if (nuevos > idListos.length) { // no deberï¿½a darse nunca
 					modificador.modificarEstadoPedido(idListos, "servido");
 					todosListos = true;
 				} else {
 					String[] idNuevos = new String[nuevos];
 					for (int nuevo = 0; nuevo < nuevos; nuevo++) {
 						idNuevos[nuevo] = idListos[nuevo];
-						modificador.modificarEstadoPedido(idNuevos, "servido");
 					}
+					modificador.modificarEstadoPedido(idNuevos, "servido");
 					
 					idServido = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "servido");
-					idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listos");
-					String[] idPedidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "pedidos");
+					idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listo");
+					String[] idPedidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "pedido");
 					if(servidos == idServido.length + idListos.length + idPedidos.length)
 						todosListos = true;
 				}

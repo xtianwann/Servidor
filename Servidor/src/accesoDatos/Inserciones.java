@@ -15,12 +15,12 @@ public class Inserciones {
      * @param mesa objeto Mesa al que está asociada la comanda
      * @param dispositivo objeto Dispositivo desde el que se tomó la comanda
      */
-    public void insertarNuevaComanda(Mesa mesa, Dispositivo dispositivo) {
+    public void insertarNuevaComanda(Mesa mesa, Usuario usuario) {
         String fechaComanda = oraculo.getFechaYHoraActual();
         int idMesa = mesa.getIdMes();
-        int idDispositivo = dispositivo.getIdDisp();
+        int idUsuario = usuario.getIdUsu();
         
-        String sentencia = "insert into COMANDAS (fechaCom, mesa, dispositivo, pagado, cerrada) values ('" + fechaComanda + "', " + idMesa + ", " + idDispositivo + ", 0, 0)";
+        String sentencia = "insert into COMANDAS (fechaCom, mesa, usuario, pagado, cerrada) values ('" + fechaComanda + "', " + idMesa + ", " + idUsuario + ", 0, 0)";
         gestorBD.actualizar(sentencia);
     }
 

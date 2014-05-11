@@ -9,10 +9,12 @@ import accesoDatos.Inserciones;
 import accesoDatos.Mesa;
 import accesoDatos.Oraculo;
 import accesoDatos.Pedido;
+import accesoDatos.Usuario;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +39,7 @@ public class PedidosComanda extends Thread {
     private String recibido;
     private ArrayList<String> destinos;
     private int idMes;
-    private Dispositivo dispositivo; // acabar la clase
+    private Usuario usuario; // acabar la clase
     private Oraculo oraculo;
 
     public PedidosComanda(Socket socket, String recibido) {
@@ -45,7 +47,7 @@ public class PedidosComanda extends Thread {
         this.socket = socket;
         this.recibido = recibido;
         this.destinos = new ArrayList<>();
-        this.dispositivo = new Dispositivo(socket.getInetAddress()); // tengo el dispositivo tuneado para los test, deshacer
+        this.usuario = Usuario.getUsuario(socket);
     }
 
     public void run() {
@@ -65,54 +67,61 @@ public class PedidosComanda extends Thread {
 
         /* Extraemos la lista de pedidos */
         ArrayList<Pedido> pedidos = new ArrayList<>();
+        HashMap<Integer, ArrayList<Pedido>> mapaDestino = new HashMap<>();
+        ArrayList<Dispositivo> dispositivos = new ArrayList<>();
         NodeList nodeListPedido = dom.getElementsByTagName("pedido");
         for (int contadorPedidos = 0; contadorPedidos < nodeListPedido.getLength(); contadorPedidos++) {
             Node nodePedido = nodeListPedido.item(contadorPedidos);
             NodeList items = nodePedido.getChildNodes();
             int idMenu = Integer.parseInt(items.item(0).getChildNodes().item(0).getNodeValue());
             int unidades = Integer.parseInt(items.item(1).getChildNodes().item(0).getNodeValue());
+            
+            Dispositivo dispositivo = Dispositivo.getDispositivo(idMenu);
+            if(!dispositivos.contains(dispositivo)){
+            	dispositivos.add(dispositivo);
+            	mapaDestino.put(dispositivo.getIdDisp(), new ArrayList<Pedido>());
+            }
+            
+            mapaDestino.get(dispositivo.getIdDisp()).add(new Pedido(idMenu, unidades));
             pedidos.add(new Pedido(idMenu, unidades));
         }
-
+        
         /* Comprobamos si la mesa está activa */
         Inserciones insertor = new Inserciones();
         int idComanda = 0;
         if(mesa.isActiva()){
             idComanda = insertor.insertarPedidos(mesa, pedidos.toArray(new Pedido[0]));
         } else {
-            insertor.insertarNuevaComanda(mesa, dispositivo);
+            insertor.insertarNuevaComanda(mesa, usuario);
             idComanda = insertor.insertarPedidos(mesa, pedidos.toArray(new Pedido[0]));
         }
-
-        /* Dividimos los pedidos según su destino y los almacenamos en un ArrayList */
-        ArrayList<XMLPedidoMesaServer> listaXMLPedidos = new ArrayList<>();
-        ArrayList<Integer> destinos = new ArrayList<>();
-        for (Pedido p : pedidos) {
-            int idDest = p.getIdDestino();
-            System.out.println("Destino: " + idDest);
-            if (!destinos.contains(idDest)) {
-                destinos.add(idDest);
-            }
+        
+        /* Generamos una lista de xml según destinos */
+        ArrayList<XMLPedidoMesaServer> listaXML = new ArrayList<>();
+        for(int contadorDestino = 0; contadorDestino < dispositivos.size(); contadorDestino++){
+        	listaXML.add(new XMLPedidoMesaServer(mesa, nombreSeccion, idComanda, mapaDestino.get(dispositivos).toArray(new Pedido[0])));
         }
-        for (int contadorDestinos = 0; contadorDestinos < destinos.size(); contadorDestinos++) {
-            ArrayList<Pedido> pedidosDestino = new ArrayList<>();
-            for (int contadorPedidos = 0; contadorPedidos < pedidos.size(); contadorPedidos++) {
-                if (pedidos.get(contadorPedidos).getIdDestino() == destinos.get(contadorDestinos)) {
-                    pedidosDestino.add(pedidos.get(contadorPedidos));
-                }
-            }
-            XMLPedidoMesaServer xmlPedidoMesaServer = new XMLPedidoMesaServer(mesa, nombreSeccion, idComanda,pedidosDestino.toArray(new Pedido[0]));
-            listaXMLPedidos.add(xmlPedidoMesaServer);
-        }
-
-        /* Se envía cada parte del pedido a su destino */
-        for (int contadorPedidos = 0; contadorPedidos < listaXMLPedidos.size(); contadorPedidos++) {
-            String mensaje = listaXMLPedidos.get(contadorPedidos).xmlToString(listaXMLPedidos.get(contadorPedidos).getDOM());
-            Conexion conexion = null;
-            conexion = new Conexion("192.168.43.55",27013);
-            conexion.escribirMensaje(mensaje);
-            System.out.println(mensaje); // mensaje de prueba para ver los distintos subpedidos, borrar al terminar de testear
-            
+        
+        /* Intentamos conectar con el destino y enviarle la información */
+        for(int contadorDestino = 0; contadorDestino < dispositivos.size(); contadorDestino++){
+        	Dispositivo dispositivo = dispositivos.get(contadorDestino);
+        	
+        	/* Comprobamos en la base de datos si está conectado */
+        	if(dispositivo.getConectado()){
+        		/* Vemos si realmente está conectado */
+        		if(Conexion.hacerPing(dispositivo.getIp())){ // enviar tarea y acuse SI
+        			resultado = "SI";
+        		} else { // lanzar hilo y acuse NO
+        			// modificar el estado en la bd como desconectado
+        			new HiloInsistente(dispositivo).run();
+        			resultado = "NO";
+        			explicacion = dispositivo.getNombreDestino() + " está desconectado";
+        		}
+        	} else { // enviar acuse con el fallo NO
+        		new HiloInsistente(dispositivo).run();
+    			resultado = "NO";
+    			explicacion = dispositivo.getNombreDestino() + " está desconectado";
+        	}
         }
 
         /* Finalmente se envía acuse de recibo al que pidió la comanda */

@@ -13,27 +13,52 @@ public class Pedido {
     private String nombreDestino;
     private int unidades;
     
+    private int idPed;
+    private String estado;
+    private int comanda;
+    
+    Oraculo oraculo = new Oraculo();
+    
     public Pedido(int idMenu){
-    	Oraculo oraculo = new Oraculo();
         this.idMenu = idMenu;
-        this.nombreProducto = oraculo.getNombreProductoPorIdMenu(this.idMenu);
-        this.nombreCantidad = oraculo.getNombreCantidadPorIdMenu(this.idMenu);
-        this.idDestino = Integer.parseInt(oraculo.getIdDestinoPorIdMenu(this.idMenu));
-        this.nombreDestino = oraculo.getNombreDestinoPorIdMenu(this.idMenu);
+        this.nombreProducto = oraculo.getNombreProductoPorIdMenu(idMenu);
+        this.nombreCantidad = oraculo.getNombreCantidadPorIdMenu(idMenu);
+        this.idDestino = Integer.parseInt(oraculo.getIdDestinoPorIdMenu(idMenu));
+        this.nombreDestino = oraculo.getNombreDestinoPorIdMenu(idMenu);
         this.unidades = 0;
     }
 
 	public Pedido(int idMenu, int unidades) {
-        Oraculo oraculo = new Oraculo();
         this.idMenu = idMenu;
-        this.nombreProducto = oraculo.getNombreProductoPorIdMenu(this.idMenu);
-        this.nombreCantidad = oraculo.getNombreCantidadPorIdMenu(this.idMenu);
-        this.idDestino = Integer.parseInt(oraculo.getIdDestinoPorIdMenu(this.idMenu));
-        this.nombreDestino = oraculo.getNombreDestinoPorIdMenu(this.idMenu);
+        this.nombreProducto = oraculo.getNombreProductoPorIdMenu(idMenu);
+        this.nombreCantidad = oraculo.getNombreCantidadPorIdMenu(idMenu);
+        this.idDestino = Integer.parseInt(oraculo.getIdDestinoPorIdMenu(idMenu));
+        this.nombreDestino = oraculo.getNombreDestinoPorIdMenu(idMenu);
         this.unidades = unidades;
     }
+	
+	public Pedido(int idPed, int idMenu, int comanda, String estado){
+		this.idPed = idPed;
+		this.idMenu = idMenu;
+		this.comanda = comanda;
+		this.estado = estado;
+		this.nombreProducto = oraculo.getNombreProductoPorIdMenu(idMenu);
+		this.nombreCantidad = oraculo.getNombreCantidadPorIdMenu(idMenu);
+	}
 
-    public int getIdDestino() {
+    public int getIdPed() {
+		return idPed;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public int getComanda() {
+		return comanda;
+	}
+
+	public int getIdDestino() {
         return idDestino;
     }
 
