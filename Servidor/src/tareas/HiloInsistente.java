@@ -1,7 +1,11 @@
 package tareas;
 
+import java.io.IOException;
+
 import Conexion.Conexion;
+import XMLServer.XMLInfoAcumulada;
 import accesoDatos.Dispositivo;
+import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
 import accesoDatos.PedidoPendiente;
 
@@ -28,18 +32,30 @@ public class HiloInsistente extends Thread {
 			}
 		} while (!conectado);
 		
-		/* Consltamos los pedidos pendientes del destino */
+		/* Ponemos el dispositivo como conectado en la base de datos */
+		Inserciones modificador = new Inserciones();
+		modificador.actualizarEstadoDispositivo(1);
+		
+		/* Consultamos los pedidos pendientes del destino */
+		PedidoPendiente[] pedidosPendientes = null;
 		if(dispositivo.getNombreDestino() != null){ // caso camarero --> cocina
-			PedidoPendiente[] pedidosPendientes = oraculo.getPedidosPendientes(dispositivo);
+			pedidosPendientes = oraculo.getPedidosPendientes(dispositivo);
 		}
 		else{ // caso cocina --> camarero
 			// otra consulta
 		}
 		
 		/* Generamos el xml con la información actualizada */
+		XMLInfoAcumulada xml = new XMLInfoAcumulada(pedidosPendientes);
 		
 		/* Finalmente envía el mensaje generado */
-		
+		Conexion conn = new Conexion(dispositivo.getIp(), 27000);
+		conn.escribirMensaje(xml.xmlToString(xml.getDOM()));
+		try {
+			conn.cerrarConexion();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

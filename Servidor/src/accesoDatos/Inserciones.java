@@ -49,12 +49,35 @@ public class Inserciones {
         return idCom;
     }
     
+    /**
+     * Cambia el estado de un pedido al que se le pase por parámetro
+     * 
+     * @param idPedidos lista de pedidos a modificar
+     * @param estado nuevo estado que se le va a asignar a los pedidos de la lista
+     */
     public void modificarEstadoPedido(String[] idPedidos, String estado){
     	String sentencia = "";
     	
     	for(int pedido = 0; pedido < idPedidos.length; pedido++){
     		sentencia = "update PEDIDOS set estado = '" + estado + "' where idPed = " + idPedidos[pedido];
     		gestorBD.actualizar(sentencia);
+    	}
+    }
+    
+    /**
+     * Actualiza el estado de un dispositivo en la base de datos
+     * 0 = desconectado
+     * 1 = conectado
+     * 
+     * @param estado nuevo estado que se le va a asignar
+     */
+    public void actualizarEstadoDispositivo(int estado){
+    	if(estado == 0 || estado == 1){
+    		String sentencia = "update DISPOSITIVOS set conectado = " + estado;
+    		gestorBD.actualizar(sentencia);
+    	}
+    	else {
+    		System.err.println("[Clase Inserciones] ActualizarEstadoDispositivo(): estado incorrecto, debe ser 0 o 1");
     	}
     }
 }

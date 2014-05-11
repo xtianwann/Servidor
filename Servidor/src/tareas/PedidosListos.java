@@ -99,9 +99,11 @@ public class PedidosListos extends Thread{
 			Conexion conexion = null;
 			conexion = new Conexion("192.168.43.102",27012);
 			conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
-						
-//			Cliente cliente = new Cliente();
-//			cliente.run();
+			try {
+				conexion.cerrarConexion();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 //		XMLPedidosListosServer xmlPedidosListos = new XMLPedidosListosServer(pedidos);
 //		Conexion conexion = null;
