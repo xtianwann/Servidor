@@ -12,25 +12,25 @@ import accesoDatos.PedidoPendiente;
 public class HiloInsistente extends Thread {
 
 	private Dispositivo dispositivo;
-	private boolean conectado;
+	private Conexion conectado;
 	private Oraculo oraculo = new Oraculo();
 
 	public HiloInsistente(Dispositivo dispositivo) {
 		this.dispositivo = dispositivo;
-		conectado = false;
+		conectado = null;
 	}
 
 	public void run() {
 		do {
-			conectado = Conexion.hacerPing(dispositivo.getIp());
-			if (!conectado) {
+			conectado  = new Conexion(dispositivo.getIp(), 27000);
+			if (conectado == null) {
 				try {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-		} while (!conectado);
+		} while (conectado == null);
 		
 		/* Ponemos el dispositivo como conectado en la base de datos */
 		Inserciones modificador = new Inserciones();

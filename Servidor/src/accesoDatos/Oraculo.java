@@ -237,10 +237,9 @@ public class Oraculo {
      */
     public Usuario getUsuarioById(int idUsu){
     	String consulta = "select * from USUARIOS where idUsu = " + idUsu;
-    	String[] datosUsu = gestorBD.consulta(consulta);
+    	String[] datosUsu = gestorBD.consulta(consulta,3);
     	consulta = "select ip from DISPOSITIVOS where idDisp = " + datosUsu[2];
     	String ip = gestorBD.consulta(consulta)[0];
-    	
     	return new Usuario(Integer.parseInt(datosUsu[0]), datosUsu[1], Integer.parseInt(datosUsu[2]), ip);
     }
     
@@ -250,11 +249,11 @@ public class Oraculo {
      * @return
      */
     public Usuario getUsuarioByIp(Socket socket){
-    	System.out.println(socket.getInetAddress());
-    	String consulta = "select idUsu, nomUsu, dispositivo, ip USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + socket.getInetAddress() + "'";
-    	String[] resultado = gestorBD.consulta(consulta);
-    	
-    	return new Usuario(Integer.parseInt(resultado[0]), resultado[1], Integer.parseInt(resultado[2]), resultado[3]);
+    	String ip = socket.getInetAddress()+"";
+    	ip = ip.substring(1);
+    	String consulta = "select * from USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + ip + "'";
+    	String[] resultado = gestorBD.consulta(consulta,3);
+    	return new Usuario(Integer.parseInt(resultado[0]), resultado[1], Integer.parseInt(resultado[2]), ip);
     }
     
     /**
@@ -263,8 +262,8 @@ public class Oraculo {
      * @return
      */
     public Dispositivo getDispositivoPorIdMenu(int idMenu){
-    	String consulta = "select idDisp, conectado, ip, nomDest from DISPOSITIVOS d inner join DESTINOS on destino = idDest inner join MENUS m on destino = idDest where idMenu = " + idMenu;
-    	String[] resultado = gestorBD.consulta(consulta);
+    	String consulta = "select idDisp, conectado, ip, nomDest from DISPOSITIVOS d inner join DESTINOS on d.destino = idDest inner join MENUS m on m.destino = idDest where idMenu = " + idMenu;
+    	String[] resultado = gestorBD.consulta(consulta,4);
     	
     	return new Dispositivo(Integer.parseInt(resultado[0]), Integer.parseInt(resultado[1]), resultado[2], resultado[3]);
     }
@@ -341,7 +340,7 @@ public class Oraculo {
     	
     	for(String menu : idMenus){
     		consulta = "select idPed, menu, comanda, estado from PEDIDOS where menu = " + menu;
-    		datos = gestorBD.consulta(consulta);
+    		datos = gestorBD.consulta(consulta,4);
     		for(int contador = 0; contador < datos.length; contador++){
     			tuplas.add(datos[contador]);
     		}
