@@ -86,9 +86,13 @@ public class ModificacionCB extends Thread{
 			PedidoListo[] pedidos = mapaDestino.get(listaIp.get(destino)).toArray(new PedidoListo[0]);
 			XMLModificacionCBServer xmlModificacionesCB = new XMLModificacionCBServer(pedidos);
 			Conexion conexion = null;
-			conexion = new Conexion("192.168.43.102",27012);
-			conexion.escribirMensaje(xmlModificacionesCB.xmlToString(xmlModificacionesCB.getDOM()));
-			
+			try {
+				conexion = new Conexion("192.168.43.102",27012);
+				conexion.escribirMensaje(xmlModificacionesCB.xmlToString(xmlModificacionesCB.getDOM()));
+			} catch (NullPointerException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
 //			Cliente cliente = new Cliente();
 //			cliente.run();
 		}

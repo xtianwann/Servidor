@@ -22,7 +22,12 @@ public class HiloInsistente extends Thread {
 
 	public void run() {
 		do {
-			conectado  = new Conexion(dispositivo.getIp(), 27000);
+			try {
+				conectado  = new Conexion(dispositivo.getIp(), 27000);
+			} catch (NullPointerException | IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			if (conectado == null) {
 				try {
 					Thread.sleep(2000);
@@ -49,12 +54,14 @@ public class HiloInsistente extends Thread {
 		XMLInfoAcumulada xml = new XMLInfoAcumulada(pedidosPendientes);
 		
 		/* Finalmente envía el mensaje generado */
-		Conexion conn = new Conexion(dispositivo.getIp(), 27000);
-		conn.escribirMensaje(xml.xmlToString(xml.getDOM()));
+		Conexion conn;
 		try {
+			conn = new Conexion(dispositivo.getIp(), 27000);
+			conn.escribirMensaje(xml.xmlToString(xml.getDOM()));
 			conn.cerrarConexion();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (NullPointerException | IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 

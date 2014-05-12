@@ -39,9 +39,19 @@ public class GestorMensajes extends Thread {
 
     public GestorMensajes(Socket socket) {
         this.socket = socket;
-        conn = new Conexion(socket);
+        try {
+			conn = new Conexion(socket);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         do {
-            this.mensaje = conn.leerMensaje();
+            try {
+				this.mensaje = conn.leerMensaje();
+			} catch (NullPointerException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         } while (this.mensaje.length() == 0);
     }
 

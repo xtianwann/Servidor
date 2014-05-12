@@ -121,40 +121,42 @@ public class PedidosComanda extends Thread {
 
 			/* Comprobamos en la base de datos si está conectado */
 			if (dispositivo.getConectado()) {
+				Conexion conexionDestino = null;
 				/* Vemos si realmente está conectado */
-				Conexion conexionDestino = new Conexion(dispositivo.getIp(),
-						27000);
-				if (conexionDestino != null) {
-					resultado = "SI";
-					conexionDestino.escribirMensaje(listaXML.get(
-							contadorDestino).xmlToString(
-							listaXML.get(contadorDestino).getDOM()));
 					try {
-						conexionDestino.cerrarConexion();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						conexionDestino = new Conexion(dispositivo.getIp(),27000);
+						conexionDestino.escribirMensaje(listaXML.get(
+								contadorDestino).xmlToString(
+								listaXML.get(contadorDestino).getDOM()));
+						System.out.println("entro en esta conectado");
+						resultado = "SI";
+						try {
+							conexionDestino.cerrarConexion();
+						} catch (IOException e) {
+							
+						}
+					} catch (NullPointerException | IOException e) {
+						System.out.println("entro en no esta conectado");
+						/*
+						 * Cambiamos el estado del dispositivo en la base de datos a
+						 * desconectado
+						 */
+						Inserciones modificador = new Inserciones();
+						modificador.actualizarEstadoDispositivo(0);
+
+						/* Dejamos un hilo comprobando si se conecta */
+						new HiloInsistente(dispositivo).run();
+
+						/*
+						 * Preparamos la información a enviar en el acuse del
+						 * camarero
+						 */
+						resultado = "NO";
+						explicacion = dispositivo.getNombreDestino()
+								+ " está desconectado";
 					}
-				} else {
-					/*
-					 * Cambiamos el estado del dispositivo en la base de datos a
-					 * desconectado
-					 */
-					Inserciones modificador = new Inserciones();
-					modificador.actualizarEstadoDispositivo(0);
-
-					/* Dejamos un hilo comprobando si se conecta */
-					new HiloInsistente(dispositivo).run();
-
-					/*
-					 * Preparamos la información a enviar en el acuse del
-					 * camarero
-					 */
-					resultado = "NO";
-					explicacion = dispositivo.getNombreDestino()
-							+ " está desconectado";
-				}
 			} else {
+				System.out.println("entro en esta conectado en bd");
 				/* Dejamos un hilo comprobando si se conecta */
 				new HiloInsistente(dispositivo).run();
 
