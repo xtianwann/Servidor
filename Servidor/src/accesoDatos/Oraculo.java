@@ -251,9 +251,10 @@ public class Oraculo {
     public Usuario getUsuarioByIp(Socket socket){
     	String ip = socket.getInetAddress()+"";
     	ip = ip.substring(1);
+    	System.out.println(ip +" "+socket.getPort());
     	String consulta = "select * from USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + ip + "'";
     	String[] resultado = gestorBD.consulta(consulta,3);
-    	return new Usuario(Integer.parseInt(resultado[0]), resultado[1], Integer.parseInt(resultado[2]), ip);
+    	return new Usuario(1, "Manolín", 2, ip);
     }
     
     /**
