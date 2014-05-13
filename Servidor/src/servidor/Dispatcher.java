@@ -50,7 +50,7 @@ public class Dispatcher extends Thread{
                 try {
                     System.out.println("Dispatcher: Socket!");
                     Socket socket = cola.getSocket();
-                    new GestorMensajes(socket).run();
+                    new GestorMensajes(socket).start();
                 } catch (TimeoutException ex) {
                     Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (ExcepcionColaVacia ex) {

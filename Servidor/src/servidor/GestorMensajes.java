@@ -71,7 +71,7 @@ public class GestorMensajes extends Thread {
             switch (tipo) {
                 case "DameloTodo":
                     DameloTodo dameloTodo = new DameloTodo(socket);
-                    dameloTodo.run();
+                    dameloTodo.start();
                     break;
                 case "PedidosComanda":
                     PedidosComanda pedidosComanda = new PedidosComanda(socket, mensaje);
@@ -79,27 +79,27 @@ public class GestorMensajes extends Thread {
                     break;
                 case "ResumenMesa":
                     ResumenMesa resumenMesa = new ResumenMesa(socket, mensaje);
-                    resumenMesa.run();
+                    resumenMesa.start();
                     break;
                 case "PedidosListos":
                 	PedidosListos pedidosListos = new PedidosListos(socket, mensaje);
-                	pedidosListos.run();
+                	pedidosListos.start();
                 	break;
                 case "PedidosServidos":
                 	PedidosServidos pedidosServidos = new PedidosServidos(socket, mensaje);
-                	pedidosServidos.run();
+                	pedidosServidos.start();
                 	break;
                 case "ModificacionCB":
                 	ModificacionCB modificacionCB = new ModificacionCB(socket, mensaje);
-                	modificacionCB.run();
+                	modificacionCB.start();
                 	break;
                 case "ModificacionCamarero":
                 	ModificacionCamarero modificacionCamarero = new ModificacionCamarero(socket, mensaje);
-                	modificacionCamarero.run();
+                	modificacionCamarero.start();
                 	break;
                 case "CancelarPedido":
                 	CancelarPedido cancelarPedido = new CancelarPedido(socket, mensaje);
-                	cancelarPedido.run();
+                	cancelarPedido.start();
                 	break;
             }
 

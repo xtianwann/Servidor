@@ -114,120 +114,74 @@ public class PedidosComanda extends Thread {
 							dispositivos.get(contadorDestino).getIdDisp())
 							.toArray(new Pedido[0])));
 		}
-
+		XMLPedidosPendientesCamarero xmlPendientes = new XMLPedidosPendientesCamarero(
+				mesa.getNomMes(), nombreSeccion, idComanda,
+				pedidos.toArray(new Pedido[0]));
+		String acuse = xmlPendientes.xmlToString(xmlPendientes.getDOM());
+		Conexion conexionCamarero;
+		try {
+			conexionCamarero = new Conexion(socket);
+			conexionCamarero.escribirMensaje(acuse);
+			conexionCamarero.cerrarConexion();
+		} catch (NullPointerException | IOException e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
+		System.out.println("Enviado");
 		/* Intentamos conectar con el destino y enviarle la información */
 		for (int contadorDestino = 0; contadorDestino < dispositivos.size(); contadorDestino++) {
-			XMLPedidosPendientesCamarero xmlPendientes = new XMLPedidosPendientesCamarero(
-					mesa.getNomMes(), nombreSeccion, idComanda,
-					pedidos.toArray(new Pedido[0]));
-			String acuse = xmlPendientes.xmlToString(xmlPendientes.getDOM());
-			Conexion conexionCamarero;
-			try {
-				conexionCamarero = new Conexion(socket);
-				conexionCamarero.escribirMensaje(acuse);
-				conexionCamarero.cerrarConexion();
-			} catch (NullPointerException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			Conexion conexionDestino = null;
+			Dispositivo dispositivo = dispositivos.get(contadorDestino);
+			// /* Comprobamos en la base de datos si está conectado */
+			System.out.println("Vuelta "+contadorDestino);
+			if (dispositivo.getConectado()) {
+				
+				/* Vemos si realmente está conectado */
+				try {
+					conexionDestino = new Conexion(dispositivo.getIp(),27000);
+				} catch (NullPointerException | IOException e2) {
+					// TODO Auto-generated catch block
+					//e2.printStackTrace();
+				}
+				if(conexionDestino == null){
+					/*
+					 * Cambiamos el estado del dispositivo en la base de datos a
+					 * desconectado
+					 */
+					System.out.println("entro en no esta conectado");
+					Inserciones modificador = new Inserciones();
+					modificador.actualizarEstadoDispositivo(0);
+					new HiloInsistente(dispositivo).start();
+				}
+			} else {
+				System.out.println("entro en no esta conectado en bd");
+				new HiloInsistente(dispositivo).start();
 			}
-			System.out.println("Enviado");
-			return;
-//			/* Comprobamos en la base de datos si está conectado */
-//			if (dispositivo.getConectado()) {
-//				Conexion conexionDestino = null;
-//				/* Vemos si realmente está conectado */
-//					try {
-//						conexionDestino = new Conexion(dispositivo.getIp(),27000);
-//						conexionDestino.escribirMensaje(listaXML.get(
-//								contadorDestino).xmlToString(
-//								listaXML.get(contadorDestino).getDOM()));
-//						System.out.println("entro en esta conectado");
-//						resultado = "SI";
-//						try {
-//							conexionDestino.cerrarConexion();
-//						} catch (IOException e) {
-//							
-//						}
-//					} catch (NullPointerException | IOException e) {
-//						System.out.println("entro en no esta conectado");
-//						/*
-//						 * Cambiamos el estado del dispositivo en la base de datos a
-//						 * desconectado
-//						 */
-//						Inserciones modificador = new Inserciones();
-//						modificador.actualizarEstadoDispositivo(0);
-//						resultado = "NO";
-//						explicacion = dispositivo.getNombreDestino()
-//								+ " está desconectado";
-//						XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer(resultado,
-//								explicacion);
-//						String acuse = xmlAcuse.xmlToString(xmlAcuse.getDOM());
-//
-//						Conexion conexionCamarero;
-//						try {
-//							conexionCamarero = new Conexion(socket);
-//							conexionCamarero.escribirMensaje(acuse);
-//							conexionCamarero.cerrarConexion();
-//						} catch (NullPointerException | IOException ex) {
-//							System.out.println("no se puede enviar acuse");
-//						}
-//						/* Dejamos un hilo comprobando si se conecta */
-//						//new HiloInsistente(dispositivo).run();
-//
-//						/*
-//						 * Preparamos la información a enviar en el acuse del
-//						 * camarero
-//						 */
-//						
-//					}
-//			} else {
-//				System.out.println("entro en no esta conectado en bd");
-//				/* Dejamos un hilo comprobando si se conecta */
-//				resultado = "NO";
-//				explicacion = dispositivo.getNombreDestino()
-//						+ " está desconectado";
-//				XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer(resultado,
-//						explicacion);
-//				String acuse = xmlAcuse.xmlToString(xmlAcuse.getDOM());
-//
-//				Conexion conexionCamarero;
-//				try {
-//					conexionCamarero = new Conexion(socket);
-//					conexionCamarero.escribirMensaje(acuse);
-//					conexionCamarero.cerrarConexion();
-//					System.out.println("Enviado");
-//				} catch (NullPointerException | IOException e) {
-//					System.out.println("no se puede enviar acuse");
-//				}
-//				//new HiloInsistente(dispositivo).run();
-//
-//				/* Preparamos la información a enviar en el acuse del camarero */
-//				
-//			}
 		}
 
-//		/* Finalmente se envía acuse de recibo al camarero que pidió la comanda */
-//		String acuse = "";
-//		if (resultado.equals("SI")) {
-//			XMLPedidosPendientesCamarero xmlPendientes = new XMLPedidosPendientesCamarero(
-//					mesa.getNomMes(), nombreSeccion, idComanda,
-//					pedidos.toArray(new Pedido[0]));
-//			acuse = xmlPendientes.xmlToString(xmlPendientes.getDOM());
-//		} else if (resultado.equals("NO")) {
-//			XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer(resultado,
-//					explicacion);
-//			acuse = xmlAcuse.xmlToString(xmlAcuse.getDOM());
-//		}
-//
-//		try {
-//			Conexion conexionCamarero = new Conexion(socket);
-//			conexionCamarero.escribirMensaje(acuse);
-//			conexionCamarero.cerrarConexion();
-//		} catch (NullPointerException e) {
-//			e.printStackTrace();
-//		} catch (IOException ex) {
-//			Logger.getLogger(PedidosComanda.class.getName()).log(Level.SEVERE,
-//					null, ex);
-//		}
+		/* Finalmente se envía acuse de recibo al camarero que pidió la comanda */
+		// String acuse = "";
+		// if (resultado.equals("SI")) {
+		// XMLPedidosPendientesCamarero xmlPendientes = new
+		// XMLPedidosPendientesCamarero(
+		// mesa.getNomMes(), nombreSeccion, idComanda,
+		// pedidos.toArray(new Pedido[0]));
+		// acuse = xmlPendientes.xmlToString(xmlPendientes.getDOM());
+		// } else if (resultado.equals("NO")) {
+		// XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer(resultado,
+		// explicacion);
+		// acuse = xmlAcuse.xmlToString(xmlAcuse.getDOM());
+		// }
+		//
+		// try {
+		// Conexion conexionCamarero = new Conexion(socket);
+		// conexionCamarero.escribirMensaje(acuse);
+		// conexionCamarero.cerrarConexion();
+		// } catch (NullPointerException e) {
+		// e.printStackTrace();
+		// } catch (IOException ex) {
+		// Logger.getLogger(PedidosComanda.class.getName()).log(Level.SEVERE,
+		// null, ex);
+		// }
 	}
 }
