@@ -75,7 +75,7 @@ public class GestorMensajes extends Thread {
                     break;
                 case "PedidosComanda":
                     PedidosComanda pedidosComanda = new PedidosComanda(socket, mensaje);
-                    pedidosComanda.run();
+                    pedidosComanda.start();
                     break;
                 case "ResumenMesa":
                     ResumenMesa resumenMesa = new ResumenMesa(socket, mensaje);
