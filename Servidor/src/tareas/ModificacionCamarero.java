@@ -111,7 +111,8 @@ public class ModificacionCamarero extends Thread {
 			XMLModificacionCamarero xmlModificacion = new XMLModificacionCamarero(pedidos);
 			Conexion conexion = null;
 			try {
-				conexion = new Conexion("192.168.1.2", 27000);
+				//conexion = new Conexion("192.168.1.2", 27000);
+				conexion = new Conexion("192.168.20.9", 27000);
 				conexion.escribirMensaje(xmlModificacion
 						.xmlToString(xmlModificacion.getDOM()));
 			} catch (NullPointerException | IOException e) {

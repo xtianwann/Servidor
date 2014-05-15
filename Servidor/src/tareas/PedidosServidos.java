@@ -38,6 +38,7 @@ public class PedidosServidos extends Thread {
 	}
 
 	private void actualizar() {
+		System.out.println("entro en actualizar de pedidosServidos");
 		boolean todosListos = false;
 		ArrayList<PedidoListo> totalmenteServidos = new ArrayList<>();
 		
@@ -51,7 +52,8 @@ public class PedidosServidos extends Thread {
 			int servidos = Integer.parseInt(nodePedido.getChildNodes().item(1).getFirstChild().getNodeValue());
 
 			String[] idServido = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "servido");
-
+			System.out.println("idServidos antes k nada"+idServido.length);
+			//Aqui esta el error
 			if (servidos < idServido.length) {
 				int diferencia = idServido.length - servidos;
 				String[] cambiar = new String[diferencia];
@@ -59,10 +61,12 @@ public class PedidosServidos extends Thread {
 					cambiar[cambiado] = idServido[cambiado];
 				}
 				modificador.modificarEstadoPedido(cambiar, "listo");
+				System.out.println("Modificacion de pedidos servidos");
 			} else if (servidos > idServido.length) {
 				String[] idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listo");
 				int nuevos = servidos - idServido.length;
 				if (nuevos > idListos.length) { // no deber�a darse nunca
+					System.out.println("No debo entrar aqui");
 					modificador.modificarEstadoPedido(idListos, "servido");
 					todosListos = true;
 				} else {
@@ -75,19 +79,24 @@ public class PedidosServidos extends Thread {
 					idServido = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "servido");
 					idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listo");
 					String[] idPedidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "pedido");
-					if(servidos == idServido.length + idListos.length + idPedidos.length){
+					System.out.println("Servidos "+servidos+ " Unidades servidas "+(idServido.length + idListos.length + idPedidos.length));
+					System.out.println("Listos "+idListos.length + " pedidos "+idPedidos.length);
+					int total = idServido.length + idListos.length + idPedidos.length;
+					if(idServido.length == total){
 						todosListos = true;
 						totalmenteServidos.add(new PedidoListo(idComanda, idMenu, 0));
 					}
 				}
 			}
 		}
-		
+		////////////////////////////
 		if(todosListos){
+			System.out.println("todos servidos");
 			XMLPedidosServidos xmlFinalizados = new XMLPedidosServidos(totalmenteServidos.toArray(new PedidoListo[0]));
 			String xml = xmlFinalizados.xmlToString(xmlFinalizados.getDOM());
 			try {
-				Conexion conexionDestino = new Conexion("192.168.1.2", 27000);
+				//Conexion conexionDestino = new Conexion("192.168.1.2", 27000);
+				Conexion conexionDestino = new Conexion("192.168.20.9", 27000);
 				conexionDestino.escribirMensaje(xml);
 				conexionDestino.cerrarConexion();
 			} catch (NullPointerException e) {

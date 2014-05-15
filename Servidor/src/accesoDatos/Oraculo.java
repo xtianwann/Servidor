@@ -251,10 +251,9 @@ public class Oraculo {
     public Usuario getUsuarioByIp(Socket socket){
     	String ip = socket.getInetAddress()+"";
     	ip = ip.substring(1);
-    	System.out.println(ip +" "+socket.getPort());
     	String consulta = "select * from USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + ip + "'";
     	String[] resultado = gestorBD.consulta(consulta,3);
-    	return new Usuario(1, "Manolín", 2, ip);
+    	return new Usuario(1, "Manolin", 1, ip);
     }
     
     /**
@@ -265,7 +264,6 @@ public class Oraculo {
     public Dispositivo getDispositivoPorIdMenu(int idMenu){
     	String consulta = "select idDisp, conectado, ip, nomDest from DISPOSITIVOS d inner join DESTINOS on d.destino = idDest inner join MENUS m on m.destino = idDest where idMenu = " + idMenu;
     	String[] resultado = gestorBD.consulta(consulta,4);
-    	
     	return new Dispositivo(Integer.parseInt(resultado[0]), Integer.parseInt(resultado[1]), resultado[2], resultado[3]);
     }
     
@@ -279,11 +277,9 @@ public class Oraculo {
     	ArrayList<PedidoPendiente> pedidosPendientes = new ArrayList<>();
     	HashMap<Integer, ArrayList<Pedido>> mapaPedidosComanda = new HashMap<>();
     	ArrayList<Integer> comandas = new ArrayList<>();
-    	
     	/* Obtenemos todos los menús distintos de las comandas activas */
     	String consulta = "select distinct menu from PEDIDOS inner join MENUS on menu = idMenu inner join DESTINOS on destino = idDest where nomDest = '" + dispositivo.getNombreDestino() + "'";
     	String[] idMenus = gestorBD.consulta(consulta);
-    	
     	/* Obtenemos todos los pedidos de las comandas activas y los 
     	 * separamos por comanda */
     	Pedido[] pedidos = getPedidos(idMenus);
@@ -308,13 +304,13 @@ public class Oraculo {
     				Pedido p = pedidosComanda.get(contadorPedido);
     				if(p.getIdMenu() == Integer.parseInt(idMenus[contadorMenu])){
     					pEnv = p; // si hay coincidencia guardo la info y empiezo a contar
-    					if(p.getEstado().equals("Pedido")){
+    					if(p.getEstado().equals("pedido")){
     						udPedido++;
     						udTotales++;
-    					} else if(p.getEstado().equals("Listo")){
+    					} else if(p.getEstado().equals("listo")){
     						udListo++;
     						udTotales++;
-    					} else if(p.getEstado().equals("Servido")){
+    					} else if(p.getEstado().equals("servido")){
     						udServido++;
     						udTotales++;
     					}
@@ -323,7 +319,6 @@ public class Oraculo {
     			pedidosPendientes.add(new PedidoPendiente(pEnv, udTotales, udPedido, udListo, udServido));
     		}
     	}
-    	
     	return pedidosPendientes.toArray(new PedidoPendiente[0]);
     }
     

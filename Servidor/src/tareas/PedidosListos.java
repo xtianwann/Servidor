@@ -98,7 +98,8 @@ public class PedidosListos extends Thread{
 			XMLPedidosListosServer xmlPedidosListos = new XMLPedidosListosServer(pedidos);
 			Conexion conexion = null;
 			try {
-				conexion = new Conexion("192.168.1.7",27000);
+				//conexion = new Conexion("192.168.1.7",27000);
+				conexion = new Conexion("localhost",5050);
 				conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
 			} catch (NullPointerException | IOException e1) {
 				// TODO Auto-generated catch block

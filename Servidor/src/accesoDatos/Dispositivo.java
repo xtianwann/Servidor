@@ -20,7 +20,7 @@ public class Dispositivo {
         this.idDisp = oraculo.getIdDispositivoPorIp(ip);
     }
     
-    public Dispositivo(int idDisp, int conectado, String ip, String nomDest){
+    public Dispositivo(int idDisp, int conectado, String ip, String nombreDestino){
     	this.idDisp = idDisp;
     	this.conectado = conectado;
     	this.ip = ip;

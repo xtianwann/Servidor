@@ -71,9 +71,9 @@ public class Inserciones {
      * 
      * @param estado nuevo estado que se le va a asignar
      */
-    public void actualizarEstadoDispositivo(int estado){
+    public void actualizarEstadoDispositivo(int estado,int idDisp){
     	if(estado == 0 || estado == 1){
-    		String sentencia = "update DISPOSITIVOS set conectado = " + estado;
+    		String sentencia = "update DISPOSITIVOS set conectado = " + estado+ " where idDisp = "+idDisp;
     		gestorBD.actualizar(sentencia);
     	}
     	else {
