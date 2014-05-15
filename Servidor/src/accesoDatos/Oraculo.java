@@ -225,7 +225,7 @@ public class Oraculo {
      * @return ip del dispositivo del camarero
      */
     public String getCamareroPorComanda(int idComanda){
-    	String consulta = "select ip from DISPOSITIVOS inner join COMANDAS on idDisp = dispositivo where idCom = " + idComanda;
+    	String consulta = "select ip from DISPOSITIVOS inner join USUARIOS on idDisp = dispositivo inner join COMANDAS on idUsu = usuario where idCom = " + idComanda;
     	String resultado = gestorBD.consulta(consulta)[0];
     	return resultado;
     }

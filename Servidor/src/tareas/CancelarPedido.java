@@ -67,7 +67,7 @@ public class CancelarPedido extends Thread{
 			System.out.println(xmlDevolver.xmlToString(xmlDevolver.getDOM()));
 			Conexion conexion = null;
 			try {
-				conexion = new Conexion("192.168.43.184", 27012);
+				conexion = new Conexion("192.168.1,2", 27012);
 				conexion.escribirMensaje(xmlDevolver
 						.xmlToString(xmlDevolver.getDOM()));
 			} catch (NullPointerException | IOException e) {

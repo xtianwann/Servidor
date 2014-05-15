@@ -128,60 +128,80 @@ public class PedidosComanda extends Thread {
 			e3.printStackTrace();
 		}
 		System.out.println("Enviado");
-		/* Intentamos conectar con el destino y enviarle la información */
+
+		// /* Intentamos conectar con el destino y enviarle la información */
 		for (int contadorDestino = 0; contadorDestino < dispositivos.size(); contadorDestino++) {
 			Conexion conexionDestino = null;
-			Dispositivo dispositivo = dispositivos.get(contadorDestino);
-			// /* Comprobamos en la base de datos si está conectado */
-			System.out.println("Vuelta "+contadorDestino);
-			if (dispositivo.getConectado()) {
-				
-				/* Vemos si realmente está conectado */
-				try {
-					conexionDestino = new Conexion(dispositivo.getIp(),27000);
-				} catch (NullPointerException | IOException e2) {
-					// TODO Auto-generated catch block
-					//e2.printStackTrace();
-				}
-				if(conexionDestino == null){
-					/*
-					 * Cambiamos el estado del dispositivo en la base de datos a
-					 * desconectado
-					 */
-					System.out.println("entro en no esta conectado");
-					Inserciones modificador = new Inserciones();
-					modificador.actualizarEstadoDispositivo(0);
-					new HiloInsistente(dispositivo).start();
-				}
-			} else {
-				System.out.println("entro en no esta conectado en bd");
-				new HiloInsistente(dispositivo).start();
+			String mensaje = listaXML.get(contadorDestino).xmlToString(
+					listaXML.get(contadorDestino).getDOM());
+			try {
+				conexionDestino = new Conexion("192.168.1.2", 27000);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		}
+			try {
+				conexionDestino.escribirMensaje(mensaje);
+				conexionDestino.cerrarConexion();
+			} catch (NullPointerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		/* Finalmente se envía acuse de recibo al camarero que pidió la comanda */
-		// String acuse = "";
-		// if (resultado.equals("SI")) {
-		// XMLPedidosPendientesCamarero xmlPendientes = new
-		// XMLPedidosPendientesCamarero(
-		// mesa.getNomMes(), nombreSeccion, idComanda,
-		// pedidos.toArray(new Pedido[0]));
-		// acuse = xmlPendientes.xmlToString(xmlPendientes.getDOM());
-		// } else if (resultado.equals("NO")) {
-		// XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer(resultado,
-		// explicacion);
-		// acuse = xmlAcuse.xmlToString(xmlAcuse.getDOM());
+			// Dispositivo dispositivo = dispositivos.get(contadorDestino);
+			// // /* Comprobamos en la base de datos si está conectado */
+			// System.out.println("Vuelta "+contadorDestino);
+			// if (dispositivo.getConectado()) {
+			//
+			// /* Vemos si realmente está conectado */
+			// try {
+			// try {
+			// conexionDestino = new Conexion("192.168.1.2",27000);
+			// } catch (NullPointerException | IOException e2) {
+			// TODO Auto-generated catch block
+			// e2.printStackTrace();
+		}
+		// if(conexionDestino == null){
+		// /*
+		// * Cambiamos el estado del dispositivo en la base de datos a
+		// * desconectado
+		// */
+		// System.out.println("entro en no esta conectado");
+		// Inserciones modificador = new Inserciones();
+		// modificador.actualizarEstadoDispositivo(0);
+		// new HiloInsistente(dispositivo).start();
 		// }
-		//
-		// try {
-		// Conexion conexionCamarero = new Conexion(socket);
-		// conexionCamarero.escribirMensaje(acuse);
-		// conexionCamarero.cerrarConexion();
-		// } catch (NullPointerException e) {
-		// e.printStackTrace();
-		// } catch (IOException ex) {
-		// Logger.getLogger(PedidosComanda.class.getName()).log(Level.SEVERE,
-		// null, ex);
+		// } else {
+		// System.out.println("entro en no esta conectado en bd");
+		// new HiloInsistente(dispositivo).start();
 		// }
 	}
+
+	/* Finalmente se envía acuse de recibo al camarero que pidió la comanda */
+	// String acuse = "";
+	// if (resultado.equals("SI")) {
+	// XMLPedidosPendientesCamarero xmlPendientes = new
+	// XMLPedidosPendientesCamarero(
+	// mesa.getNomMes(), nombreSeccion, idComanda,
+	// pedidos.toArray(new Pedido[0]));
+	// acuse = xmlPendientes.xmlToString(xmlPendientes.getDOM());
+	// } else if (resultado.equals("NO")) {
+	// XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer(resultado,
+	// explicacion);
+	// acuse = xmlAcuse.xmlToString(xmlAcuse.getDOM());
+	// }
+	//
+	// try {
+	// Conexion conexionCamarero = new Conexion(socket);
+	// conexionCamarero.escribirMensaje(acuse);
+	// conexionCamarero.cerrarConexion();
+	// } catch (NullPointerException e) {
+	// e.printStackTrace();
+	// } catch (IOException ex) {
+	// Logger.getLogger(PedidosComanda.class.getName()).log(Level.SEVERE,
+	// null, ex);
+	// }
 }

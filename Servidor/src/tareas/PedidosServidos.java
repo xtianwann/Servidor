@@ -2,6 +2,7 @@ package tareas;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,8 +14,10 @@ import org.w3c.dom.NodeList;
 import Conexion.Conexion;
 import XML.XML;
 import XMLServer.XMLAcuseReciboServer;
+import XMLServer.XMLPedidosServidos;
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
+import accesoDatos.PedidoListo;
 
 public class PedidosServidos extends Thread {
 
@@ -36,18 +39,16 @@ public class PedidosServidos extends Thread {
 
 	private void actualizar() {
 		boolean todosListos = false;
+		ArrayList<PedidoListo> totalmenteServidos = new ArrayList<>();
 		
 		Document dom = XML.stringToXml(recibido);
 		NodeList nodeListFinalizados = dom.getElementsByTagName("pedido");
 		for (int pedido = 0; pedido < nodeListFinalizados.getLength(); pedido++) {
 			Node nodePedido = nodeListFinalizados.item(pedido);
 			Element elementoPedido = (Element) nodePedido;
-			int idComanda = Integer.parseInt(elementoPedido
-					.getAttribute("idCom"));
-			int idMenu = Integer.parseInt(nodePedido.getChildNodes().item(0)
-					.getFirstChild().getNodeValue());
-			int servidos = Integer.parseInt(nodePedido.getChildNodes().item(1)
-					.getFirstChild().getNodeValue());
+			int idComanda = Integer.parseInt(elementoPedido.getAttribute("idCom"));
+			int idMenu = Integer.parseInt(nodePedido.getChildNodes().item(0).getFirstChild().getNodeValue());
+			int servidos = Integer.parseInt(nodePedido.getChildNodes().item(1).getFirstChild().getNodeValue());
 
 			String[] idServido = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "servido");
 
@@ -74,13 +75,25 @@ public class PedidosServidos extends Thread {
 					idServido = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "servido");
 					idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listo");
 					String[] idPedidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "pedido");
-					if(servidos == idServido.length + idListos.length + idPedidos.length)
+					if(servidos == idServido.length + idListos.length + idPedidos.length){
 						todosListos = true;
+						totalmenteServidos.add(new PedidoListo(idComanda, idMenu, 0));
+					}
 				}
 			}
-			
-			if(todosListos){
-				// enviar a cocina/barra
+		}
+		
+		if(todosListos){
+			XMLPedidosServidos xmlFinalizados = new XMLPedidosServidos(totalmenteServidos.toArray(new PedidoListo[0]));
+			String xml = xmlFinalizados.xmlToString(xmlFinalizados.getDOM());
+			try {
+				Conexion conexionDestino = new Conexion("192.168.1.2", 27000);
+				conexionDestino.escribirMensaje(xml);
+				conexionDestino.cerrarConexion();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 

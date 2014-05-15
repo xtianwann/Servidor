@@ -87,7 +87,7 @@ public class ModificacionCB extends Thread{
 			XMLModificacionCBServer xmlModificacionesCB = new XMLModificacionCBServer(pedidos);
 			Conexion conexion = null;
 			try {
-				conexion = new Conexion("192.168.43.102",27012);
+				conexion = new Conexion("192.168.1.7",27000);
 				conexion.escribirMensaje(xmlModificacionesCB.xmlToString(xmlModificacionesCB.getDOM()));
 			} catch (NullPointerException | IOException e) {
 				// TODO Auto-generated catch block
