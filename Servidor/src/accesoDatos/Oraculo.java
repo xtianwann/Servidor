@@ -373,9 +373,15 @@ public class Oraculo {
     	return resultado;
     }
     
-    /* Funcion de prueba, borrar al acabar los test */
-    public void test(){
-        
+    /**
+     * Obtiene todos los usuarios registrados en la base de datos
+     * 
+     * @return String[] con los nombres de todos los usuarios obtenidos
+     */
+    public String[] getCamareros(){
+    	String consulta = "select nomUsu from USUARIOS";
+    	String[] resultado = gestorBD.consulta(consulta);
+    	return resultado;
     }
     
 }

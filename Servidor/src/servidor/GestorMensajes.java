@@ -20,6 +20,8 @@ import org.xml.sax.SAXException;
 import tareas.CancelarPedido;
 import tareas.DameloTodo;
 import tareas.HiloInsistente;
+import tareas.LoginCamarero;
+import tareas.LogoutCamarero;
 import tareas.ModificacionCB;
 import tareas.ModificacionCamarero;
 import tareas.PedidosComanda;
@@ -100,6 +102,14 @@ public class GestorMensajes extends Thread {
                 case "CancelarPedido":
                 	CancelarPedido cancelarPedido = new CancelarPedido(socket, mensaje);
                 	cancelarPedido.start();
+                	break;
+                case "LoginCamarero":
+                	LoginCamarero loginCamarero = new LoginCamarero(socket, mensaje);
+                	loginCamarero.start();
+                	break;
+                case "LogoutCamarero":
+                	LogoutCamarero logoutCamarero = new LogoutCamarero(socket, mensaje);
+                	logoutCamarero.start();
                 	break;
             }
 
