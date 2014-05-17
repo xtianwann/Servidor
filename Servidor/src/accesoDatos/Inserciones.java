@@ -96,8 +96,7 @@ public class Inserciones {
 	 */
 	public void onOffDispositivo(String ip, int estado) {
 		if (estado == 0 || estado == 1) {
-			String sentencia = "update DISPOSITIVOS set conectado = " + estado
-					+ "where ip = '" + ip + "'";
+			String sentencia = "update DISPOSITIVOS set conectado = " + estado + " where ip = '" + ip + "'";
 			gestorBD.actualizar(sentencia);
 		} else {
 			System.err.println("[Clase inserciones] onOffDispositivo(): estado incorrecto, debe ser 0 o 1");
@@ -111,13 +110,13 @@ public class Inserciones {
 	 */
 	public void vinculoUsuarioDispositivo(String nomUsu, String ip, int login) {
 		if (login == 0) { // caso deslogueo: desvincula y apaga el dispositivo
-			String sentencia = "update USUARIOS dispositivo = 0 where nomUsu = '" + nomUsu + "'";
+			String sentencia = "update USUARIOS set dispositivo = null where nomUsu = '" + nomUsu + "'";
 			gestorBD.actualizar(sentencia);
 			onOffDispositivo(ip, login);
 		} else if(login == 1){ // caso login: vinvula y enciende el dispositivo
 			String consulta = "select idDisp from DISPOSITIVOS where ip = '" + ip + "'";
 			String idDisp = gestorBD.consulta(consulta)[0];
-			String sentencia = "update USUARIOS dispositivo = " + idDisp + " where nomUsu = '" + nomUsu + "'";
+			String sentencia = "update USUARIOS set dispositivo = " + idDisp + " where nomUsu = '" + nomUsu + "'";
 			gestorBD.actualizar(sentencia);
 			onOffDispositivo(ip, login);
 		} else {
