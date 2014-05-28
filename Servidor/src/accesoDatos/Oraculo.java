@@ -225,7 +225,20 @@ public class Oraculo {
      * @return ip del dispositivo del camarero
      */
     public String getCamareroPorComanda(int idComanda){
-    	String consulta = "select ip from DISPOSITIVOS inner join USUARIOS on idDisp = dispositivo inner join COMANDAS on idUsu = usuario where idCom = " + idComanda;
+    	String consulta = "select idUsu from USUARIOS inner join COMANDAS on idUsu = usuario where idCom = " + idComanda;
+    	String resultado = gestorBD.consulta(consulta)[0];
+    	resultado = getIpPorIdUsuario(Integer.parseInt(resultado));
+    	return resultado;
+    }
+    
+    /**
+     * Obtiene la ip del dispositivo en el que se encuentra un camarero
+     * 
+     * @param idUsu id de usuario que queremos saber su dispositivo
+     * @return ip del dispositivo que esté usando, null si no está usando ninguno
+     */
+    public String getIpPorIdUsuario(int idUsu){
+    	String consulta = "select ip from DISPOSITIVOS inner join USUARIOS on idDisp = dispositivo where idUsu = " + idUsu;
     	String resultado = gestorBD.consulta(consulta)[0];
     	return resultado;
     }
@@ -236,7 +249,7 @@ public class Oraculo {
      * @return
      */
     public Usuario getUsuarioById(int idUsu){
-    	String consulta = "select * from USUARIOS where idUsu = " + idUsu;
+    	String consulta = "select idUsu, nomUsu, dispositivo from USUARIOS where idUsu = " + idUsu;
     	String[] datosUsu = gestorBD.consulta(consulta,3);
     	consulta = "select ip from DISPOSITIVOS where idDisp = " + datosUsu[2];
     	String ip = gestorBD.consulta(consulta)[0];
@@ -244,16 +257,39 @@ public class Oraculo {
     }
     
     /**
+     * Obtiene un usuario a partir de la ip que se extrae del socket
      * 
-     * @param socket
-     * @return
+     * @param socket socket por el que el usuario estableció conexión
+     * @return Usuario con toda la información
      */
     public Usuario getUsuarioByIp(Socket socket){
     	String ip = socket.getInetAddress()+"";
     	ip = ip.substring(1);
     	String consulta = "select * from USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + ip + "'";
     	String[] resultado = gestorBD.consulta(consulta,3);
-    	return new Usuario(1, "Manolin", 1, ip);
+    	
+    	int idUsu = Integer.parseInt(resultado[0]);
+    	String nomUsu = resultado[1];
+    	int idDisp = Integer.parseInt(resultado[2]);
+    	
+    	return new Usuario(idUsu, nomUsu, idDisp, ip);
+    }
+    
+    /**
+     * Obtiene un usuario a partir de la ip de un dispositivo
+     * 
+     * @param ip String ip del dispositivo
+     * @return Usuario con toda la información
+     */
+    public Usuario getUsuarioByIp(String ip){
+    	String consulta = "select * from USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + ip + "'";
+    	String[] resultado = gestorBD.consulta(consulta,3);
+
+    	int idUsu = Integer.parseInt(resultado[0]);
+    	String nomUsu = resultado[1];
+    	int idDisp = Integer.parseInt(resultado[2]);
+    	
+    	return new Usuario(idUsu, nomUsu, idDisp, ip);
     }
     
     /**
@@ -268,20 +304,20 @@ public class Oraculo {
     }
     
     /**
+     * Devuelve una lista de pedidos pendientes de un dispositivo tipo destino (cocina o barra)
      * 
-     * 
-     * @param dispositivo
-     * @return
+     * @param dispositivo Dispositivo del que se quiere obtener la lista
+     * @return PedidoPendiente[] lista de todos los pedidos pendientes de ese dispositivo
      */
     public PedidoPendiente[] getPedidosPendientes(Dispositivo dispositivo){
     	ArrayList<PedidoPendiente> pedidosPendientes = new ArrayList<>();
     	HashMap<Integer, ArrayList<Pedido>> mapaPedidosComanda = new HashMap<>();
     	ArrayList<Integer> comandas = new ArrayList<>();
+    	
     	/* Obtenemos todos los menús distintos de las comandas activas */
-    	String consulta = "select distinct menu from PEDIDOS inner join MENUS on menu = idMenu inner join DESTINOS on destino = idDest where nomDest = '" + dispositivo.getNombreDestino() + "'";
+    	String consulta = "select distinct menu from PEDIDOS inner join MENUS on menu = idMenu inner join DESTINOS on destino = idDest where nomDest = '" + dispositivo.getNombreDestino() + "' order by idPed";
     	String[] idMenus = gestorBD.consulta(consulta);
-    	/* Obtenemos todos los pedidos de las comandas activas y los 
-    	 * separamos por comanda */
+    	/* Obtenemos todos los pedidos de las comandas activas y los separamos por comanda */
     	Pedido[] pedidos = getPedidos(idMenus);
     	for(Pedido pedido : pedidos){
     		if(!mapaPedidosComanda.containsKey(pedido.getComanda())){
@@ -312,11 +348,14 @@ public class Oraculo {
     						udTotales++;
     					} else if(p.getEstado().equals("servido")){
     						udServido++;
+    						udListo++;
     						udTotales++;
     					}
     				}
     			}
-    			pedidosPendientes.add(new PedidoPendiente(pEnv, udTotales, udPedido, udListo, udServido));
+    			
+    			if(pEnv != null)
+    				pedidosPendientes.add(new PedidoPendiente(pEnv, udTotales, udPedido, udListo, udServido));
     		}
     	}
     	return pedidosPendientes.toArray(new PedidoPendiente[0]);
@@ -381,6 +420,158 @@ public class Oraculo {
     public String[] getCamareros(){
     	String consulta = "select nomUsu from USUARIOS";
     	String[] resultado = gestorBD.consulta(consulta);
+    	return resultado;
+    }
+    
+    /**
+     * Obtiene la id de un usuario a partir de su nombre
+     * 
+     * @param nomUsu - String nombre del usuario
+     * @return int id del usuario
+     */
+    public int getIdUsuario(String nomUsu){
+    	String consulta = "select idUsu from USUARIOS where nomUsu = '" + nomUsu + "'";
+    	String idUsu = gestorBD.consulta(consulta)[0];
+    	return Integer.parseInt(idUsu);
+    }
+    
+    /**
+     * Obtiene la id de los camareros que se encuentran vinculados a un dispositivo
+     * 
+     * @param ip String ip del dipositivo en cuestión
+     * @return int[] con la id de los camareros
+     */
+    public int[] getCamarerosEnDispositivo(String ip){
+    	int[] idUsuarios = null;
+    	
+    	String consulta = "select idUsu from USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + ip + "'";
+    	String[] ids = gestorBD.consulta(consulta);
+    	
+    	if(ids != null && ids.length > 0){
+	    	idUsuarios = new int[ids.length];
+	    	for(int usuario = 0; usuario < ids.length; usuario++){
+	    		idUsuarios[usuario] = Integer.parseInt(ids[usuario]);
+	    	}
+    	}
+    	
+    	return idUsuarios;
+    }
+    
+    /**
+     * Obtiene una lista de todos los pedidos de las comandas de un usuario que se
+     * encuentren en estado "pedido" y "listo"
+     * 
+     * @param idUsu int id del usuario del que queremos saber sus pedidos pendientes
+     * @return PedidoPendiente[] lista de los pedidos pendientes
+     */
+    public Pedido[] getPedidosPendientes(int idUsu){
+    	ArrayList<Pedido> listaPedidos = new ArrayList<>();
+    	Pedido[] pedidos = null;
+    	
+    	/* Obtenemos los datos */
+    	String consulta = "select idPed, menu, comanda, estado from PEDIDOS inner join COMANDAS on comanda = idCom where cerrada = 0 and estado in ('listo', 'pedido', 'servido') and usuario = " + idUsu;
+    	String[] datos = gestorBD.consulta(consulta, 4);
+    	
+    	/* Si obtenemos datos creamos una lista de pedidos con cada tupla */
+    	if(datos.length > 0){
+    		pedidos = new Pedido[datos.length/4];
+    		
+	    	int numPedidos = 0;
+	    	for(int i = 0; i < datos.length; i+=4){
+	    		pedidos[numPedidos] = new Pedido(Integer.parseInt(datos[i]), Integer.parseInt(datos[i+1]), Integer.parseInt(datos[i+2]), datos[i+3]);
+	    		numPedidos++;
+	    	}
+	    	
+	    	/* Mejoramos la lista contando los pedidos y uniendo los que se corresponden */
+	    	for(int i = 0; i < pedidos.length; i++){
+	    		int unidades = 0;
+	    		int listos = 0;
+	    		int servidos = 0;
+	    		
+	    		Pedido pedido = pedidos[i];
+	    		boolean existe = false;
+	    		
+	    		for(int j = 0; j < pedidos.length; j++){
+		    		if(pedido.getComanda() == pedidos[j].getComanda() && pedido.getIdMenu() == pedidos[j].getIdMenu()){
+		    			if(pedidos[j].getEstado().equals("listo")){
+		    				listos++;
+		    			} else if(pedidos[j].getEstado().equals("servido")){
+		    				servidos++;
+		    			}
+		    			unidades++;
+		    		}
+	    		}
+	    		
+	    		int pos = 0;
+	    		if(listaPedidos.size() > 0){
+	    			for(int k = 0; k < listaPedidos.size(); k++){
+	    				if(listaPedidos.get(k).getIdMenu() == pedido.getIdMenu() && listaPedidos.get(k).getComanda() == pedido.getComanda()){
+	    					existe = true;
+	    					pos = k;
+	    					break;
+	    				}
+	    			}
+	    		}
+	    		
+	    		if(!existe)
+	    			listaPedidos.add(new Pedido(pedido.getIdPed(), pedido.getIdMenu(), pedido.getComanda(), pedido.getEstado(), unidades, listos, servidos));
+	    	}
+    	}
+    	
+    	return listaPedidos.toArray(new Pedido[0]);
+    }
+    
+    /**
+     * Obtiene si un dispositivo está conectado o no a partir de su id
+     * 
+     * @param idDisp int id del dispositivo
+     * @return int 1 = conectado, 0 = desconectado
+     */
+    public int getConectado(int idDisp){
+    	String consulta = "select conectado from DISPOSITIVOS where idDisp = " + idDisp;
+    	String conectado = gestorBD.consulta(consulta)[0];
+    	return Integer.parseInt(conectado);
+    }
+    
+    /**
+     * Obtiene si un dispositivo está conectado o no a partir de su ip
+     * 
+     * @param ip String ip del dispositivo
+     * @return int 1 = conectado, 0 = desconectado
+     */
+    public int getConectado(String ip){
+    	String consulta = "select conectado from DISPOSITIVOS where ip = '" + ip + "'";
+    	String conectado = gestorBD.consulta(consulta)[0];
+    	return Integer.parseInt(conectado);
+    }
+    
+    /**
+     * Comprueba si se ha lanzado un hilo para intentar conectar con un dispositivo
+     * 
+     * @param ip String ip del dispositivo
+     * @return boolean true si está lanzado, false en caso contrario
+     */
+    public boolean isHiloLanzado(String ip){
+    	boolean hiloLanzado = false;
+    	String consulta = "select hilo from DISPOSITIVOS where ip = '" + ip + "'";
+    	String hilo = gestorBD.consulta(consulta)[0];
+    	if(hilo.equals("1"))
+    		hiloLanzado = true;
+    	return hiloLanzado;
+    }
+    
+    /**
+     * Obtiene el nombre de un destino a partir del dispositivo vinculado
+     * 
+     * @param idDisp id del dispositivo vinculado
+     * @return String nombre del destino
+     */
+    public String getNombreDestino(int idDisp){
+    	String resultado = null;
+    	String consulta = "select nomDest from DESTINOS inner join DISPOSITIVOS on idDest = destino where idDisp = " + idDisp;
+    	String[] resultados = gestorBD.consulta(consulta);
+    	if(resultados != null && resultados.length > 0)
+    		resultado = resultados[0];
     	return resultado;
     }
     

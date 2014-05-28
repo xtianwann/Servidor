@@ -1,5 +1,7 @@
 package XMLServer;
 
+import accesoDatos.Oraculo;
+import accesoDatos.Pedido;
 import XML.XML;
 
 public class XMLResultadoLoginCamarero extends XML{

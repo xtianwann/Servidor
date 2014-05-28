@@ -102,11 +102,13 @@ public class Inserciones {
 			System.err.println("[Clase inserciones] onOffDispositivo(): estado incorrecto, debe ser 0 o 1");
 		}
 	}
-
+	
 	/**
-	 * Desvincula un dispositivo de un usuario
+	 * Vinvula o desvinvula un dispositivo de un camarero
 	 * 
-	 * @param nomUsu nombre del usuario en cuestión
+	 * @param nomUsu - String nombre del camarero
+	 * @param ip - String ip del dispositivo que se desea vinvular o desvincular
+	 * @param login - int que recibirá 1 para vinvular y 0 para desvincular
 	 */
 	public void vinculoUsuarioDispositivo(String nomUsu, String ip, int login) {
 		if (login == 0) { // caso deslogueo: desvincula y apaga el dispositivo
@@ -122,5 +124,26 @@ public class Inserciones {
 		} else {
 			System.err.println("[Clase inserciones] vinvuloUsuarioDispositivo(): login incorrecto, debe ser 0 o 1");
 		}
+	}
+	
+	/**
+	 * Asigna las comandas realizadas por un usuario a otro
+	 * 
+	 * @param idCamareros int[] id de los camareros que van a perder la propiedad de sus pedidos
+	 * @param idUsu int id del usuario que va a heredar los pedidos de otros usuarios
+	 */
+	public void cambiarPedidosDeUsuario(int idUsuAnterior, int idUsu){
+		String sentencia = "update COMANDAS set usuario = " + idUsu + " where usuario = " + idUsuAnterior + " and cerrada = 0";
+		gestorBD.actualizar(sentencia);
+	}
+	
+	/**
+	 * Cambia el campo hilo lanzado en la base de datos
+	 * 
+	 * @param estado int 1 = lanzado, 0 = no lanzado
+	 */
+	public void setHiloLanzado(String ip, int estado){
+		String sentencia = "update DISPOSITIVOS set hilo = " + estado + " where ip = '" + ip + "'";
+		gestorBD.actualizar(sentencia);
 	}
 }

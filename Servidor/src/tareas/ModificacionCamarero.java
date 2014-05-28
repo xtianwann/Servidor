@@ -16,6 +16,7 @@ import XML.XML;
 import XMLServer.XMLAcuseReciboServer;
 import XMLServer.XMLModificacionCBServer;
 import XMLServer.XMLModificacionCamarero;
+import accesoDatos.Dispositivo;
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
 import accesoDatos.PedidoListo;
@@ -44,84 +45,54 @@ public class ModificacionCamarero extends Thread {
 
 		Document dom = XML.stringToXml(recibido);
 		NodeList nodeListModificado = dom.getElementsByTagName("modificado");
-		for (int contadorModificado = 0; contadorModificado < nodeListModificado
-				.getLength(); contadorModificado++) {
-			Node nodeModificado = nodeListModificado.item(contadorModificado);
-			int idComanda = Integer.parseInt(nodeModificado.getChildNodes()
-					.item(0).getFirstChild().getNodeValue());
-			int idMenu = Integer.parseInt(nodeModificado.getChildNodes()
-					.item(1).getFirstChild().getNodeValue());
-			int unidades = Integer.parseInt(nodeModificado.getChildNodes()
-					.item(2).getFirstChild().getNodeValue());
+		Node nodeModificado = nodeListModificado.item(0);
+		int idComanda = Integer.parseInt(nodeModificado.getChildNodes().item(0)
+				.getFirstChild().getNodeValue());
+		int idMenu = Integer.parseInt(nodeModificado.getChildNodes().item(1)
+				.getFirstChild().getNodeValue());
+		int unidades = Integer.parseInt(nodeModificado.getChildNodes().item(2)
+				.getFirstChild().getNodeValue());
 
-			String[] idPedidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu,
-					idComanda, "pedido");
-			String[] idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu,
-					idComanda, "listo");
-			String[] idServidos = oraculo.getIdPedidoPorIdMenuYIdComanda(
-					idMenu, idComanda, "servido");
+		String[] idPedidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu,
+				idComanda, "pedido");
+		String[] idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu,
+				idComanda, "listo");
+		String[] idServidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu,
+				idComanda, "servido");
 
-			int total = idPedidos.length + idListos.length + idServidos.length;
+		int total = idPedidos.length + idListos.length + idServidos.length;
 
-			int diferencia = total - unidades;
-			if (diferencia == total) { // cancelar todos los pedidos
-				modificador.modificarEstadoPedido(idPedidos, "cancelado");
-				modificador.modificarEstadoPedido(idListos, "cancelado");
-				modificador.modificarEstadoPedido(idServidos, "cancelado");
-			} else {
-				ArrayList<String> modificaciones = new ArrayList<>();
-				for (String id : idPedidos) {
-					if (diferencia > 0) {
-						modificaciones.add(id);
-						diferencia--;
-					} else
-						break;
-				}
-				for (String id : idListos) {
-					if (diferencia > 0) {
-						modificaciones.add(id);
-						diferencia--;
-					} else
-						break;
-				}
-				for (String id : idPedidos) {
-					if (diferencia > 0) {
-						modificaciones.add(id);
-						diferencia--;
-					} else
-						break;
-				}
-
-				modificador.modificarEstadoPedido(
-						modificaciones.toArray(new String[0]), "cancelado");
+		int diferencia = total - unidades;
+		if (diferencia == total) { // cancelar todos los pedidos
+			modificador.modificarEstadoPedido(idPedidos, "cancelado");
+			modificador.modificarEstadoPedido(idListos, "cancelado");
+			modificador.modificarEstadoPedido(idServidos, "cancelado");
+		} else {
+			ArrayList<String> modificaciones = new ArrayList<>();
+			for (String id : idPedidos) {
+				if (diferencia > 0) {
+					modificaciones.add(id);
+					diferencia--;
+				} else
+					break;
+			}
+			for (String id : idListos) {
+				if (diferencia > 0) {
+					modificaciones.add(id);
+					diferencia--;
+				} else
+					break;
+			}
+			for (String id : idPedidos) {
+				if (diferencia > 0) {
+					modificaciones.add(id);
+					diferencia--;
+				} else
+					break;
 			}
 
-			/* Vemos dónde debe mandarse */
-			String ip = oraculo.getIdDestinoPorIdMenu(idMenu);
-			if (!ipDestino.contains(ip)) {
-				ipDestino.add(ip);
-				mapaDestino.put(ip, new ArrayList<PedidoListo>());
-			}
-			mapaDestino.get(ip).add(new PedidoListo(idComanda, idMenu, unidades));
-		}
-		
-		/* Finalmente se le envía a cada destino la modificación */
-		for (int destino = 0; destino < ipDestino.size(); destino++) {
-			PedidoListo[] pedidos = mapaDestino.get(ipDestino.get(destino)).toArray(new PedidoListo[0]);
-			XMLModificacionCamarero xmlModificacion = new XMLModificacionCamarero(pedidos);
-			Conexion conexion = null;
-			try {
-				//conexion = new Conexion("192.168.1.2", 27000);
-				conexion = new Conexion("192.168.20.9", 27000);
-				conexion.escribirMensaje(xmlModificacion
-						.xmlToString(xmlModificacion.getDOM()));
-			} catch (NullPointerException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			// Cliente cliente = new Cliente();
-			// cliente.run();
+			modificador.modificarEstadoPedido(
+					modificaciones.toArray(new String[0]), "cancelado");
 		}
 
 		/* Acuse de recibo al emisor */
@@ -131,10 +102,40 @@ public class ModificacionCamarero extends Thread {
 			Conexion conn = new Conexion(socket);
 			conn.escribirMensaje(acuse);
 			conn.cerrarConexion();
+			System.out.println("[ModificacionCamarero] Enviado el acuse");
 		} catch (IOException ex) {
 			Logger.getLogger(PedidosComanda.class.getName()).log(Level.SEVERE,
 					null, ex);
 		}
-	}
 
+		/* Finalmente se le envía a cada destino la modificación */
+		PedidoListo pedido = new PedidoListo(idComanda, idMenu, unidades);
+		XMLModificacionCamarero xmlModificacion = new XMLModificacionCamarero(
+				pedido);
+		String mensaje = xmlModificacion.xmlToString(xmlModificacion.getDOM());
+		Dispositivo dispositivo = Dispositivo.getDispositivo(idMenu);
+
+		Conexion conexion = null;
+		/* Comprobamos en la base de datos si está conectado */
+		if (dispositivo.getConectado()) {
+			/* Vemos si realmente está conectado */
+			try {
+				conexion = new Conexion(dispositivo.getIp(), 27000);
+				conexion.escribirMensaje(mensaje);
+				conexion.cerrarConexion();
+			} catch (NullPointerException | IOException e1) {
+				/*
+				 * Cambiamos el estado del dispositivo en la base de datos a
+				 * desconectado
+				 */
+				System.out.println("entro en no esta conectado");
+				Inserciones modificador = new Inserciones();
+				modificador.actualizarEstadoDispositivo(0,
+						dispositivo.getIdDisp());
+				new HiloInsistente(dispositivo).start();
+				modificador.setHiloLanzado(dispositivo.getIp(), 1);
+			}
+		}
+
+	}
 }

@@ -17,9 +17,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import tareas.CBOff;
 import tareas.CancelarPedido;
+import tareas.CocinaOn;
 import tareas.DameloTodo;
-import tareas.HiloInsistente;
 import tareas.LoginCamarero;
 import tareas.LogoutCamarero;
 import tareas.ModificacionCB;
@@ -27,6 +28,7 @@ import tareas.ModificacionCamarero;
 import tareas.PedidosComanda;
 import tareas.PedidosListos;
 import tareas.PedidosServidos;
+import tareas.PendientesCamarero;
 import tareas.ResumenMesa;
 
 /**
@@ -51,7 +53,6 @@ public class GestorMensajes extends Thread {
             try {
 				this.mensaje = conn.leerMensaje();
 			} catch (NullPointerException | IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         } while (this.mensaje.length() == 0);
@@ -110,6 +111,18 @@ public class GestorMensajes extends Thread {
                 case "LogoutCamarero":
                 	LogoutCamarero logoutCamarero = new LogoutCamarero(socket, mensaje);
                 	logoutCamarero.start();
+                	break;
+                case "DamePendientes":
+                	PendientesCamarero pendientesCamarero = new PendientesCamarero(socket, mensaje);
+                	pendientesCamarero.start();
+                	break;
+                case "CocinaOn":
+                	CocinaOn cocinaOn = new CocinaOn(socket);
+                	cocinaOn.start();
+                	break;
+                case "LogoutCB":
+                	CBOff logoutCB = new CBOff(socket);
+                	logoutCB.start();
                 	break;
             }
 

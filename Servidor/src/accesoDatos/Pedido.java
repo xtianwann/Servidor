@@ -6,14 +6,16 @@ package accesoDatos;
  */
 public class Pedido {
 
-    private int idMenu;
+	private int idMenu;
     private String nombreProducto;
     private String nombreCantidad;
     private int idDestino;
     private String nombreDestino;
     private int unidades;
-    
-    private int idPed;
+    private int listos;
+    private int servidos;
+
+	private int idPed;
     private String estado;
     private int comanda;
     
@@ -44,6 +46,62 @@ public class Pedido {
 		this.estado = estado;
 		this.nombreProducto = oraculo.getNombreProductoPorIdMenu(idMenu);
 		this.nombreCantidad = oraculo.getNombreCantidadPorIdMenu(idMenu);
+	}
+	
+	public Pedido(int idPed, int idMenu, int comanda, String estado, int unidades, int listos, int servidos){
+		this.idPed = idPed;
+		this.idMenu = idMenu;
+		this.comanda = comanda;
+		this.estado = estado;
+		this.nombreProducto = oraculo.getNombreProductoPorIdMenu(idMenu);
+		this.nombreCantidad = oraculo.getNombreCantidadPorIdMenu(idMenu);
+		this.unidades = unidades;
+		this.listos = listos;
+		this.servidos = servidos;
+	}
+	
+	public void setIdMenu(int idMenu) {
+		this.idMenu = idMenu;
+	}
+
+	public void setNombreProducto(String nombreProducto) {
+		this.nombreProducto = nombreProducto;
+	}
+
+	public void setNombreCantidad(String nombreCantidad) {
+		this.nombreCantidad = nombreCantidad;
+	}
+
+	public void setIdDestino(int idDestino) {
+		this.idDestino = idDestino;
+	}
+
+	public void setNombreDestino(String nombreDestino) {
+		this.nombreDestino = nombreDestino;
+	}
+
+	public void setUnidades(int unidades) {
+		this.unidades = unidades;
+	}
+
+	public void setListos(int listos) {
+		this.listos = listos;
+	}
+
+	public void setIdPed(int idPed) {
+		this.idPed = idPed;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
+	public void setComanda(int comanda) {
+		this.comanda = comanda;
+	}
+
+	public void setOraculo(Oraculo oraculo) {
+		this.oraculo = oraculo;
 	}
 
     public int getIdPed() {
@@ -80,6 +138,18 @@ public class Pedido {
     
     public int getUnidades() {
 		return unidades;
+	}
+    
+    public int getListos() {
+		return listos;
+	}
+    
+    public int getServidos() {
+		return servidos;
+	}
+
+	public void setServidos(int servidos) {
+		this.servidos = servidos;
 	}
     
 }

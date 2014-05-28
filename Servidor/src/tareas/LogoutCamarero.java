@@ -10,6 +10,18 @@ import Conexion.Conexion;
 import XML.XML;
 import XMLServer.XMLResultadoLogoutCamarero;
 
+/**
+ * Clase encargada de desloguear al camarero del sistema y poner su dispositivo como
+ * apagado.
+ * En caso de que tenga pedidos pendientes en el histórico, estos pedidos serán entregados
+ * al camarero que tenga más comandas en secciones comunes. Si ningún camarero tuviese
+ * comandas en alguna de las secciones que el que se está deslogueando, entonces los pedidos
+ * serán asignados aleatoriamente.
+ * 
+ * @author Juan Gabriel Pérez Leo
+ * @author Cristian Marín Honor
+ *
+ */
 public class LogoutCamarero extends Thread{
 	
 	private Socket socket;

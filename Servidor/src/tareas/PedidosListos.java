@@ -12,6 +12,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import accesoDatos.Dispositivo;
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
 import accesoDatos.PedidoListo;
@@ -78,9 +79,10 @@ public class PedidosListos extends Thread{
 			int listos = Integer.parseInt(nodePedido.getChildNodes().item(1).getFirstChild().getNodeValue());
 			
 			/* Con estos datos modificamos el estado de lo que corresponda en la base de datos */
-			String[] pedidosListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda,"listo");
-			String[] pedidosPendientes = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda,"pedido");
-			String[] pedidosAModificar = new String[listos-pedidosListos.length];
+			String[] pedidosListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listo");
+			String[] pedidosPendientes = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "pedido");
+			String[] pedidosServidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "servido");
+			String[] pedidosAModificar = new String[listos-pedidosListos.length-pedidosServidos.length];
 			for(int pedido = 0; pedido < pedidosAModificar.length; pedido++){
 				pedidosAModificar[pedido] = pedidosPendientes[pedido];
 			}
@@ -92,36 +94,7 @@ public class PedidosListos extends Thread{
 			mapaDestino.get(ipCamarero).add(pedidoListo);
 		}
 		
-		/* Generamos los mensajes para cada destino y lo enviamos */
-		for(int destino = 0; destino < listaIp.size(); destino++){
-			PedidoListo[] pedidos = mapaDestino.get(listaIp.get(destino)).toArray(new PedidoListo[0]);
-			XMLPedidosListosServer xmlPedidosListos = new XMLPedidosListosServer(pedidos);
-			Conexion conexion = null;
-			try {
-				//conexion = new Conexion("192.168.1.7",27000);
-				conexion = new Conexion("localhost",5050);
-				conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
-			} catch (NullPointerException | IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			try {
-				conexion.cerrarConexion();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-//		XMLPedidosListosServer xmlPedidosListos = new XMLPedidosListosServer(pedidos);
-//		Conexion conexion = null;
-//		try {
-//			conexion = new Conexion("192.168.1.6",27012);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
-		
-		/* Finalmente enviamos un acuse de recibo al emisor del mensaje recibido */
+		/* Enviamos un acuse de recibo al emisor del mensaje recibido */
 		XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer("OK", "");
 		String acuse = xmlAcuse.xmlToString(xmlAcuse.getDOM());
 		try {
@@ -131,6 +104,38 @@ public class PedidosListos extends Thread{
         } catch (IOException ex) {
             Logger.getLogger(PedidosComanda.class.getName()).log(Level.SEVERE, null, ex);
         }
+		
+		/* Generamos los mensajes para cada destino y lo enviamos */
+		for(int destino = 0; destino < listaIp.size(); destino++){
+			PedidoListo[] pedidos = mapaDestino.get(listaIp.get(destino)).toArray(new PedidoListo[0]);
+			
+			Dispositivo dispositivo = new Dispositivo(listaIp.get(destino));
+			/* Comprobamos en la base de datos si está conectado */
+			if(dispositivo.getConectado()){
+				/* Vemos si realmente estáconectado */
+				Conexion conexion = null;
+				try {
+					conexion = new Conexion(dispositivo.getIp(), 27000);
+				} catch (NullPointerException | IOException e1) {
+					/* Cambiamos el estado del dispositivo en la base de datos a desconectado */
+					System.out.println("entro en no esta conectado");
+					modificador.actualizarEstadoDispositivo(0, dispositivo.getIdDisp());
+					new HiloInsistente(dispositivo).start();
+					modificador.setHiloLanzado(dispositivo.getIp(), 1);
+				}
+				
+				/* Si todo está bien se envía el mensaje */
+				XMLPedidosListosServer xmlPedidosListos = new XMLPedidosListosServer(pedidos);
+				try {
+					conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
+					conexion.cerrarConexion();
+					System.out.println("enviado, todo normal");
+				} catch (NullPointerException e) {
+					
+				} catch (IOException e) {
+					
+				}
+			}
+		}
 	}
-
 }

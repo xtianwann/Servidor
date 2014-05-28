@@ -40,7 +40,7 @@ public class PedidosComanda extends Thread {
 	private String recibido;
 	private ArrayList<String> destinos;
 	private int idMes;
-	private Usuario usuario; // acabar la clase
+	private Usuario usuario;
 	private Oraculo oraculo;
 
 	public PedidosComanda(Socket socket, String recibido) {
@@ -127,34 +127,32 @@ public class PedidosComanda extends Thread {
 			conexionCamarero = new Conexion(socket);
 			conexionCamarero.escribirMensaje(acuse);
 			conexionCamarero.cerrarConexion();
+			System.out.println("[PedidosComanda] enviado el acuse");
 		} catch (NullPointerException | IOException e3) {
-			// TODO Auto-generated catch block
 			e3.printStackTrace();
 		}
 		System.out.println("Enviado");
 
-		// /* Intentamos conectar con el destino y enviarle la información */
+		/* Intentamos conectar con el destino y enviarle la información */
 		for (int contadorDestino = 0; contadorDestino < dispositivos.size(); contadorDestino++) {
 			Dispositivo dispositivo = dispositivos.get(contadorDestino);
 			Conexion conexionDestino = null;
-			// /* Comprobamos en la base de datos si está conectado */
+			 /* Comprobamos en la base de datos si está conectado */
 			if (dispositivo.getConectado()) {
 				/* Vemos si realmente está conectado */
 				try {
 					conexionDestino = new Conexion(dispositivo.getIp(), 27000);
 				} catch (NullPointerException | IOException e1) {
-					/*
-					 * Cambiamos el estado del dispositivo en la base de datos a
-					 * desconectado
-					 */
+					/* Cambiamos el estado del dispositivo en la base de datos a desconectado */
 					System.out.println("entro en no esta conectado");
 					Inserciones modificador = new Inserciones();
 					modificador.actualizarEstadoDispositivo(0,dispositivo.getIdDisp());
 					new HiloInsistente(dispositivo).start();
+					modificador.setHiloLanzado(dispositivo.getIp(), 1);
 				}
-				String mensaje = listaXML.get(contadorDestino).xmlToString(
-						listaXML.get(contadorDestino).getDOM());
-				System.out.println(mensaje);
+				
+				/* Si todo está bien se envía el mensaje */
+				String mensaje = listaXML.get(contadorDestino).xmlToString(listaXML.get(contadorDestino).getDOM());
 				try {
 					conexionDestino.escribirMensaje(mensaje);
 					conexionDestino.cerrarConexion();
@@ -163,35 +161,7 @@ public class PedidosComanda extends Thread {
 				} catch (IOException e) {
 
 				}
-			} else {
-				System.out.println("entro en no esta conectado en bd");
-				new HiloInsistente(dispositivo).start();
 			}
 		}
-
-		/* Finalmente se envía acuse de recibo al camarero que pidió la comanda */
-		// String acuse = "";
-		// if (resultado.equals("SI")) {
-		// XMLPedidosPendientesCamarero xmlPendientes = new
-		// XMLPedidosPendientesCamarero(
-		// mesa.getNomMes(), nombreSeccion, idComanda,
-		// pedidos.toArray(new Pedido[0]));
-		// acuse = xmlPendientes.xmlToString(xmlPendientes.getDOM());
-		// } else if (resultado.equals("NO")) {
-		// XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer(resultado,
-		// explicacion);
-		// acuse = xmlAcuse.xmlToString(xmlAcuse.getDOM());
-		// }
-		//
-		// try {
-		// Conexion conexionCamarero = new Conexion(socket);
-		// conexionCamarero.escribirMensaje(acuse);
-		// conexionCamarero.cerrarConexion();
-		// } catch (NullPointerException e) {
-		// e.printStackTrace();
-		// } catch (IOException ex) {
-		// Logger.getLogger(PedidosComanda.class.getName()).log(Level.SEVERE,
-		// null, ex);
-		// }
 	}
 }

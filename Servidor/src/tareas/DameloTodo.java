@@ -8,6 +8,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Esta clase entrega la información necesaria para que la aplicación camarero
+ * rellene la interfaz para poder realizar pedidos.
+ * 
  * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */

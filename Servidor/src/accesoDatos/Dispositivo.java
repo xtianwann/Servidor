@@ -15,9 +15,16 @@ public class Dispositivo {
     private static Oraculo oraculo = new Oraculo();
 
     public Dispositivo(InetAddress address) {
-        
         this.ip = "192.168.0.1";
         this.idDisp = oraculo.getIdDispositivoPorIp(ip);
+    }
+    
+    public Dispositivo(String ip){
+    	this.ip = ip;
+    	this.idDisp = oraculo.getIdDispositivoPorIp(ip);
+    	System.out.println("[oraculo] idDisp: " + idDisp);
+    	this.conectado = oraculo.getConectado(idDisp);
+    	this.nombreDestino = oraculo.getNombreDestino(idDisp);
     }
     
     public Dispositivo(int idDisp, int conectado, String ip, String nombreDestino){
