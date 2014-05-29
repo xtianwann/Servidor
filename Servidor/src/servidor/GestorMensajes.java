@@ -21,6 +21,7 @@ import tareas.CBOff;
 import tareas.CancelarPedido;
 import tareas.CocinaOn;
 import tareas.DameloTodo;
+import tareas.ImprimirTicket;
 import tareas.LoginCamarero;
 import tareas.LogoutCamarero;
 import tareas.ModificacionCB;
@@ -46,7 +47,6 @@ public class GestorMensajes extends Thread {
         try {
 			conn = new Conexion(socket);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         do {
@@ -123,6 +123,10 @@ public class GestorMensajes extends Thread {
                 case "LogoutCB":
                 	CBOff logoutCB = new CBOff(socket);
                 	logoutCB.start();
+                	break;
+                case "ImprimirTicket":
+                	ImprimirTicket imprimir = new ImprimirTicket(socket, mensaje);
+                	imprimir.start();
                 	break;
             }
 

@@ -42,7 +42,7 @@ public class CBOff extends Thread {
 		String ip = socket.getInetAddress() + "";
 		ip = ip.substring(1);
 		int idDisp = oraculo.getIdDispositivoPorIp(ip);
-		modificador.actualizarEstadoDispositivo(0, idDisp);
+		modificador.onOffDispositivo(0, idDisp);
 	}
 
 }

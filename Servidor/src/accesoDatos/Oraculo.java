@@ -177,18 +177,14 @@ public class Oraculo {
      */
     public Pedido[] getPedidosPorIdMesa(int idMesa){
         ArrayList<Pedido> listaPedidos = new ArrayList<>();
-        
         String consultaComandaActiva = "select idCom from COMANDAS where pagado = 0 and cerrada = 0 and mesa = " + idMesa;
         int idCom = Integer.parseInt(gestorBD.consulta(consultaComandaActiva)[0]);
-        
         String consulta = "select menu from PEDIDOS where comanda = " + idCom;
         String[] resultados = gestorBD.consulta(consulta, 2);
-        
         for(int i = 0; i < resultados.length; i++){
             int idMenu = Integer.parseInt(resultados[i]);
             listaPedidos.add(new Pedido(idMenu));
         }
-        
         return listaPedidos.toArray(new Pedido[0]);
     }
     
@@ -244,9 +240,10 @@ public class Oraculo {
     }
     
     /**
+     * Obtiene un objeto usuario a partir de una id de usuario
      * 
-     * @param idUsu
-     * @return
+     * @param idUsu int id del usuario del que vamos a crear el objeto
+     * @return Usuario con toda la información necesaria
      */
     public Usuario getUsuarioById(int idUsu){
     	String consulta = "select idUsu, nomUsu, dispositivo from USUARIOS where idUsu = " + idUsu;
@@ -267,11 +264,9 @@ public class Oraculo {
     	ip = ip.substring(1);
     	String consulta = "select * from USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + ip + "'";
     	String[] resultado = gestorBD.consulta(consulta,3);
-    	
     	int idUsu = Integer.parseInt(resultado[0]);
     	String nomUsu = resultado[1];
     	int idDisp = Integer.parseInt(resultado[2]);
-    	
     	return new Usuario(idUsu, nomUsu, idDisp, ip);
     }
     
@@ -284,18 +279,17 @@ public class Oraculo {
     public Usuario getUsuarioByIp(String ip){
     	String consulta = "select * from USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + ip + "'";
     	String[] resultado = gestorBD.consulta(consulta,3);
-
     	int idUsu = Integer.parseInt(resultado[0]);
     	String nomUsu = resultado[1];
     	int idDisp = Integer.parseInt(resultado[2]);
-    	
     	return new Usuario(idUsu, nomUsu, idDisp, ip);
     }
     
     /**
+     * Devuelve un objeto dispositivo del tipo destino a partir de una id de menú
      * 
-     * @param idMenu
-     * @return
+     * @param idMenu int id de menú
+     * @return Dispositivo del tipo destino
      */
     public Dispositivo getDispositivoPorIdMenu(int idMenu){
     	String consulta = "select idDisp, conectado, ip, nomDest from DISPOSITIVOS d inner join DESTINOS on d.destino = idDest inner join MENUS m on m.destino = idDest where idMenu = " + idMenu;
@@ -313,7 +307,6 @@ public class Oraculo {
     	ArrayList<PedidoPendiente> pedidosPendientes = new ArrayList<>();
     	HashMap<Integer, ArrayList<Pedido>> mapaPedidosComanda = new HashMap<>();
     	ArrayList<Integer> comandas = new ArrayList<>();
-    	
     	/* Obtenemos todos los menús distintos de las comandas activas */
     	String consulta = "select distinct menu from PEDIDOS inner join MENUS on menu = idMenu inner join DESTINOS on destino = idDest where nomDest = '" + dispositivo.getNombreDestino() + "' order by idPed";
     	String[] idMenus = gestorBD.consulta(consulta);
@@ -326,7 +319,6 @@ public class Oraculo {
     		}
     		mapaPedidosComanda.get(pedido.getComanda()).add(pedido);
     	}
-    	
     	ArrayList<Pedido> pedidosComanda = new ArrayList<>();
     	for(int contadorComanda = 0; contadorComanda < comandas.size(); contadorComanda++){
     		pedidosComanda = mapaPedidosComanda.get(comandas.get(contadorComanda));
@@ -353,7 +345,6 @@ public class Oraculo {
     					}
     				}
     			}
-    			
     			if(pEnv != null)
     				pedidosPendientes.add(new PedidoPendiente(pEnv, udTotales, udPedido, udListo, udServido));
     		}
@@ -372,7 +363,6 @@ public class Oraculo {
     	String[] datos;
     	ArrayList<String> tuplas = new ArrayList<>();
     	ArrayList<Pedido> pedidos = new ArrayList<>();
-    	
     	for(String menu : idMenus){
     		consulta = "select idPed, menu, comanda, estado from PEDIDOS where menu = " + menu;
     		datos = gestorBD.consulta(consulta,4);
@@ -380,11 +370,9 @@ public class Oraculo {
     			tuplas.add(datos[contador]);
     		}
     	}
-    	
     	for(int contador = 0; contador < tuplas.size(); contador+=4){
     		pedidos.add(new Pedido(Integer.parseInt(tuplas.get(contador)), Integer.parseInt(tuplas.get(contador+1)), Integer.parseInt(tuplas.get(contador+2)), tuplas.get(contador+3)));
     	}
-    	
     	return pedidos.toArray(new Pedido[0]);
     }
     
@@ -408,6 +396,18 @@ public class Oraculo {
      */
     public String getNombreSeccion(int idComanda){
     	String consulta = "select nomSec from SECCIONES inner join MESAS on idSec = seccion inner join COMANDAS on mesa = idMes where idCom = " + idComanda;
+    	String resultado = gestorBD.consulta(consulta)[0];
+    	return resultado;
+    }
+    
+    /**
+     * Obtiene el nombre de una sección a partir de la id de una mesa
+     * 
+     * @param idMesa int id de la mesa
+     * @return String nombre de la sección
+     */
+    public String getNombreSeccionPorIdMesa(int idMesa){
+    	String consulta = "select nomSec from SECCIONES inner join MESAS on idSec = seccion where idMes = " + idMesa;
     	String resultado = gestorBD.consulta(consulta)[0];
     	return resultado;
     }
@@ -443,21 +443,20 @@ public class Oraculo {
      */
     public int[] getCamarerosEnDispositivo(String ip){
     	int[] idUsuarios = null;
-    	
     	String consulta = "select idUsu from USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + ip + "'";
     	String[] ids = gestorBD.consulta(consulta);
-    	
     	if(ids != null && ids.length > 0){
 	    	idUsuarios = new int[ids.length];
 	    	for(int usuario = 0; usuario < ids.length; usuario++){
 	    		idUsuarios[usuario] = Integer.parseInt(ids[usuario]);
 	    	}
     	}
-    	
     	return idUsuarios;
     }
     
     /**
+     * revisar
+     * 
      * Obtiene una lista de todos los pedidos de las comandas de un usuario que se
      * encuentren en estado "pedido" y "listo"
      * 
@@ -467,30 +466,24 @@ public class Oraculo {
     public Pedido[] getPedidosPendientes(int idUsu){
     	ArrayList<Pedido> listaPedidos = new ArrayList<>();
     	Pedido[] pedidos = null;
-    	
     	/* Obtenemos los datos */
     	String consulta = "select idPed, menu, comanda, estado from PEDIDOS inner join COMANDAS on comanda = idCom where cerrada = 0 and estado in ('listo', 'pedido', 'servido') and usuario = " + idUsu;
     	String[] datos = gestorBD.consulta(consulta, 4);
-    	
     	/* Si obtenemos datos creamos una lista de pedidos con cada tupla */
     	if(datos.length > 0){
     		pedidos = new Pedido[datos.length/4];
-    		
 	    	int numPedidos = 0;
 	    	for(int i = 0; i < datos.length; i+=4){
 	    		pedidos[numPedidos] = new Pedido(Integer.parseInt(datos[i]), Integer.parseInt(datos[i+1]), Integer.parseInt(datos[i+2]), datos[i+3]);
 	    		numPedidos++;
 	    	}
-	    	
 	    	/* Mejoramos la lista contando los pedidos y uniendo los que se corresponden */
 	    	for(int i = 0; i < pedidos.length; i++){
 	    		int unidades = 0;
 	    		int listos = 0;
 	    		int servidos = 0;
-	    		
 	    		Pedido pedido = pedidos[i];
 	    		boolean existe = false;
-	    		
 	    		for(int j = 0; j < pedidos.length; j++){
 		    		if(pedido.getComanda() == pedidos[j].getComanda() && pedido.getIdMenu() == pedidos[j].getIdMenu()){
 		    			if(pedidos[j].getEstado().equals("listo")){
@@ -501,7 +494,6 @@ public class Oraculo {
 		    			unidades++;
 		    		}
 	    		}
-	    		
 	    		int pos = 0;
 	    		if(listaPedidos.size() > 0){
 	    			for(int k = 0; k < listaPedidos.size(); k++){
@@ -512,12 +504,10 @@ public class Oraculo {
 	    				}
 	    			}
 	    		}
-	    		
 	    		if(!existe)
 	    			listaPedidos.add(new Pedido(pedido.getIdPed(), pedido.getIdMenu(), pedido.getComanda(), pedido.getEstado(), unidades, listos, servidos));
 	    	}
     	}
-    	
     	return listaPedidos.toArray(new Pedido[0]);
     }
     
@@ -573,6 +563,50 @@ public class Oraculo {
     	if(resultados != null && resultados.length > 0)
     		resultado = resultados[0];
     	return resultado;
+    }
+    
+    /**
+     * Obtiene una id de comanda a partir de la id de una mesa
+     * 
+     * @param idMesa int id de la mesa de la que se quiere obtener la comanda
+     * @return id de la comanda, en caso de no haber ninguna comanda abierta y sin pagar devuelve 0
+     */
+    public int getIdComandaActiva(int idMesa){
+    	String consulta = "select idCom from COMANDAS where mesa = " + idMesa + " and pagado = 0 and cerrada = 0";
+    	String[] resultado = gestorBD.consulta(consulta);
+    	if(resultado.length > 0)
+    		return Integer.parseInt(resultado[0]);
+    	else
+    		return 0;
+    }
+    
+    /**
+     * Obtiene todas las idMenu distintas de una mesa pasada por parámetro en caso de que
+     * tenga alguna comanda abierta
+     * 
+     * @param idMesa int id de la mesa de la que se va a extraer la información
+     * @return una lista con todas las idMenu distintas que haya encontrado en esa mesa, null en caso de que no haya ninguna comanda abierta en esa mesa
+     */
+    public String[] getPedidosPorIdComanda(int idMesa){
+    	int idCom = getIdComandaActiva(idMesa);
+    	if(idCom != 0){
+	    	String consulta = "select distinct idMenu from MENUS inner join PEDIDOS on idMenu = menu where comanda = " + idCom;
+	    	String[] resultado = gestorBD.consulta(consulta);
+	    	return resultado;
+    	} else
+    		return null;
+    }
+    
+    /**
+     * Obtiene el precio de un menú
+     * 
+     * @param idMenu int id del menú del que se quiere obtener el precio
+     * @return float con el valor del precio
+     */
+    public float getPrecio(int idMenu){
+    	String consulta = "select precio from MENUS where idMenu = " + idMenu;
+    	String resultado = gestorBD.consulta(consulta)[0];
+    	return Float.parseFloat(resultado);
     }
     
 }

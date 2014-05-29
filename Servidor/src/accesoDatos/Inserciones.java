@@ -1,19 +1,31 @@
 package accesoDatos;
 
 /**
+ * FINALIZADA
+ * 
+ * Clase encargada de todas las operaciones del tipo INSERT y UPDATE en la base de datos
+ * 
  * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
 public class Inserciones {
 
-	private GestorBD gestorBD = new GestorBD();
-	private Oraculo oraculo = new Oraculo();
+	private GestorBD gestorBD;
+	private Oraculo oraculo;
+	
+	/**
+	 * Constructor
+	 */
+	public Inserciones(){
+		this.gestorBD = new GestorBD();
+		this.oraculo = new Oraculo();
+	}
 
 	/**
 	 * Crea una nueva comanda en la base de datos.
 	 * 
-	 * @param mesa objeto Mesa al que está asociada la comanda
-	 * @param dispositivo objeto Dispositivo desde el que se tomó la comanda
+	 * @param mesa [Mesa] mesa a la que está asociada la comanda
+	 * @param dispositivo [Dispositivo] dispositivo desde el que se tomó la comanda
 	 */
 	public void insertarNuevaComanda(Mesa mesa, Usuario usuario) {
 		String fechaComanda = oraculo.getFechaYHoraActual();
@@ -29,10 +41,10 @@ public class Inserciones {
 	 * Inserta un grupo de pedidos de una mesa y devuelve la id de la comanda a
 	 * la que pertenecen.
 	 * 
-	 * @param mesa objeto Mesa para el que se han realizado los pedidos
-	 * @param pedidos lista de objetos Pedido con los datos a insertar
+	 * @param mesa [Mesa] mesa para la que se han realizado los pedidos
+	 * @param pedidos [Pedido[ ]] lista de pedidos con los datos a insertar
 	 * 
-	 * @return id de la comanda a la que pertenecen los pedidos
+	 * @return [int] id de la comanda a la que pertenecen los pedidos
 	 */
 	public int insertarPedidos(Mesa mesa, Pedido[] pedidos) {
 		int idMenu;
@@ -55,8 +67,8 @@ public class Inserciones {
 	/**
 	 * Cambia el estado de un pedido al que se le pase por parámetro
 	 * 
-	 * @param idPedidos lista de pedidos a modificar
-	 * @param estado nuevo estado que se le va a asignar a los pedidos de la lista
+	 * @param idPedidos [String[ ]] lista de id de pedidos a modificar
+	 * @param estado [String] nuevo estado que se le va a asignar a los pedidos de la lista
 	 */
 	public void modificarEstadoPedido(String[] idPedidos, String estado) {
 		String sentencia = "";
@@ -70,13 +82,11 @@ public class Inserciones {
 
 	/**
 	 * Actualiza el estado de un dispositivo en la base de datos 
-	 * 0 = desconectado
-	 * 1 = conectado
 	 * 
-	 * @param estado nuevo estado que se le va a asignar
-	 * @param idDisp id del dispositivo en cuestión
+	 * @param estado [int] nuevo estado que se le va a asignar, 1 encendido, 0 apagado
+	 * @param idDisp [int] id del dispositivo
 	 */
-	public void actualizarEstadoDispositivo(int estado, int idDisp) {
+	public void onOffDispositivo(int estado, int idDisp) {
 		if (estado == 0 || estado == 1) {
 			String sentencia = "update DISPOSITIVOS set conectado = " + estado
 					+ " where idDisp = " + idDisp;
@@ -88,11 +98,9 @@ public class Inserciones {
 
 	/**
 	 * Cambia el estado de un dispositivo en la base de datos 
-	 * 0 = desconectado 
-	 * 1 = conectado
 	 * 
-	 * @param socket de aquí extrae la ip para cambiarle el estado
-	 * @param estado nuevo estado que se le va a asignar
+	 * @param ip [String] ip del dispositivo
+	 * @param estado [int] nuevo estado que se le va a asignar, 1 encendido, 0 apagado
 	 */
 	public void onOffDispositivo(String ip, int estado) {
 		if (estado == 0 || estado == 1) {
@@ -104,11 +112,11 @@ public class Inserciones {
 	}
 	
 	/**
-	 * Vinvula o desvinvula un dispositivo de un camarero
+	 * Vincula o desvincula un dispositivo de un camarero
 	 * 
-	 * @param nomUsu - String nombre del camarero
-	 * @param ip - String ip del dispositivo que se desea vinvular o desvincular
-	 * @param login - int que recibirá 1 para vinvular y 0 para desvincular
+	 * @param nomUsu [String] nombre del camarero
+	 * @param ip [String] ip del dispositivo
+	 * @param login [int] 1 para vinvular y 0 para desvincular
 	 */
 	public void vinculoUsuarioDispositivo(String nomUsu, String ip, int login) {
 		if (login == 0) { // caso deslogueo: desvincula y apaga el dispositivo
@@ -129,8 +137,8 @@ public class Inserciones {
 	/**
 	 * Asigna las comandas realizadas por un usuario a otro
 	 * 
-	 * @param idCamareros int[] id de los camareros que van a perder la propiedad de sus pedidos
-	 * @param idUsu int id del usuario que va a heredar los pedidos de otros usuarios
+	 * @param idCamareros [int[ ]] id de los camareros que van a perder la propiedad de sus pedidos
+	 * @param idUsu [int] id del usuario que va a heredar los pedidos de otros usuarios
 	 */
 	public void cambiarPedidosDeUsuario(int idUsuAnterior, int idUsu){
 		String sentencia = "update COMANDAS set usuario = " + idUsu + " where usuario = " + idUsuAnterior + " and cerrada = 0";
@@ -140,7 +148,7 @@ public class Inserciones {
 	/**
 	 * Cambia el campo hilo lanzado en la base de datos
 	 * 
-	 * @param estado int 1 = lanzado, 0 = no lanzado
+	 * @param estado [int] 1 = lanzado, 0 = no lanzado
 	 */
 	public void setHiloLanzado(String ip, int estado){
 		String sentencia = "update DISPOSITIVOS set hilo = " + estado + " where ip = '" + ip + "'";

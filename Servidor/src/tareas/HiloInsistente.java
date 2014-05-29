@@ -51,7 +51,7 @@ public class HiloInsistente extends Thread {
 			}
 		} while (conectado == null);
 		/* Ponemos el dispositivo como conectado en la base de datos */
-		modificador.actualizarEstadoDispositivo(1,dispositivo.getIdDisp());
+		modificador.onOffDispositivo(1,dispositivo.getIdDisp());
 
 		/* Consultamos los pedidos pendientes del destino */
 		PedidoPendiente[] pedidosPendientes = null;
@@ -89,7 +89,7 @@ public class HiloInsistente extends Thread {
 		}
 		
 		modificador.setHiloLanzado(dispositivo.getIp(), 0);
-		modificador.actualizarEstadoDispositivo(1, dispositivo.getIdDisp());
+		modificador.onOffDispositivo(1, dispositivo.getIdDisp());
 	}
 
 }

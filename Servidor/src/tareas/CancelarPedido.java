@@ -66,6 +66,7 @@ public class CancelarPedido extends Thread {
 					null, ex);
 		}
 
+		/* Obtenemos la información del mensaje recibido */
 		Document dom = XML.stringToXml(recibido);
 
 		int idComanda = Integer.parseInt(dom.getElementsByTagName("idCom")
@@ -105,9 +106,9 @@ public class CancelarPedido extends Thread {
 				 * Cambiamos el estado del dispositivo en la base de datos a
 				 * desconectado
 				 */
-				System.out.println("entro en no esta conectado");
+				System.out.println("Entro en no esta conectado");
 				Inserciones modificador = new Inserciones();
-				modificador.actualizarEstadoDispositivo(0,
+				modificador.onOffDispositivo(0,
 						dispositivo.getIdDisp());
 				new HiloInsistente(dispositivo).start();
 				modificador.setHiloLanzado(dispositivo.getIp(), 1);

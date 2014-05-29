@@ -9,6 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * FINALIZADA
+ * 
+ * Clase encargada de realizar todas las operaciones relacionadas con la base de datos
+ * 
  * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
@@ -17,6 +21,9 @@ public class GestorBD {
     String cadenaConexion = "";
     Connection conexion = null;
 
+    /**
+     * Constructor: realiza la conexión con la base de datos
+     */
     public GestorBD() {
         try {
             Class.forName("org.sqlite.JDBC");
@@ -30,9 +37,9 @@ public class GestorBD {
     /**
      * Permite realizar consultas a la base de datos
      *
-     * @param consulta Sentencia que ejecutará la consulta
-     * @param numeroCampos indica cuantos campos hay en la selección
-     * @return Conjunto de resultados de la consulta en forma de array
+     * @param consulta [String] sentencia que ejecutará la consulta
+     * @param numeroCampos [int] indica cuantos campos hay en la selección
+     * @return [String[ ]] conjunto de resultados de la consulta en forma de array
      */
     public String[] consulta(String consulta, int numeroCampos) {
         ArrayList<String> resultados = new ArrayList<>();
@@ -56,9 +63,9 @@ public class GestorBD {
     /**
      * Permite realizar consultas de un solo campo a la base de datos
      *
-     * @param consulta Sentencia que ejecutará la consulta
-     * @param numeroCampos indica cuantos campos hay en la selección
-     * @return Conjunto de resultados de la consulta en forma de array
+     * @param consulta [String] sentencia que ejecutará la consulta
+     * @param numeroCampos [int] indica cuantos campos hay en la selección
+     * @return [String[ ]] conjunto de resultados de la consulta en forma de array
      */
     public String[] consulta(String consulta) {
         return consulta(consulta, 1);
@@ -68,7 +75,7 @@ public class GestorBD {
      * Permite realizar inserciones, modificaciones y borrado de datos en la
      * base de datos.
      *
-     * @param actualizacion Sentencia que se ejecutará para modificar o borrar
+     * @param actualizacion [String] sentencia que se ejecutará para modificar o borrar
      * datos
      */
     public void actualizar(String actualizacion) {

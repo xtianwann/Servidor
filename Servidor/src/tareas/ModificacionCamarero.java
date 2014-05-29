@@ -21,6 +21,14 @@ import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
 import accesoDatos.PedidoListo;
 
+/**
+ * Clase encarda de cambiar los pedidos solicitados por el camarero de estado
+ * pedido, listo o servidos (en ese orden) al estado cancelar. Esa información
+ * se propaga a los dispositivos destino que les resulte relevante la información.
+ * 
+ * @author Juan Gabriel Pérez Leo
+ * @author Cristian Marín Honor
+ */
 public class ModificacionCamarero extends Thread {
 
 	private Socket socket;
@@ -130,7 +138,7 @@ public class ModificacionCamarero extends Thread {
 				 */
 				System.out.println("entro en no esta conectado");
 				Inserciones modificador = new Inserciones();
-				modificador.actualizarEstadoDispositivo(0,
+				modificador.onOffDispositivo(0,
 						dispositivo.getIdDisp());
 				new HiloInsistente(dispositivo).start();
 				modificador.setHiloLanzado(dispositivo.getIp(), 1);

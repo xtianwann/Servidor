@@ -53,7 +53,7 @@ public class CocinaOn extends Thread{
 		if(!oraculo.isHiloLanzado(ip)){
 			/* Encendemos el dispositivo en la base de datos */
 			int idDisp = oraculo.getIdDispositivoPorIp(ip);
-			modificador.actualizarEstadoDispositivo(1, idDisp);
+			modificador.onOffDispositivo(1, idDisp);
 			
 			/* Comprobamos si tiene algo pendiente */
 			Dispositivo dispositivo = new Dispositivo(ip);

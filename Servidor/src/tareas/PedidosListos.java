@@ -119,7 +119,7 @@ public class PedidosListos extends Thread{
 				} catch (NullPointerException | IOException e1) {
 					/* Cambiamos el estado del dispositivo en la base de datos a desconectado */
 					System.out.println("entro en no esta conectado");
-					modificador.actualizarEstadoDispositivo(0, dispositivo.getIdDisp());
+					modificador.onOffDispositivo(0, dispositivo.getIdDisp());
 					new HiloInsistente(dispositivo).start();
 					modificador.setHiloLanzado(dispositivo.getIp(), 1);
 				}
