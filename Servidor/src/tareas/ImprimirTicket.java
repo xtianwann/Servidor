@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -46,33 +47,27 @@ public class ImprimirTicket extends Thread {
 	}
 
 	private void imprimir(){
-		ArrayList<Integer> menus = new ArrayList<>();
 		HashMap<Integer, Integer> mapaUnidades = new HashMap<>();
 		ArrayList<Pedido> pedidos = new ArrayList<>();
 		
 		Document dom = XML.stringToXml(recibido);
 		
 		int idMesa = Integer.parseInt(dom.getElementsByTagName("idMesa").item(0).getFirstChild().getNodeValue());
-		String[] resultados = oraculo.getPedidosPorIdComanda(idMesa);
+		String[] resultados = oraculo.getMenusPorIdMesa(idMesa);
 		
 		if(resultados != null){
 			if(resultados.length > 0){
-				
 				acuse("OK" ,"");
 				
-				for(int contador = 0; contador < resultados.length; contador+=2){
+				for(int contador = 0; contador < resultados.length; contador++){
 					int idMenu = Integer.parseInt(resultados[contador]);
-					
-					if(!mapaUnidades.containsKey(idMenu)){
-						menus.add(idMenu);
-						mapaUnidades.put(idMenu, 0);
-					}
-					int unidades = mapaUnidades.get(idMenu);
-					mapaUnidades.put(idMenu, unidades+1);
+					int idComanda = oraculo.getIdComandaPorIdMesa(idMesa);
+					int unidades = oraculo.contarResultados(idMenu, idComanda);
+					mapaUnidades.put(idMenu, unidades);
 				}
 				
-				for(int contador = 0; contador < menus.size(); contador++){
-					int idMenu = menus.get(contador);
+				for(int contador = 0; contador < resultados.length; contador++){
+					int idMenu = Integer.parseInt(resultados[contador]);
 					int unidades = mapaUnidades.get(idMenu);
 					float precio = oraculo.getPrecio(idMenu);
 					Pedido pedido = new Pedido(idMenu, unidades, precio);
@@ -80,15 +75,15 @@ public class ImprimirTicket extends Thread {
 				}
 				
 				String fechaTicket = oraculo.getFechaYHoraActual();
+				fechaTicket = fechaTicket.replace("-", "");
+				fechaTicket = fechaTicket.replace(":", "_");
 				String nombreSeccion = oraculo.getNombreSeccionPorIdMesa(idMesa);
 				String nombreMesa = oraculo.getNombreMesaPorIdMesa(idMesa);
 				float totalTicket = 0;
 				try {
-					File fichero = new File("Tickets/"+fechaTicket+" S"+nombreSeccion+" M"+nombreMesa+".txt");
-					if(!fichero.exists()){
-						fichero.createNewFile();
-					}
-					BufferedWriter escritor = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fichero.getAbsolutePath()), "UTF-8"));
+					String rutaCarpeta = "./Tickets/";
+					File fichero = new File(rutaCarpeta+fechaTicket+" S_"+nombreSeccion+" M_"+nombreMesa+".txt");
+					BufferedWriter escritor = new BufferedWriter(new FileWriter(fichero));
 					String linea = "";
 					for(int contador = 0; contador < pedidos.size(); contador++){
 						int unidades = pedidos.get(contador).getUnidades();
@@ -99,11 +94,12 @@ public class ImprimirTicket extends Thread {
 						totalTicket += precioTotalProducto;
 						
 						linea = unidades + " --- " + nombreCantidad + " " + nombreProducto + " --- " + precioUnitario + " --- " + precioTotalProducto;
-						escritor.append(linea + "\n");
+						escritor.append(linea + "\r\n");
 					}
 					
 					linea = "TOTAL: " + totalTicket;
 					escritor.append(linea + "\n");
+					escritor.flush();
 					escritor.close();
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();

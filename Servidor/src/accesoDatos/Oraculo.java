@@ -587,7 +587,7 @@ public class Oraculo {
      * @param idMesa int id de la mesa de la que se va a extraer la información
      * @return una lista con todas las idMenu distintas que haya encontrado en esa mesa, null en caso de que no haya ninguna comanda abierta en esa mesa
      */
-    public String[] getPedidosPorIdComanda(int idMesa){
+    public String[] getMenusPorIdMesa(int idMesa){
     	int idCom = getIdComandaActiva(idMesa);
     	if(idCom != 0){
 	    	String consulta = "select distinct idMenu from MENUS inner join PEDIDOS on idMenu = menu where comanda = " + idCom;
@@ -609,4 +609,16 @@ public class Oraculo {
     	return Float.parseFloat(resultado);
     }
     
+    /**
+     * Cuenta el número de pedidos que no están cancelados
+     * 
+     * @param idMenu [int] id del menú
+     * @param idComanda [int] id de la comanda
+     * @return [int] número de unidades
+     */
+    public int contarResultados(int idMenu, int idComanda){
+    	String consulta = "select count(*) from PEDIDOS where menu = " + idMenu + " and comanda = " + idComanda + " and estado != 'cancelado'";
+    	String resultado = gestorBD.consulta(consulta)[0];
+    	return Integer.parseInt(resultado);
+    }
 }
