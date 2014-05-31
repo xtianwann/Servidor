@@ -654,4 +654,15 @@ public class Oraculo {
     	int totalServidos = Integer.parseInt(gestorBD.consulta(consulta)[0]);
     	return totalPedidos == totalServidos;
     }
+    
+    /**
+     * Obtiene la ip de todos los destinos que consten en la base de datos
+     * 
+     * @return [String[ ]] ip de todos los dispositivos que actúan como destino
+     */
+    public String[] getIpDestinos(){
+    	String consulta = "select ip from DISPOSITIVOS where destino is not null";
+    	String[] resultado = gestorBD.consulta(consulta);
+    	return resultado;
+    }
 }

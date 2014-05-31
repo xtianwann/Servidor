@@ -7,12 +7,13 @@ import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 
+import accesoDatos.Dispositivo;
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
-
 import Conexion.Conexion;
 import XML.XML;
 import XMLServer.XMLAcuseReciboServer;
+import XMLServer.XMLComandaAcabada;
 
 /**
  * FINALIZADA
@@ -60,6 +61,36 @@ public class CerrarComanda extends Thread{
 		if(idComanda != 0){
 			acuse("SI", idComanda+"");
 			modificador.cerrarComanda(idComanda);
+			
+			/* Avisamos a los destinos que la comanda se ha cobrado */
+			XMLComandaAcabada xml = new XMLComandaAcabada(idComanda);
+			String[] ipDestinos = oraculo.getIpDestinos();
+			for(int contadorDestino = 0; contadorDestino < ipDestinos.length; contadorDestino++){
+				Dispositivo dispositivo = new Dispositivo(ipDestinos[contadorDestino]);
+				Conexion conexionDestino = null;
+				 /* Comprobamos en la base de datos si está conectado */
+				if (dispositivo.getConectado()) {
+					/* Vemos si realmente está conectado */
+					try {
+						conexionDestino = new Conexion(dispositivo.getIp(), 27000);
+					} catch (NullPointerException | IOException e1) {
+						/* Cambiamos el estado del dispositivo en la base de datos a desconectado */
+						Inserciones modificador = new Inserciones();
+						modificador.onOffDispositivo(0,dispositivo.getIdDisp());
+						new HiloInsistente(dispositivo).start();
+						modificador.setHiloLanzado(dispositivo.getIp(), 1);
+					}
+					
+					/* Si todo está bien se envía el mensaje */
+					String mensaje = xml.xmlToString(xml.getDOM());
+					try {
+						conexionDestino.escribirMensaje(mensaje);
+						conexionDestino.cerrarConexion();
+					} catch (NullPointerException e) {
+					} catch (IOException e) {
+					}
+				}
+			}
 		} else {
 			acuse("NO", "No hay ninguna comanda abierta para esa mesa");
 		}
