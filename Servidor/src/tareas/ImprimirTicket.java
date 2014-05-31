@@ -3,10 +3,8 @@ package tareas;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -24,10 +22,12 @@ import XML.XML;
 import XMLServer.XMLAcuseReciboServer;
 
 /**
- * Imprime un ticket en caso de que exista una comanda en la mesa solicitada
- * Informa si no existe comanda o la comanda no tiene pedidos
+ * FINALIZADA
  * 
- * @author Juan GabrielPérez Leo
+ * Imprime un ticket en caso de que exista una comanda en la mesa solicitada
+ * Informa si no existe comanda o si la comanda no tiene pedidos
+ * 
+ * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
 public class ImprimirTicket extends Thread {
@@ -36,27 +36,39 @@ public class ImprimirTicket extends Thread {
 	private String recibido;
 	private Oraculo oraculo;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param socket [Socket] socket por el que se ha establecido la comunicación
+	 * @param recibido [String] mensaje recibido
+	 */
 	public ImprimirTicket(Socket socket, String recibido) {
 		this.socket = socket;
 		this.recibido = recibido;
-		oraculo = new Oraculo();
+		this.oraculo = new Oraculo();
 	}
 
 	public void run() {
 		imprimir();
 	}
 
+	/**
+	 * Hace todas las comprobaciones necesarias para informar de cualquier incidencia
+	 * al camarero. Si todo está correcto procede a imprimir el ticket de la comanda.
+	 */
 	private void imprimir(){
 		HashMap<Integer, Integer> mapaUnidades = new HashMap<>();
 		ArrayList<Pedido> pedidos = new ArrayList<>();
 		
 		Document dom = XML.stringToXml(recibido);
 		
+		/* Obtiene todos los menús de una mesa */
 		int idMesa = Integer.parseInt(dom.getElementsByTagName("idMesa").item(0).getFirstChild().getNodeValue());
 		String[] resultados = oraculo.getMenusPorIdMesa(idMesa);
 		
 		if(resultados != null){
 			if(resultados.length > 0){
+				/* Llegados aquí es que todo está correcto y se procede a imprimir el ticket */
 				acuse("OK" ,"");
 				
 				for(int contador = 0; contador < resultados.length; contador++){
@@ -108,10 +120,12 @@ public class ImprimirTicket extends Thread {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			} else { // no hay pedidos en la comanda
+			} else {
+				/* En este caso hay comanda pero no tiene pedidos */
 				acuse("NO", "No hay pedidos en la comanda");
 			}
-		} else { // no hay comanda abierta en esa mesa
+		} else {
+			/* En este caso no existe ninguna comanda activa para esa mesa */
 			acuse("NO", "No hay ninguna comanda abierta para esa mesa");
 		}
 	}

@@ -13,15 +13,16 @@ import accesoDatos.PedidoPendiente;
 import accesoDatos.Usuario;
 
 /**
+ * FINALIZADA
+ * 
  * Esta clase se encarga de intentar conectar con un dispositivo que por algún motivo
  * ha perdido la conexión, ya que el hilo se llama cuando dicho dispositivo aparece 
  * como conectado en la base de datos. Una vez consigue establecer conexión con el dispositivo
  * le envía toda la información que se le ha acumulado en la ausencia mas la que tenía
  * anteriormente.
  * 
- * @author Juan Gabriel Pérez Leo
+ * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
- *
  */
 public class HiloInsistente extends Thread {
 
@@ -30,6 +31,11 @@ public class HiloInsistente extends Thread {
 	private Oraculo oraculo;
 	private Inserciones modificador;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param dispositivo [Dispositivo] dispositivo con el que debe reintentar la conexión
+	 */
 	public HiloInsistente(Dispositivo dispositivo) {
 		this.dispositivo = dispositivo;
 		conectado = null;
@@ -38,6 +44,15 @@ public class HiloInsistente extends Thread {
 	}
 
 	public void run() {
+		reconexion();
+	}
+
+	/**
+	 * Intenta conectar con el dispositivo cada dos segundos, cuando lo consigue
+	 * envía toda la información que necesita para estar actualizado y empezar a
+	 * trbajar correctamente.
+	 */
+	private void reconexion(){
 		do {
 			try {
 				conectado = new Conexion(dispositivo.getIp(), 27000);
@@ -80,7 +95,6 @@ public class HiloInsistente extends Thread {
 			mensaje = xmlCamarero.xmlToString(xmlCamarero.getDOM());
 		}
 		
-		System.out.println("Enviando: " + mensaje);
 		try {
 			conectado.escribirMensaje(mensaje);
 			conectado.cerrarConexion();
@@ -88,8 +102,8 @@ public class HiloInsistente extends Thread {
 			e1.printStackTrace();
 		}
 		
+		/* Cambia el estado de hilo a no lanzado y enciende el dispositivo en la base de datos */
 		modificador.setHiloLanzado(dispositivo.getIp(), 0);
 		modificador.onOffDispositivo(1, dispositivo.getIdDisp());
 	}
-
 }

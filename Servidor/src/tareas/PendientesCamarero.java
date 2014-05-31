@@ -12,6 +12,8 @@ import accesoDatos.Oraculo;
 import accesoDatos.Pedido;
 
 /**
+ * FINALIZADA
+ * 
  * Clase encargada de ver si un camarero tiene pedidos pendientes y se los 
  * envía. En caso de no tener pedidos se le informa en el mensaje enviado
  * 
@@ -25,6 +27,12 @@ public class PendientesCamarero extends Thread{
 	private String recibido;
 	private Oraculo oraculo;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param socket [Socket] socket por el que el camarero estableció conexión con el servidor
+	 * @param recibido [String] mensaje recibido
+	 */
 	public PendientesCamarero(Socket socket, String recibido){
 		this.socket = socket;
 		this.recibido = recibido;
@@ -35,10 +43,18 @@ public class PendientesCamarero extends Thread{
 		obtenerPendientes();
 	}
 	
+	/**
+	 * Obtiene el nombre del camarero y la ip desde donde se está conectando,
+	 * comprueba que no hay ningún hilo que esté intentando conectar a esa ip,
+	 * si es que no, entonces obtiene todos los pedidos pendientes, si lo hay,
+	 * y los envía
+	 */
 	private void obtenerPendientes(){
+		/* Obtenemos la información proporcionada en el mensaje */
 		Document dom = XML.stringToXml(recibido);
 		String nomUsu = dom.getElementsByTagName("usuario").item(0).getFirstChild().getNodeValue();
 		
+		/* Vemos si ya hay un hilo lanzado intentando conectar con el camarero */
 		Pedido[] pedidos = null;
 		String ip = socket.getInetAddress()+"";
 		ip = ip.substring(1);
@@ -47,9 +63,9 @@ public class PendientesCamarero extends Thread{
 			pedidos = oraculo.getPedidosPendientes(idUsu);
 		}
 		
+		/* Generamos el mensaje y lo enviamos */
 		XMLPendientesCamareroAlEncender xmlPendientes = new XMLPendientesCamareroAlEncender(pedidos);
 		String mensaje = xmlPendientes.xmlToString(xmlPendientes.getDOM());
-		System.out.println(mensaje);
 		
 		Conexion conexion;
 		try {
@@ -61,7 +77,6 @@ public class PendientesCamarero extends Thread{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Enviado");
 	}
 
 }

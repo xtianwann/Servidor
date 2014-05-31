@@ -22,12 +22,14 @@ import XMLServer.XMLAcuseReciboServer;
 import XMLServer.XMLPedidosListosServer;
 
 /**
+ * FINALIZADA
+ * 
  * Esta clase se encarga de modificar en la base de datos los pedidos a 
  * estado listo, devuelve un acuse de recibo al emisor y propaga el mensaje
  * al dispositivo del camarero que originalmente envió la comanda a la 
  * que pertenecen dichos pedidos.
  * 
- * @author Juan Gabriel Pérez Leo
+ * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
 public class PedidosListos extends Thread{
@@ -37,6 +39,12 @@ public class PedidosListos extends Thread{
 	private Oraculo oraculo;
 	private Inserciones modificador;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param socket [Socket] socket por el que cocina estableció la conexión con el servidor
+	 * @param recibido [String] mensaje recibido
+	 */
 	public PedidosListos(Socket socket, String recibido){
 		this.socket = socket;
 		this.recibido = recibido;
@@ -48,13 +56,19 @@ public class PedidosListos extends Thread{
 		anotarYComunicar();
 	}
 	
+	/**
+	 * Extrae los pedidos del mensaje, los separa según el destino y se lo envía 
+	 * a cada camarero que le corresponda.
+	 */
 	private void anotarYComunicar(){
+		/* Obtiene los datos pasados en el mensaje */
 		Document dom = XML.stringToXml(recibido);
 		NodeList nodeListPedidos = dom.getElementsByTagName("pedido");
 		Node nodePedido = null;
 		Element elementoPedido = null;
 		int idComanda = 0;
 		String ipCamarero = "";
+		
 		ArrayList<String> listaIp = new ArrayList<>();
 		HashMap<String, ArrayList<PedidoListo>> mapaDestino = new HashMap<>();
 		
@@ -129,11 +143,8 @@ public class PedidosListos extends Thread{
 				try {
 					conexion.escribirMensaje(xmlPedidosListos.xmlToString(xmlPedidosListos.getDOM()));
 					conexion.cerrarConexion();
-					System.out.println("enviado, todo normal");
 				} catch (NullPointerException e) {
-					
 				} catch (IOException e) {
-					
 				}
 			}
 		}

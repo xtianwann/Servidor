@@ -154,4 +154,24 @@ public class Inserciones {
 		String sentencia = "update DISPOSITIVOS set hilo = " + estado + " where ip = '" + ip + "'";
 		gestorBD.actualizar(sentencia);
 	}
+	
+	/**
+	 * Pone una comanda como pagada
+	 * 
+	 * @param idComanda [int] id de la comanda
+	 */
+	public void cobrarComanda(int idComanda){
+		String sentencia = "update COMANDAS set pagado = 1 where idCom = " + idComanda;
+		gestorBD.actualizar(sentencia);
+	}
+	
+	/**
+	 * Pone una comanda como cerrada sin pagar
+	 * 
+	 * @param idComanda [int] id de la comanda
+	 */
+	public void cerrarComanda(int idComanda){
+		String sentencia = "update COMANDAS set cerrada = 1 where idCom = " + idComanda;
+		gestorBD.actualizar(sentencia);
+	}
 }

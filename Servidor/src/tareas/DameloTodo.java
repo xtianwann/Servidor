@@ -8,7 +8,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Esta clase entrega la información necesaria para que la aplicación camarero
+ * FINALIZADA
+ * 
+ * Clase encargada de entregar la información necesaria para que la aplicación camarero
  * rellene la interfaz para poder realizar pedidos.
  * 
  * @author Juan G. Pérez Leo
@@ -18,12 +20,24 @@ public class DameloTodo extends Thread{
     
     private Socket socket;
     
+    /**
+     * Constructor
+     * 
+     * @param socket [Socket] socket con el que el camarero ha establecido conexión con el servidor
+     */
     public DameloTodo(Socket socket){
         this.socket = socket;
     }
     
     public void run(){
-        try {
+        darTodo();
+    }
+    
+    /**
+     * Obtiene toda la información solicitada y la envía
+     */
+    private void darTodo(){
+    	try {
             XMLDameloTodoServer xml = new XMLDameloTodoServer();
             String respuesta = xml.xmlToString(xml.getDOM());
             Conexion conn = new Conexion(socket);

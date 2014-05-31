@@ -2,8 +2,6 @@ package tareas;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,9 +17,11 @@ import accesoDatos.Oraculo;
 import accesoDatos.PedidoListo;
 
 /**
+ * FINALIZADA
+ * 
  * Clase encargada de cancelar los pedidos que solicite un camarero y ya estén servidos.
  * 
- * @author Juan Gabriel Pérez Leo
+ * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
 public class CancelarPedido extends Thread {
@@ -34,8 +34,8 @@ public class CancelarPedido extends Thread {
 	/**
 	 * Constructor
 	 * 
-	 * @param socket Socket a través del cuál se enviará el acuse al camarero
-	 * @param recibido String con el mensaje recibido en el que se idica qué pedido cancelar
+	 * @param socket [Socket] socket a través del cuál se enviará el acuse al camarero
+	 * @param recibido [String] mensaje recibido en el que se idica qué pedido cancelar
 	 */
 	public CancelarPedido(Socket socket, String recibido) {
 		this.socket = socket;

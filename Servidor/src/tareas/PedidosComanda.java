@@ -2,7 +2,6 @@ package tareas;
 
 import Conexion.Conexion;
 import XML.XML;
-import XMLServer.XMLAcuseReciboServer;
 import XMLServer.XMLPedidoMesaServer;
 import XMLServer.XMLPedidosPendientesCamarero;
 import accesoDatos.Dispositivo;
@@ -16,14 +15,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
+ * FINALIZADA
+ * 
  * Esta clase es la encargada de recibir la comanda enviada por el camarero,
  * insertar la información correspondiente en la base de datos, divide los
  * pedidos según el destino (cocina, barra, etc), genera los mensajes y los
@@ -38,27 +37,33 @@ public class PedidosComanda extends Thread {
 
 	private Socket socket;
 	private String recibido;
-	private ArrayList<String> destinos;
 	private int idMes;
 	private Usuario usuario;
 	private Oraculo oraculo;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param socket [Socket] socket en el que el camarero estableció la conexión con el servidor
+	 * @param recibido [String] mensaje recibido
+	 */
 	public PedidosComanda(Socket socket, String recibido) {
 		oraculo = new Oraculo();
 		this.socket = socket;
 		this.recibido = recibido;
-		this.destinos = new ArrayList<>();
 		this.usuario = Usuario.getUsuario(socket);
 	}
 
 	public void run() {
-		dividirYEnviarSubcomandas(recibido);
+		dividirYEnviarSubcomandas();
 	}
 
-	private void dividirYEnviarSubcomandas(String recibido) {
+	/**
+	 * Obtiene la información del mensaje, envía acuse al emisor, divide según el destino de los
+	 * pedidos y envía un mensaje con lo que le correspone a cada destino
+	 */
+	private void dividirYEnviarSubcomandas() {
 		Document dom = XML.stringToXml(recibido);
-		String resultado = "";
-		String explicacion = "";
 
 		/* Obtenemos los datos de la mesa */
 		NodeList nodeListIdMes = dom.getElementsByTagName("idMes");
@@ -127,7 +132,6 @@ public class PedidosComanda extends Thread {
 			conexionCamarero = new Conexion(socket);
 			conexionCamarero.escribirMensaje(acuse);
 			conexionCamarero.cerrarConexion();
-			System.out.println("[PedidosComanda] enviado el acuse");
 		} catch (NullPointerException | IOException e3) {
 			e3.printStackTrace();
 		}

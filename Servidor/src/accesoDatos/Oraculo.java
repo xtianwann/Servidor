@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * FINALIZADA
+ * 
+ * Clase que agrupa funciones condistintos tipos de consultas necesarias
+ * para el servidor en distintas tareas.
+ * 
  * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
@@ -308,7 +313,7 @@ public class Oraculo {
     	HashMap<Integer, ArrayList<Pedido>> mapaPedidosComanda = new HashMap<>();
     	ArrayList<Integer> comandas = new ArrayList<>();
     	/* Obtenemos todos los menús distintos de las comandas activas */
-    	String consulta = "select distinct menu from PEDIDOS inner join MENUS on menu = idMenu inner join DESTINOS on destino = idDest where nomDest = '" + dispositivo.getNombreDestino() + "' order by idPed";
+    	String consulta = "select distinct menu from COMANDAS inner join PEDIDOS on idCom = comanda inner join MENUS on menu = idMenu inner join DESTINOS on destino = idDest where nomDest = '" + dispositivo.getNombreDestino() + "' and pagado = 0 and cerrada = 0 order by idPed";
     	String[] idMenus = gestorBD.consulta(consulta);
     	/* Obtenemos todos los pedidos de las comandas activas y los separamos por comanda */
     	Pedido[] pedidos = getPedidos(idMenus);
@@ -353,10 +358,11 @@ public class Oraculo {
     }
     
     /**
-     * Devuelve todos los pedidos de un menú en concreto de aquellas comandas 
+     * Devuelve todos los pedidos de una lista de menús de aquellas comandas 
      * que estén activas.
      * 
-     * @return array de Pedido
+     * @param idMenus [int[ ]] lista de id de menú
+     * @return [Pedido[ ]] lista de pedidos que coinciden con los pasados por parámetro
      */
     public Pedido[] getPedidos(String[] idMenus){
     	String consulta = "";
@@ -467,7 +473,7 @@ public class Oraculo {
     	ArrayList<Pedido> listaPedidos = new ArrayList<>();
     	Pedido[] pedidos = null;
     	/* Obtenemos los datos */
-    	String consulta = "select idPed, menu, comanda, estado from PEDIDOS inner join COMANDAS on comanda = idCom where cerrada = 0 and estado in ('listo', 'pedido', 'servido') and usuario = " + idUsu;
+    	String consulta = "select idPed, menu, comanda, estado from PEDIDOS inner join COMANDAS on comanda = idCom where pagado = 0 and cerrada = 0 and estado in ('listo', 'pedido', 'servido') and usuario = " + idUsu;
     	String[] datos = gestorBD.consulta(consulta, 4);
     	/* Si obtenemos datos creamos una lista de pedidos con cada tupla */
     	if(datos.length > 0){
@@ -590,7 +596,7 @@ public class Oraculo {
     public String[] getMenusPorIdMesa(int idMesa){
     	int idCom = getIdComandaActiva(idMesa);
     	if(idCom != 0){
-	    	String consulta = "select distinct idMenu from MENUS inner join PEDIDOS on idMenu = menu where comanda = " + idCom;
+	    	String consulta = "select distinct idMenu from MENUS inner join PEDIDOS on idMenu = menu where comanda = " + idCom + " and estado != 'cancelado'";
 	    	String[] resultado = gestorBD.consulta(consulta);
 	    	return resultado;
     	} else
@@ -620,5 +626,32 @@ public class Oraculo {
     	String consulta = "select count(*) from PEDIDOS where menu = " + idMenu + " and comanda = " + idComanda + " and estado != 'cancelado'";
     	String resultado = gestorBD.consulta(consulta)[0];
     	return Integer.parseInt(resultado);
+    }
+    
+    /**
+     * Cuenta los pedidos de una comanda que no están servidos ni cancelados
+     * 
+     * @param idComanda [int] id de la comanda
+     * @return [int] número de pedidos sin servir y sin cancelar
+     */
+    public int contarPedidosYListos(int idComanda){
+    	String consulta = "select count(*) from PEDIDOS where comanda = " + idComanda + " and estado not in('servido', 'cancelado')";
+    	String resultado = gestorBD.consulta(consulta)[0];
+    	return Integer.parseInt(resultado);
+    }
+    
+    /**
+     * Permite saber si todos los pedidos de un menú en concreto están servidos
+     * 
+     * @param idComanda [int] id de la comanda
+     * @param idMenu [int] id del menú
+     * @return [boolean] true si todos los pedidos están servidos, false en caso contrario
+     */
+    public boolean getFinalizado(int idComanda, int idMenu){
+    	String consulta = "select count(*) from PEDIDOS where comanda = " + idComanda + " and menu = " + idMenu + " and estado != 'cancelado'";
+    	int totalPedidos = Integer.parseInt(gestorBD.consulta(consulta)[0]);
+    	consulta = "select count(*) from PEDIDOS where comanda = " + idComanda + " and menu = " + idMenu + " and estado = 'servido'";
+    	int totalServidos = Integer.parseInt(gestorBD.consulta(consulta)[0]);
+    	return totalPedidos == totalServidos;
     }
 }

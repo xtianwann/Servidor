@@ -6,10 +6,12 @@ import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
 
 /**
+ * FINALIZADA
+ * 
  * Clase encargada de poner en estado apagado a los dispositivos que ejercen la
  * función de destino.
  * 
- * @author Juan GabrielPérez Leo
+ * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
 public class CBOff extends Thread {

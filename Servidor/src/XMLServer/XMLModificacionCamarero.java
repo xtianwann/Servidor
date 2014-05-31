@@ -5,7 +5,7 @@ import XML.XML;
 
 public class XMLModificacionCamarero extends XML {
 
-	public XMLModificacionCamarero(PedidoListo pedido) {
+	public XMLModificacionCamarero(PedidoListo pedido, boolean todosServidos) {
 		init();
 		addNodo("tipo", "ModificacionCamarero", "paquete");
 		addNodo("salen", null, "paquete");
@@ -13,6 +13,7 @@ public class XMLModificacionCamarero extends XML {
 				new String[] { pedido.getIdComanda() + "" }, null, "salen");
 		addNodo("idMenu", pedido.getIdMenu() + "", "pedido");
 		addNodo("listos", pedido.getListos() + "", "pedido");
+		addNodo("todosServidos", todosServidos? "1" : "0", "pedido");
 	}
 
 }

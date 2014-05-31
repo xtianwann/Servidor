@@ -11,10 +11,12 @@ import Conexion.Conexion;
 import XMLServer.XMLCocinaOn;
 
 /**
+ * FINALIZADO
+ * 
  * Clase encargada de ver si el dispositivo (tipo destino) que ha dado el aviso
  * de que está encendido, tiene información acumulada que deba necesitar.
  * 
- * @author Juan Gabriel Pérez Leo
+ * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  *
  */
@@ -48,7 +50,6 @@ public class CocinaOn extends Thread{
 		XMLCocinaOn xmlCocinaOn = null;
 		String ip = socket.getInetAddress()+"";
 		ip = ip.substring(1);
-		System.out.println("Cocina encendida: " + ip);
 		
 		if(!oraculo.isHiloLanzado(ip)){
 			/* Encendemos el dispositivo en la base de datos */
@@ -67,6 +68,7 @@ public class CocinaOn extends Thread{
 			xmlCocinaOn = new XMLCocinaOn("OK");
 		}
 		
+		/* Enviamos el mensaje al destinatario */
 		String mensaje = xmlCocinaOn.xmlToString(xmlCocinaOn.getDOM());
 		System.out.println(mensaje);
 		Conexion conexion;

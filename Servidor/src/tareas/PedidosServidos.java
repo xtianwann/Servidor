@@ -21,6 +21,16 @@ import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
 import accesoDatos.PedidoListo;
 
+/**
+ * FINALIZADA
+ * 
+ * Se encarga de cambiar el estado de los pedidos a servido en la base de datos
+ * y comunica al destino que le interese si están todos las unidades de un pedido
+ * servidas.
+ * 
+ * @author Juan G. Pérez Leo
+ * @author Cristian Marín Honor
+ */
 public class PedidosServidos extends Thread {
 
 	private Socket socket;
@@ -28,6 +38,12 @@ public class PedidosServidos extends Thread {
 	private Inserciones modificador;
 	private Oraculo oraculo;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param socket [Socket] socket por el que el camarero estableció conexión con el servidor
+	 * @param recibido [String] mensaje recibido
+	 */
 	public PedidosServidos(Socket socket, String recibido) {
 		this.recibido = recibido;
 		this.socket = socket;
@@ -39,6 +55,11 @@ public class PedidosServidos extends Thread {
 		actualizar();
 	}
 
+	/**
+	 * Obtiene los datos del mensaje, realiza los cambios necesarios en la base de datos
+	 * y si están todas las unidades de un pedido servidas informa al destino que le 
+	 * interese para que lo borre del histórico.
+	 */
 	private void actualizar() {
 		/* Acuse para el emisor */
 		XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer("OK", "");
@@ -70,8 +91,7 @@ public class PedidosServidos extends Thread {
 
 			String[] idServido = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu,
 					idComanda, "servido");
-			System.out.println("idServidos antes k nada" + idServido.length);
-			// Aqui esta el error
+			
 			if (servidos < idServido.length) { // rectificacion
 				int diferencia = idServido.length - servidos;
 				String[] cambiar = new String[diferencia];
@@ -79,7 +99,6 @@ public class PedidosServidos extends Thread {
 					cambiar[cambiado] = idServido[cambiado];
 				}
 				modificador.modificarEstadoPedido(cambiar, "listo");
-				System.out.println("Modificacion de pedidos servidos");
 			} else if (servidos > idServido.length) {
 				String[] idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(
 						idMenu, idComanda, "listo");
@@ -95,22 +114,10 @@ public class PedidosServidos extends Thread {
 					}
 					modificador.modificarEstadoPedido(idNuevos, "servido");
 
-					idServido = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu,
-							idComanda, "servido");
-					idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu,
-							idComanda, "listo");
-					String[] idPedidos = oraculo
-							.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda,
-									"pedido");
-					System.out
-							.println("Servidos "
-									+ servidos
-									+ " Unidades servidas "
-									+ (idServido.length + idListos.length + idPedidos.length));
-					System.out.println("Listos " + idListos.length
-							+ " pedidos " + idPedidos.length);
-					int total = idServido.length + idListos.length
-							+ idPedidos.length;
+					idServido = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "servido");
+					idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listo");
+					String[] idPedidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "pedido");
+					int total = idServido.length + idListos.length + idPedidos.length;
 					if (idServido.length == total) {
 						todosListos = true;
 						Dispositivo d = Dispositivo.getDispositivo(idMenu);
@@ -131,9 +138,9 @@ public class PedidosServidos extends Thread {
 			}
 		}
 
+		/* Si están todos servidos se lo comunica al destino */
 		if (todosListos) {
 			for (int contador = 0; contador < dispositivos.size(); contador++) {
-				System.out.println("todos servidos");
 				Dispositivo dispositivo = dispositivos.get(contador);
 				XMLPedidosServidos xmlFinalizados = new XMLPedidosServidos(mapaServidos.get(dispositivo.getIdDisp()).toArray(new PedidoListo[0]));
 				String mensaje = xmlFinalizados.xmlToString(xmlFinalizados.getDOM());
@@ -157,9 +164,7 @@ public class PedidosServidos extends Thread {
 						conexion.escribirMensaje(mensaje);
 						conexion.cerrarConexion();
 					} catch (NullPointerException e) {
-
 					} catch (IOException e) {
-
 					}
 				}
 			}

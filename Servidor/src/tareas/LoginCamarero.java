@@ -7,14 +7,14 @@ import org.w3c.dom.Document;
 
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
-import accesoDatos.Pedido;
-import accesoDatos.PedidoPendiente;
 import accesoDatos.Usuario;
 import Conexion.Conexion;
 import XML.XML;
 import XMLServer.XMLResultadoLoginCamarero;
 
 /**
+ * FINALIZADA
+ * 
  * Esta clase se encarga de la identificación de un camarero.
  * Tiene tres funciones principales: 
  * 1.- Comprobar si es un nuevo usuario en un dispositivo nuevo.
@@ -24,7 +24,7 @@ import XMLServer.XMLResultadoLoginCamarero;
  * 3.- Comprobar si el nuevo usuario tiene pedidos pendientes (a parte de
  * los que pueda haber heredado de otro camarero) y pasarlos a ese dispositivo.
  * 
- * @author Juan Gabriel Pérez Leo
+ * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  * 
  */
@@ -35,6 +35,12 @@ public class LoginCamarero extends Thread {
 	private Oraculo oraculo;
 	private Inserciones modificador;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param socket [Socket] socket por el que se ha establecido la conexión
+	 * @param recibido [String] mensaje recibido
+	 */
 	public LoginCamarero(Socket socket, String recibido) {
 		this.socket = socket;
 		this.recibido = recibido;
@@ -46,10 +52,12 @@ public class LoginCamarero extends Thread {
 		loguear();
 	}
 
+	/**
+	 * Realiza todas las comprobaciones necesarias para loguear correctamente al camarero
+	 */
 	private void loguear() {
 		String resultado = "";
 		int idUsuario = 0;
-		Pedido[] pedidosPendientes = null;
 
 		/* Leemos los datos del mensaje */
 		Document dom = XML.stringToXml(recibido);
@@ -65,10 +73,8 @@ public class LoginCamarero extends Thread {
 				break;
 			}
 		}
-
 		if (existe) {
 			resultado = "OK";
-
 			/* Comprobamos si ya había otro usuario en ese dispositivo */
 			String ip = socket.getInetAddress() + "";
 			ip = ip.substring(1);
@@ -84,7 +90,6 @@ public class LoginCamarero extends Thread {
 					modificador.vinculoUsuarioDispositivo(usuarioAnterior.getNombre(), ip, 0);
 				}
 			}
-
 			/*
 			 * Asignamos el dispositivo al nuevo camarero y lo ponemos como
 			 * encendido en la base de datos si no lo estaba ya
@@ -95,7 +100,6 @@ public class LoginCamarero extends Thread {
 
 		/* Finalmente enviamos el mensaje con el resultado del login */
 		XMLResultadoLoginCamarero xmlResultado = new XMLResultadoLoginCamarero(resultado);
-		
 		String mensaje = xmlResultado.xmlToString(xmlResultado.getDOM());
 		Conexion conexion;
 		try {

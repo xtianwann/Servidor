@@ -2,8 +2,6 @@ package tareas;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,13 +20,13 @@ import XMLServer.XMLAcuseReciboServer;
 import XMLServer.XMLModificacionCBServer;
 
 /**
- * TOTALMENTE FINALIZADO
+ * FINALIZADO
  * 
  * Recibe uno o varios pedidos procedentes de cocina/barra para ser modificados.
- * Realiza los cambios pertinentes en la base de datos y finalmente envï¿½a la
+ * Realiza los cambios pertinentes en la base de datos y finalmente envía la
  * información necesaria a los camareros implicados.
  * 
- * @author Juan Gabriel Pérez Leo
+ * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
 public class ModificacionCB extends Thread {
@@ -38,6 +36,12 @@ public class ModificacionCB extends Thread {
 	private Oraculo oraculo;
 	private Inserciones modificador;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param socket [Socket] socket a través del cuál se estableción la conexión
+	 * @param recibido [String] mensaje recibido
+	 */
 	public ModificacionCB(Socket socket, String recibido) {
 		this.socket = socket;
 		this.recibido = recibido;
@@ -49,6 +53,9 @@ public class ModificacionCB extends Thread {
 		modificarYEnviar();
 	}
 
+	/**
+	 * 
+	 */
 	private void modificarYEnviar() {
 		/*
 		 * Preparamos la lista de pedidos rectificados para cada camarero que
@@ -64,8 +71,6 @@ public class ModificacionCB extends Thread {
 		int listos = Integer.parseInt(nodePedido.getChildNodes().item(1)
 				.getFirstChild().getNodeValue());
 
-		String ipCamarero = oraculo.getCamareroPorComanda(idComanda);
-
 		/* Hacemos las modificaciones pertinentes en la base de datos */
 		String[] idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listo");
 		String[] idServidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "servido");
@@ -74,7 +79,7 @@ public class ModificacionCB extends Thread {
 		System.out.println("listos cocina: " + listos);
 		if (listos == 0) { // cocina/barra ha marcado el pedido que no es
 			modificador.modificarEstadoPedido(idListos, "pedido");
-		} else { // cocina/barra ha marcado mï¿½s listos de los que son (me
+		} else { // cocina/barra ha marcado más listos de los que son (me
 					// manda la cantidad correcta)
 			System.out.println("listos a modificar: " + (total-listos));
 			if(total-listos <= idListos.length){
@@ -110,7 +115,7 @@ public class ModificacionCB extends Thread {
 			}
 		}
 
-		/* Finalmente se le envï¿½a a cada camarero la modificaciï¿½n */
+		/* Finalmente se le envía a cada camarero la modificación */
 		if(total-listos <= idListos.length){
 			PedidoListo pedido = new PedidoListo(idComanda, idMenu, listos);
 			XMLModificacionCBServer xmlModificacionesCB = new XMLModificacionCBServer(pedido);

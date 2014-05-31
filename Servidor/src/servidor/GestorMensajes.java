@@ -19,6 +19,8 @@ import org.xml.sax.SAXException;
 
 import tareas.CBOff;
 import tareas.CancelarPedido;
+import tareas.CerrarComanda;
+import tareas.CobrarMesa;
 import tareas.CocinaOn;
 import tareas.DameloTodo;
 import tareas.ImprimirTicket;
@@ -33,6 +35,9 @@ import tareas.PendientesCamarero;
 import tareas.ResumenMesa;
 
 /**
+ * Interpreta la cabecera del mensaje y lanza la tarea que le corresponde
+ * para tratarlo.
+ * 
  * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
@@ -42,6 +47,12 @@ public class GestorMensajes extends Thread {
     Conexion conn;
     private String mensaje;
 
+    /**
+     * Constructor
+     * 
+     * @param socket [Scoket] socket por el que un dispositivo está estableciendo
+     * conexión con el servidor
+     */
     public GestorMensajes(Socket socket) {
         this.socket = socket;
         try {
@@ -127,6 +138,14 @@ public class GestorMensajes extends Thread {
                 case "ImprimirTicket":
                 	ImprimirTicket imprimir = new ImprimirTicket(socket, mensaje);
                 	imprimir.start();
+                	break;
+                case "CobrarMesa":
+                	CobrarMesa cobrar = new CobrarMesa(socket, mensaje);
+                	cobrar.start();
+                	break;
+                case "CerrarMesa":
+                	CerrarComanda cerrar = new CerrarComanda(socket, mensaje);
+                	cerrar.start();
                 	break;
             }
 

@@ -7,7 +7,7 @@ public class XMLInfoAcumulada extends XML{
 	
 	public XMLInfoAcumulada(PedidoPendiente[] pedidos){
 		init();
-		addNodo("tipo", "XMLInfoAcumulada", "paquete");
+		addNodo("tipo", "InfoAcumulada", "paquete");
 		addNodo("pedidos", null, "paquete");
 		for(int contadorPedido = 0; contadorPedido < pedidos.length; contadorPedido++){
 			addNodo("pedido", null, "pedidos");

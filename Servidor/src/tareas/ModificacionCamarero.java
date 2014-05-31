@@ -3,7 +3,6 @@ package tareas;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,7 +13,6 @@ import org.w3c.dom.NodeList;
 import Conexion.Conexion;
 import XML.XML;
 import XMLServer.XMLAcuseReciboServer;
-import XMLServer.XMLModificacionCBServer;
 import XMLServer.XMLModificacionCamarero;
 import accesoDatos.Dispositivo;
 import accesoDatos.Inserciones;
@@ -22,11 +20,13 @@ import accesoDatos.Oraculo;
 import accesoDatos.PedidoListo;
 
 /**
+ * FINALIZADA
+ * 
  * Clase encarda de cambiar los pedidos solicitados por el camarero de estado
  * pedido, listo o servidos (en ese orden) al estado cancelar. Esa información
  * se propaga a los dispositivos destino que les resulte relevante la información.
  * 
- * @author Juan Gabriel Pérez Leo
+ * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
 public class ModificacionCamarero extends Thread {
@@ -36,6 +36,12 @@ public class ModificacionCamarero extends Thread {
 	private Oraculo oraculo;
 	private Inserciones modificador;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param socket [Socket] socket por el que se estableció la comuncación
+	 * @param recibido [String] mensaje recibido
+	 */
 	public ModificacionCamarero(Socket socket, String recibido) {
 		this.socket = socket;
 		this.recibido = recibido;
@@ -47,10 +53,12 @@ public class ModificacionCamarero extends Thread {
 		modificarYEnviar();
 	}
 
+	/**
+	 * Realiza los cambios necesarios en la base de datos, comunica al emisor del
+	 * mensaje que todo fue correcto y finalmente envía los cambios a los destinos
+	 * para que ellos también los hagan.
+	 */
 	private void modificarYEnviar() {
-		ArrayList<String> ipDestino = new ArrayList<>();
-		HashMap<String, ArrayList<PedidoListo>> mapaDestino = new HashMap<>();
-
 		Document dom = XML.stringToXml(recibido);
 		NodeList nodeListModificado = dom.getElementsByTagName("modificado");
 		Node nodeModificado = nodeListModificado.item(0);
@@ -102,6 +110,10 @@ public class ModificacionCamarero extends Thread {
 			modificador.modificarEstadoPedido(
 					modificaciones.toArray(new String[0]), "cancelado");
 		}
+		
+		/* Una vez están realizados los cambios vemos si lo que queda en esa comanda
+		 * está totalmente servido */
+		boolean finalizado = oraculo.getFinalizado(idComanda, idMenu);
 
 		/* Acuse de recibo al emisor */
 		XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer("OK", "");
@@ -110,7 +122,6 @@ public class ModificacionCamarero extends Thread {
 			Conexion conn = new Conexion(socket);
 			conn.escribirMensaje(acuse);
 			conn.cerrarConexion();
-			System.out.println("[ModificacionCamarero] Enviado el acuse");
 		} catch (IOException ex) {
 			Logger.getLogger(PedidosComanda.class.getName()).log(Level.SEVERE,
 					null, ex);
@@ -119,7 +130,7 @@ public class ModificacionCamarero extends Thread {
 		/* Finalmente se le envía a cada destino la modificación */
 		PedidoListo pedido = new PedidoListo(idComanda, idMenu, unidades);
 		XMLModificacionCamarero xmlModificacion = new XMLModificacionCamarero(
-				pedido);
+				pedido, finalizado);
 		String mensaje = xmlModificacion.xmlToString(xmlModificacion.getDOM());
 		Dispositivo dispositivo = Dispositivo.getDispositivo(idMenu);
 

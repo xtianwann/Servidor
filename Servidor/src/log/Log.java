@@ -15,11 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import servidor.Servidor;
-import servidor.Servidor.Estados;
 
 public class Log {
 
