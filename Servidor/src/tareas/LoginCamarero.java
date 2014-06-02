@@ -90,18 +90,11 @@ public class LoginCamarero extends Thread {
 					modificador.vinculoUsuarioDispositivo(usuarioAnterior.getNombre(), ip, 0);
 				}
 			}
-			/* Comprobamos si el usuario se ha cambiado de dispositivo, en tal caso apagamos el anterior */
-			String ipAnterior = oraculo.getIpPorIdUsuario(idUsuario);
-			if(ipAnterior != null && !ipAnterior.equals(ip)){
-				int idDisp = oraculo.getIdDispositivoPorIp(ipAnterior);
-				modificador.onOffDispositivo(0, idDisp);
-			}
 			/*
 			 * Asignamos el dispositivo al nuevo camarero y lo ponemos como
 			 * encendido en la base de datos si no lo estaba ya
 			 */
 			modificador.vinculoUsuarioDispositivo(usuario, ip, 1);
-			
 		} else
 			resultado = "NO";
 

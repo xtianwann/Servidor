@@ -30,7 +30,6 @@ public class HiloInsistente extends Thread {
 	private Conexion conectado;
 	private Oraculo oraculo;
 	private Inserciones modificador;
-	private boolean parar;
 
 	/**
 	 * Constructor
@@ -39,10 +38,9 @@ public class HiloInsistente extends Thread {
 	 */
 	public HiloInsistente(Dispositivo dispositivo) {
 		this.dispositivo = dispositivo;
-		this.conectado = null;
-		this.oraculo = new Oraculo();
-		this.modificador = new Inserciones();
-		this.parar = false;
+		conectado = null;
+		oraculo = new Oraculo();
+		modificador = new Inserciones();
 	}
 
 	public void run() {
@@ -66,51 +64,46 @@ public class HiloInsistente extends Thread {
 					e.printStackTrace();
 				}
 			}
-			parar = oraculo.isHiloLanzado(dispositivo.getIp());
-			
-		} while (conectado == null && !parar);
-		
-		if(!parar){
-			/* Ponemos el dispositivo como conectado en la base de datos */
-			modificador.onOffDispositivo(1,dispositivo.getIdDisp());
-	
-			/* Consultamos los pedidos pendientes del destino */
-			PedidoPendiente[] pedidosPendientes = null;
-			Pedido[] pendientesCamarero = null;
-			if (dispositivo.getNombreDestino() != null) { // caso camarero --> cocina
-				pedidosPendientes = oraculo.getPedidosPendientes(dispositivo);
-			} else { // caso cocina --> camarero
-				Usuario usuario = oraculo.getUsuarioByIp(dispositivo.getIp());
-				pendientesCamarero = oraculo.getPedidosPendientes(usuario.getIdUsu());
-			}
-	
-			/* Generamos el xml con la información actualizada */
-			XMLInfoAcumulada xml = null;
-			XMLPendientesCamareroAlEncender xmlCamarero = null;
-			if(pedidosPendientes != null){
-				xml = new XMLInfoAcumulada(pedidosPendientes);
-			} else if(pendientesCamarero != null){
-				xmlCamarero = new XMLPendientesCamareroAlEncender(pendientesCamarero);
-			}
-			
-			/* Finalmente envía el mensaje generado */
-			String mensaje = null;
-			if(xml != null){
-				mensaje = xml.xmlToString(xml.getDOM());
-			} else if(xmlCamarero != null){
-				mensaje = xmlCamarero.xmlToString(xmlCamarero.getDOM());
-			}
-			
-			try {
-				conectado.escribirMensaje(mensaje);
-				conectado.cerrarConexion();
-			} catch (NullPointerException | IOException e1) {
-				e1.printStackTrace();
-			}
-			
-			/* Cambia el estado de hilo a no lanzado y enciende el dispositivo en la base de datos */
-			modificador.setHiloLanzado(dispositivo.getIp(), 0);
-			modificador.onOffDispositivo(1, dispositivo.getIdDisp());
+		} while (conectado == null);
+		/* Ponemos el dispositivo como conectado en la base de datos */
+		modificador.onOffDispositivo(1,dispositivo.getIdDisp());
+
+		/* Consultamos los pedidos pendientes del destino */
+		PedidoPendiente[] pedidosPendientes = null;
+		Pedido[] pendientesCamarero = null;
+		if (dispositivo.getNombreDestino() != null) { // caso camarero --> cocina
+			pedidosPendientes = oraculo.getPedidosPendientes(dispositivo);
+		} else { // caso cocina --> camarero
+			Usuario usuario = oraculo.getUsuarioByIp(dispositivo.getIp());
+			pendientesCamarero = oraculo.getPedidosPendientes(usuario.getIdUsu());
 		}
+
+		/* Generamos el xml con la información actualizada */
+		XMLInfoAcumulada xml = null;
+		XMLPendientesCamareroAlEncender xmlCamarero = null;
+		if(pedidosPendientes != null){
+			xml = new XMLInfoAcumulada(pedidosPendientes);
+		} else if(pendientesCamarero != null){
+			xmlCamarero = new XMLPendientesCamareroAlEncender(pendientesCamarero);
+		}
+		
+		/* Finalmente envía el mensaje generado */
+		String mensaje = null;
+		if(xml != null){
+			mensaje = xml.xmlToString(xml.getDOM());
+		} else if(xmlCamarero != null){
+			mensaje = xmlCamarero.xmlToString(xmlCamarero.getDOM());
+		}
+		
+		try {
+			conectado.escribirMensaje(mensaje);
+			conectado.cerrarConexion();
+		} catch (NullPointerException | IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		/* Cambia el estado de hilo a no lanzado y enciende el dispositivo en la base de datos */
+		modificador.setHiloLanzado(dispositivo.getIp(), 0);
+		modificador.onOffDispositivo(1, dispositivo.getIdDisp());
 	}
 }

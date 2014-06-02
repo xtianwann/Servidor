@@ -91,10 +91,6 @@ public class Inserciones {
 			String sentencia = "update DISPOSITIVOS set conectado = " + estado
 					+ " where idDisp = " + idDisp;
 			gestorBD.actualizar(sentencia);
-			if(estado == 0){
-				sentencia = "update DISPOSITIVOS set hilo = 0 where idDisp = " + idDisp;
-				gestorBD.actualizar(sentencia);
-			}
 		} else {
 			System.err.println("[Clase Inserciones] ActualizarEstadoDispositivo(): estado incorrecto, debe ser 0 o 1");
 		}
