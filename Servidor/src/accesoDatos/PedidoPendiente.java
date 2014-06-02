@@ -44,6 +44,30 @@ public class PedidoPendiente {
 		this.cantidadListos = cantidadListos;
 		this.cantidadServidos = cantidadServidos;
 	}
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param idComanda [int] id de la comanda a la que pertenece
+	 * @param pedido [Pedido] objeto pedido con toda la información necesaria
+	 * @param unidades [int] unidades que se están pidiendo
+	 * @param cantidadPedidos [int] unidades en estado pedido del total
+	 * @param cantidadListos [int] unidades en estado listo del total
+	 * @param cantidadServidos [int] unidades en estado servido del total
+	 */
+	public PedidoPendiente(int idComanda, Pedido pedido, int unidades, int cantidadPedidos, int cantidadListos, int cantidadServidos){
+		this.oraculo = new Oraculo();
+		this.idComanda = idComanda;
+		this.idMenu = pedido.getIdMenu();
+		this.nombreSeccion = oraculo.getNombreSeccion(idComanda);
+		this.nombreMesa = oraculo.getNombreMesa(idComanda);
+		this.nombreProducto = pedido.getNombreProducto();
+		this.nombreCantidad = pedido.getNombreCantidad();
+		this.unidades = unidades;
+		this.cantidadPedidos = cantidadPedidos;
+		this.cantidadListos = cantidadListos;
+		this.cantidadServidos = cantidadServidos;
+	}
 
 	/**
 	 * Permite obtener la id del menú

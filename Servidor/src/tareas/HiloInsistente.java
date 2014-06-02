@@ -15,11 +15,11 @@ import accesoDatos.Usuario;
 /**
  * FINALIZADA
  * 
- * Esta clase se encarga de intentar conectar con un dispositivo que por algún motivo
- * ha perdido la conexión, ya que el hilo se llama cuando dicho dispositivo aparece 
- * como conectado en la base de datos. Una vez consigue establecer conexión con el dispositivo
- * le envía toda la información que se le ha acumulado en la ausencia mas la que tenía
- * anteriormente.
+ * Esta clase se encarga de intentar conectar con un dispositivo que por algún
+ * motivo ha perdido la conexión, ya que el hilo se llama cuando dicho
+ * dispositivo aparece como conectado en la base de datos. Una vez consigue
+ * establecer conexión con el dispositivo le envía toda la información que se le
+ * ha acumulado en la ausencia mas la que tenía anteriormente.
  * 
  * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
@@ -30,11 +30,14 @@ public class HiloInsistente extends Thread {
 	private Conexion conectado;
 	private Oraculo oraculo;
 	private Inserciones modificador;
+	private int intentos = 30;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param dispositivo [Dispositivo] dispositivo con el que debe reintentar la conexión
+	 * @param dispositivo
+	 *            [Dispositivo] dispositivo con el que debe reintentar la
+	 *            conexión
 	 */
 	public HiloInsistente(Dispositivo dispositivo) {
 		this.dispositivo = dispositivo;
@@ -52,57 +55,68 @@ public class HiloInsistente extends Thread {
 	 * envía toda la información que necesita para estar actualizado y empezar a
 	 * trbajar correctamente.
 	 */
-	private void reconexion(){
+	private void reconexion() {
+		int contador = 0;
 		do {
 			try {
 				conectado = new Conexion(dispositivo.getIp(), 27000);
 			} catch (NullPointerException | IOException e1) {
-				System.out.println(conectado + " Conectando con: " + dispositivo.getIp());
+				System.out.println(conectado + " Conectando con: "
+						+ dispositivo.getIp());
 				try {
+					contador++;
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-		} while (conectado == null);
-		/* Ponemos el dispositivo como conectado en la base de datos */
-		modificador.onOffDispositivo(1,dispositivo.getIdDisp());
+		} while (conectado == null && contador < intentos);
+		if (contador < intentos) {
+			/* Ponemos el dispositivo como conectado en la base de datos */
+			modificador.onOffDispositivo(1, dispositivo.getIdDisp());
 
-		/* Consultamos los pedidos pendientes del destino */
-		PedidoPendiente[] pedidosPendientes = null;
-		Pedido[] pendientesCamarero = null;
-		if (dispositivo.getNombreDestino() != null) { // caso camarero --> cocina
-			pedidosPendientes = oraculo.getPedidosPendientes(dispositivo);
-		} else { // caso cocina --> camarero
-			Usuario usuario = oraculo.getUsuarioByIp(dispositivo.getIp());
-			pendientesCamarero = oraculo.getPedidosPendientes(usuario.getIdUsu());
-		}
+			/* Consultamos los pedidos pendientes del destino */
+			PedidoPendiente[] pedidosPendientes = null;
+			Pedido[] pendientesCamarero = null;
+			if (dispositivo.getNombreDestino() != null) { // caso camarero -->
+															// cocina
+				pedidosPendientes = oraculo.getPedidosPendientes(dispositivo);
+			} else { // caso cocina --> camarero
+				Usuario usuario = oraculo.getUsuarioByIp(dispositivo.getIp());
+				pendientesCamarero = oraculo.getPedidosPendientes(usuario
+						.getIdUsu());
+			}
 
-		/* Generamos el xml con la información actualizada */
-		XMLInfoAcumulada xml = null;
-		XMLPendientesCamareroAlEncender xmlCamarero = null;
-		if(pedidosPendientes != null){
-			xml = new XMLInfoAcumulada(pedidosPendientes);
-		} else if(pendientesCamarero != null){
-			xmlCamarero = new XMLPendientesCamareroAlEncender(pendientesCamarero);
+			/* Generamos el xml con la información actualizada */
+			XMLInfoAcumulada xml = null;
+			XMLPendientesCamareroAlEncender xmlCamarero = null;
+			if (pedidosPendientes != null) {
+				xml = new XMLInfoAcumulada(pedidosPendientes);
+			} else if (pendientesCamarero != null) {
+				xmlCamarero = new XMLPendientesCamareroAlEncender(
+						pendientesCamarero);
+			}
+
+			/* Finalmente envía el mensaje generado */
+			String mensaje = null;
+			if (xml != null) {
+				mensaje = xml.xmlToString(xml.getDOM());
+			} else if (xmlCamarero != null) {
+				mensaje = xmlCamarero.xmlToString(xmlCamarero.getDOM());
+			}
+
+			try {
+				conectado.escribirMensaje(mensaje);
+				conectado.cerrarConexion();
+			} catch (NullPointerException | IOException e1) {
+				e1.printStackTrace();
+			}
+
+			/*
+			 * Cambia el estado de hilo a no lanzado y enciende el dispositivo
+			 * en la base de datos
+			 */
 		}
-		
-		/* Finalmente envía el mensaje generado */
-		String mensaje = null;
-		if(xml != null){
-			mensaje = xml.xmlToString(xml.getDOM());
-		} else if(xmlCamarero != null){
-			mensaje = xmlCamarero.xmlToString(xmlCamarero.getDOM());
-		}
-		
-		try {
-			conectado.escribirMensaje(mensaje);
-			conectado.cerrarConexion();
-		} catch (NullPointerException | IOException e1) {
-			e1.printStackTrace();
-		}
-		
-		/* Cambia el estado de hilo a no lanzado y enciende el dispositivo en la base de datos */
 		modificador.setHiloLanzado(dispositivo.getIp(), 0);
 		modificador.onOffDispositivo(1, dispositivo.getIdDisp());
 	}

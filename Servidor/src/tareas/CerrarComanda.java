@@ -66,6 +66,7 @@ public class CerrarComanda extends Thread{
 			XMLComandaAcabada xml = new XMLComandaAcabada(idComanda);
 			String[] ipDestinos = oraculo.getIpDestinos();
 			for(int contadorDestino = 0; contadorDestino < ipDestinos.length; contadorDestino++){
+				System.out.println(ipDestinos[contadorDestino]);
 				Dispositivo dispositivo = new Dispositivo(ipDestinos[contadorDestino]);
 				Conexion conexionDestino = null;
 				 /* Comprobamos en la base de datos si está conectado */
@@ -75,7 +76,6 @@ public class CerrarComanda extends Thread{
 						conexionDestino = new Conexion(dispositivo.getIp(), 27000);
 					} catch (NullPointerException | IOException e1) {
 						/* Cambiamos el estado del dispositivo en la base de datos a desconectado */
-						Inserciones modificador = new Inserciones();
 						modificador.onOffDispositivo(0,dispositivo.getIdDisp());
 						new HiloInsistente(dispositivo).start();
 						modificador.setHiloLanzado(dispositivo.getIp(), 1);

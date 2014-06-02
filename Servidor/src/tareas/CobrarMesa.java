@@ -83,7 +83,6 @@ public class CobrarMesa extends Thread{
 								conexionDestino = new Conexion(dispositivo.getIp(), 27000);
 							} catch (NullPointerException | IOException e1) {
 								/* Cambiamos el estado del dispositivo en la base de datos a desconectado */
-								Inserciones modificador = new Inserciones();
 								modificador.onOffDispositivo(0,dispositivo.getIdDisp());
 								new HiloInsistente(dispositivo).start();
 								modificador.setHiloLanzado(dispositivo.getIp(), 1);

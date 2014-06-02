@@ -306,83 +306,60 @@ public class Oraculo {
     }
     
     /**
+     * Obtiene la id de todas las comandas activas
+     * 
+     * @return [int[ ]] lista de id de comandas activas
+     */
+    public int[] getIdComandasActivas(){
+    	String consulta = "select idCom from COMANDAS where pagado = 0 and cerrada = 0";
+    	String[] resultados = gestorBD.consulta(consulta);
+    	int[] idComandas = new int[resultados.length];
+    	for(int comanda = 0; comanda < resultados.length; comanda++){
+    		idComandas[comanda] = Integer.parseInt(resultados[comanda]);
+    	}
+    	return idComandas;
+    }
+    
+    /**
      * Devuelve una lista de pedidos pendientes de un dispositivo tipo destino (cocina o barra)
      * 
      * @param dispositivo Dispositivo del que se quiere obtener la lista
      * @return PedidoPendiente[] lista de todos los pedidos pendientes de ese dispositivo
      */
     public PedidoPendiente[] getPedidosPendientes(Dispositivo dispositivo){
-    	ArrayList<PedidoPendiente> pedidosPendientes = new ArrayList<>();
-    	HashMap<Integer, ArrayList<Pedido>> mapaPedidosComanda = new HashMap<>();
-    	ArrayList<Integer> comandas = new ArrayList<>();
-    	/* Obtenemos todos los menús distintos de las comandas activas */
-    	String consulta = "select distinct menu from COMANDAS inner join PEDIDOS on idCom = comanda inner join MENUS on menu = idMenu inner join DESTINOS on destino = idDest where nomDest = '" + dispositivo.getNombreDestino() + "' and pagado = 0 and cerrada = 0 order by idPed";
-    	String[] idMenus = gestorBD.consulta(consulta);
-    	/* Obtenemos todos los pedidos de las comandas activas y los separamos por comanda */
-    	Pedido[] pedidos = getPedidos(idMenus);
-    	for(Pedido pedido : pedidos){
-    		if(!mapaPedidosComanda.containsKey(pedido.getComanda())){
-    			comandas.add(pedido.getComanda());
-    			mapaPedidosComanda.put(pedido.getComanda(), new ArrayList<Pedido>());
-    		}
-    		mapaPedidosComanda.get(pedido.getComanda()).add(pedido);
-    	}
-    	ArrayList<Pedido> pedidosComanda = new ArrayList<>();
-    	for(int contadorComanda = 0; contadorComanda < comandas.size(); contadorComanda++){
-    		pedidosComanda = mapaPedidosComanda.get(comandas.get(contadorComanda));
-    		for(int contadorMenu = 0; contadorMenu < idMenus.length; contadorMenu++){
-    			int udTotales = 0;
-    			int udPedido = 0;
-    			int udListo = 0;
-    			int udServido = 0;
-    			Pedido pEnv = null; // aquí guardo la información de pedido que debo pasar a pedidoPendiente
-    			for(int contadorPedido = 0; contadorPedido < pedidosComanda.size(); contadorPedido++){
-    				Pedido p = pedidosComanda.get(contadorPedido);
-    				if(p.getIdMenu() == Integer.parseInt(idMenus[contadorMenu])){
-    					pEnv = p; // si hay coincidencia guardo la info y empiezo a contar
-    					if(p.getEstado().equals("pedido")){
-    						udPedido++;
-    						udTotales++;
-    					} else if(p.getEstado().equals("listo")){
-    						udListo++;
-    						udTotales++;
-    					} else if(p.getEstado().equals("servido")){
-    						udServido++;
-    						udListo++;
-    						udTotales++;
-    					}
-    				}
-    			}
-    			if(pEnv != null)
-    				pedidosPendientes.add(new PedidoPendiente(pEnv, udTotales, udPedido, udListo, udServido));
-    		}
-    	}
-    	return pedidosPendientes.toArray(new PedidoPendiente[0]);
+    	int[] comandasActivas = getIdComandasActivas();
+    	PedidoPendiente[] pedidosPendientes = getPedidos(comandasActivas);
+    	return pedidosPendientes;
     }
     
     /**
-     * Devuelve todos los pedidos de una lista de menús de aquellas comandas 
-     * que estén activas.
+     * Devuelve todos los pedidos de una lista de comandas activas.
      * 
      * @param idMenus [int[ ]] lista de id de menú
      * @return [Pedido[ ]] lista de pedidos que coinciden con los pasados por parámetro
      */
-    public Pedido[] getPedidos(String[] idMenus){
+    public PedidoPendiente[] getPedidos(int[] idComandas){
+    	ArrayList<PedidoPendiente> pedidosPendientes = new ArrayList<>();
     	String consulta = "";
-    	String[] datos;
-    	ArrayList<String> tuplas = new ArrayList<>();
-    	ArrayList<Pedido> pedidos = new ArrayList<>();
-    	for(String menu : idMenus){
-    		consulta = "select idPed, menu, comanda, estado from PEDIDOS where menu = " + menu;
-    		datos = gestorBD.consulta(consulta,4);
-    		for(int contador = 0; contador < datos.length; contador++){
-    			tuplas.add(datos[contador]);
+    	for(int idCom : idComandas){
+    		consulta = "select distinct menu from PEDIDOS where comanda = " + idCom;
+    		String[] menus = gestorBD.consulta(consulta);
+    		if(menus.length > 0){
+    			for(String menu : menus){
+    				consulta = "select count(*) from pedidos where menu = " + menu + " and estado != 'cancelado' and comanda = " + idCom;
+    				int unidades = Integer.parseInt(gestorBD.consulta(consulta)[0]);
+    				consulta = "select count(*) from pedidos where menu = " + menu + " and estado = 'pedido' and comanda = " + idCom;
+    				int udPedidas = Integer.parseInt(gestorBD.consulta(consulta)[0]);
+    				consulta = "select count(*) from pedidos where menu = " + menu + " and estado = 'servido' and comanda = " + idCom;
+    				int udServidas = Integer.parseInt(gestorBD.consulta(consulta)[0]);
+    				consulta = "select count(*) from pedidos where menu = " + menu + " and estado = 'listo' and comanda = " + idCom;
+    				int udListas = Integer.parseInt(gestorBD.consulta(consulta)[0]);
+    				
+    				pedidosPendientes.add(new PedidoPendiente(idCom, new Pedido(Integer.parseInt(menu)), unidades, udPedidas, udListas+udServidas, udServidas));
+    			}
     		}
     	}
-    	for(int contador = 0; contador < tuplas.size(); contador+=4){
-    		pedidos.add(new Pedido(Integer.parseInt(tuplas.get(contador)), Integer.parseInt(tuplas.get(contador+1)), Integer.parseInt(tuplas.get(contador+2)), tuplas.get(contador+3)));
-    	}
-    	return pedidos.toArray(new Pedido[0]);
+    	return pedidosPendientes.toArray(new PedidoPendiente[0]);
     }
     
     /**
