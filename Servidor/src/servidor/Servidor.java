@@ -51,12 +51,15 @@ public class Servidor {
 	private Estados estado;
 	private static TrayIcon icono;
 
+	/**
+	 * Permite arrancar el servidor y pone en funcionamiento todo lo necesario para
+	 * recibir conexiones de los dispositivos y atender las peticiones de éstos.
+	 */
 	public Servidor() {
 		logView = new LogView(this);
 		try {
 			log = new Log(this);
 		} catch (IOException | ParseException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		escribirLog(Estados.info, "Servidor iniciado");
@@ -71,10 +74,8 @@ public class Servidor {
 					"No se puedo cargar la interfaz del servidor");
 
 		}
-		/* Turn off metal's use of bold fonts */
+		
 		UIManager.put("swing.boldMetal", Boolean.FALSE);
-		// Schedule a job for the event-dispatching thread:
-		// adding TrayIcon.
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -91,10 +92,11 @@ public class Servidor {
 
 	public static void main(String[] args) {
 		new Servidor();
-		
 	}
 
-	/* Hilo principal del servidor */
+	/**
+	 *  Hilo principal del servidor
+	 */
 	public class HiloPrincipal extends Thread {
 
 		private ServerSocket socketServidor;
@@ -104,11 +106,9 @@ public class Servidor {
 		/**
 		 * Constructor de HiloPrincipal
 		 * 
-		 * @param puerto
-		 *            puerto de escucha
-		 * @throws IOException
-		 *             en caso de no poder crear el ServerSocket en el puerto
-		 *             pasado por parámetro
+		 * @param puerto [int] puerto de escucha
+		 * @throws IOException  en caso de no poder crear el ServerSocket en el puerto
+		 * pasado por parámetro
 		 */
 		public HiloPrincipal(int puerto) throws IOException {
 			this.socketServidor = new ServerSocket(puerto);
@@ -131,7 +131,9 @@ public class Servidor {
 			}
 		}
 
-		/* Para la ejecuciÃ³n del hilo */
+		/**
+		 *  Para la ejecución del hilo
+		 */
 		public void parar() {
 			parado = true;
 			dispatcher.setParado(true);
@@ -144,23 +146,33 @@ public class Servidor {
 
 	}
 
+	/**
+	 * Permite limpiar los mensajes de la ventana del log
+	 */
 	public void clearCB3() {
 		cb3.setState(false);
 	}
 
+	/**
+	 * Limpia la selección que se hizo para el filtro de los mensajes
+	 */
 	public void limpiarCheckboxEstados() {
 		checkboxTodo.setState(false);
 		checkboxError.setState(false);
 		checkboxInfo.setState(false);
 	}
 
+	/**
+	 * Estados que se le pueden asignar a los mensajes del log
+	 * 
+	 * @author Juan G. Pérez Leo
+	 * @author Cristian Marín Honor
+	 */
 	public static enum Estados {
-
 		todo, info, error
 	}
 
 	private void createAndShowGUI() {
-		// Check the SystemTray support
 		if (!SystemTray.isSupported()) {
 			System.out.println("SystemTray no soportado");
 			return;
@@ -175,7 +187,8 @@ public class Servidor {
 		} catch (UnknownHostException e1) {
 			escribirLog(Estados.error, "No se pudo obtener la ip del servidor");
 		}
-		// Create a popup menu components
+		
+		/* Crea una ventana emergente con un menú de opciones */
 		MenuItem servidorInfo = new MenuItem("Servidor iniciado en: "
 				+ ip.getHostAddress());
 		pantallaLog = new MenuItem("Ver log de sucesos");
@@ -185,7 +198,7 @@ public class Servidor {
 		checkboxInfo = new CheckboxMenuItem("Info");
 		checkboxError = new CheckboxMenuItem("Error");
 
-		// Add components to popup menu
+		/* Añade componentes al menú de opciones */
 		popup.add(servidorInfo);
 		popup.addSeparator();
 		popup.add(pantallaLog);
@@ -204,10 +217,8 @@ public class Servidor {
 			tray.add(icono);
 		} catch (AWTException e) {
 			try {
-				log.escribir(Estados.error,
-						"No se pudo añadir el icono del servidor");
+				log.escribir(Estados.error, "No se pudo añadir el icono del servidor");
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			return;
@@ -218,8 +229,7 @@ public class Servidor {
 				try {
 					logView.leer(estado, log.getLog().getName());
 				} catch (IOException ex) {
-					icono.displayMessage("Servidor", "No se pudo leer el log",
-							TrayIcon.MessageType.ERROR);
+					icono.displayMessage("Servidor", "No se pudo leer el log", TrayIcon.MessageType.ERROR);
 				}
 				logView.setVisible(true);
 			}
@@ -234,9 +244,7 @@ public class Servidor {
 					try {
 						logView.leer(estado, log.getLog().getName());
 					} catch (IOException ex) {
-						icono.displayMessage("Servidor",
-								"No se pudo leer el log",
-								TrayIcon.MessageType.ERROR);
+						icono.displayMessage("Servidor", "No se pudo leer el log", TrayIcon.MessageType.ERROR);
 					}
 				}
 			}
@@ -251,9 +259,7 @@ public class Servidor {
 					try {
 						logView.leer(estado, log.getLog().getName());
 					} catch (IOException ex) {
-						icono.displayMessage("Servidor",
-								"No se pudo leer el log",
-								TrayIcon.MessageType.ERROR);
+						icono.displayMessage("Servidor", "No se pudo leer el log", TrayIcon.MessageType.ERROR);
 					}
 				}
 			}
@@ -268,9 +274,7 @@ public class Servidor {
 					try {
 						logView.leer(estado, log.getLog().getName());
 					} catch (IOException ex) {
-						icono.displayMessage("Servidor",
-								"No se pudo leer el log",
-								TrayIcon.MessageType.ERROR);
+						icono.displayMessage("Servidor", "No se pudo leer el log", TrayIcon.MessageType.ERROR);
 					}
 				}
 			}
@@ -285,7 +289,13 @@ public class Servidor {
 		});
 	}
 
-	// Obtain the image URL
+	/**
+	 * Obtiene la URL de la imagen para el servidor en funcionamiento.
+	 * 
+	 * @param path [String] ruta en la que se encuentra la imagen 
+	 * @param description [String]
+	 * @return [Image] instancia de la imagen del servidor, null si la imagen no existe en la ruta espcificada
+	 */
 	protected Image createImage(String path, String description) {
 		URL imageURL = Servidor.class.getResource(path);
 
@@ -297,14 +307,30 @@ public class Servidor {
 		}
 	}
 
+	/**
+	 * Permite obtener el estado del servidor.
+	 * 
+	 * @return [Estado] estado del servidor
+	 */
 	public Estados getEstado() {
 		return estado;
 	}
 
+	/**
+	 * Permite modificar el estado del servidor.
+	 * 
+	 * @param estado [Estado] estado del servidor
+	 */
 	public void setEstado(Estados estado) {
 		this.estado = estado;
 	}
 
+	/**
+	 * Escribe en el log el mensaje pasado por parámetro
+	 * 
+	 * @param estadoMensaje [Estados] añadir uno de los estados permitidos para el mensaje
+	 * @param mensaje [String] mensaje que se mostrará en el log
+	 */
 	public static void escribirLog(Estados estadoMensaje, String mensaje) {
 		try {
 			log.escribir(estadoMensaje, mensaje);
@@ -312,7 +338,6 @@ public class Servidor {
 				icono.displayMessage("Servidor", mensaje,
 						TrayIcon.MessageType.ERROR);
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 	}
