@@ -240,8 +240,11 @@ public class Oraculo {
      */
     public String getIpPorIdUsuario(int idUsu){
     	String consulta = "select ip from DISPOSITIVOS inner join USUARIOS on idDisp = dispositivo where idUsu = " + idUsu;
-    	String resultado = gestorBD.consulta(consulta)[0];
-    	return resultado;
+    	String[] resultado = gestorBD.consulta(consulta);
+    	if(resultado.length > 0)
+    		return resultado[0];
+    	else
+    		return null;
     }
     
     /**
