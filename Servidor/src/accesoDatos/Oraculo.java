@@ -138,8 +138,8 @@ public class Oraculo {
     /**
      * Obtiene la id de una comanda activa a partir de la id de una mesa.
      *
-     * @param idMesa
-     * @return id de la comanda. 0 en caso de que no haya ninguna comanda sin pagar
+     * @param idMesa [int] id de la mesa
+     * @return [int] id de la comanda. 0 en caso de que no haya ninguna comanda sin pagar
      * y sin cerrar
      */
     public int getIdComandaPorIdMesa(int idMesa){
@@ -149,6 +149,19 @@ public class Oraculo {
         if(resultado.length > 0)
             idComanda = Integer.parseInt(resultado[0]);
         return idComanda;
+    }
+    
+    /**
+     * Obtiene la id del usuario que cogió la comanda
+     * 
+     * @param idComanda [int] id de la comanda
+     * @return [int] id del usuario
+     */
+    public int getIdUsuPorIdComanda(int idComanda){
+    	String consulta = "select usuario from COMANDAS where idCom = " + idComanda;
+    	String[] resultado = gestorBD.consulta(consulta);
+    	int idUsu = (resultado.length > 0) ? Integer.parseInt(resultado[0]) : 0;
+    	return idUsu;
     }
     
     /**
@@ -327,9 +340,24 @@ public class Oraculo {
      * @return PedidoPendiente[] lista de todos los pedidos pendientes de ese dispositivo
      */
     public PedidoPendiente[] getPedidosPendientes(Dispositivo dispositivo){
+    	ArrayList<PedidoPendiente> pendientes = new ArrayList<>();
     	int[] comandasActivas = getIdComandasActivas();
+    	/* Obtenemos todos los pedidos pendientes de las comandas activas */
     	PedidoPendiente[] pedidosPendientes = getPedidos(comandasActivas);
-    	return pedidosPendientes;
+    	/* Comprobamos que el dispositivo pasado es del tipo destino, en tal caso obtenemos su id */
+    	String consulta = "select destino from DISPOSITIVOS where idDisp = " + dispositivo.getIdDisp();
+    	String[] destino = gestorBD.consulta(consulta);
+    	String idDest = (destino != null && destino.length > 0) ? destino[0] : null;
+    	if(idDest != null){
+    		/* Una vez obtenemos la id nos quedamos con los pedidos que le corresponden a ese dispositivo */
+	    	for(PedidoPendiente pedido : pedidosPendientes){
+	    		if(getIdDestinoPorIdMenu(pedido.getIdMenu()).equals(idDest)){
+	    			pendientes.add(pedido);
+	    		}
+	    	}
+    	}
+    	
+    	return pendientes.toArray(new PedidoPendiente[0]);
     }
     
     /**

@@ -93,8 +93,10 @@ public class ImprimirTicket extends Thread {
 				String nombreMesa = oraculo.getNombreMesaPorIdMesa(idMesa);
 				float totalTicket = 0;
 				try {
-					String rutaCarpeta = "./Tickets/";
-					File fichero = new File(rutaCarpeta+fechaTicket+" S_"+nombreSeccion+" M_"+nombreMesa+".txt");
+					File carpeta = new File("./Tickets/");
+					if(!carpeta.exists())
+						carpeta.mkdir();
+					File fichero = new File(carpeta.getPath()+"/"+fechaTicket+" S_"+nombreSeccion+" M_"+nombreMesa+".txt");
 					BufferedWriter escritor = new BufferedWriter(new FileWriter(fichero));
 					String linea = "";
 					for(int contador = 0; contador < pedidos.size(); contador++){
