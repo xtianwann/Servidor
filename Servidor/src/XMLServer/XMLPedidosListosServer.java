@@ -3,8 +3,20 @@ package XMLServer;
 import accesoDatos.PedidoListo;
 import XML.XML;
 
+/**
+ * Clase encargada de generar la estructura XML con la información de los pedidos que un 
+ * dispositivo de tipo destino ha marcado como listo
+ * 
+ * @author Juan G. Pérez Leo
+ * @author Cristian Marín Honor
+ */
 public class XMLPedidosListosServer extends XML{
 	
+	/**
+	 * Constructor: genera la estructura del XML con la información necesaria
+	 * 
+	 * @param pedidos [PedidoListo[]] lista con todos los pedidos que ha marcado el dispositivo destino como listo
+	 */
 	public XMLPedidosListosServer(PedidoListo[] pedidos){
 		init();
 		addNodo("tipo", "PedidosListos", "paquete");

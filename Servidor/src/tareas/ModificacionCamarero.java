@@ -20,8 +20,6 @@ import accesoDatos.Oraculo;
 import accesoDatos.PedidoListo;
 
 /**
- * FINALIZADA
- * 
  * Clase encarda de cambiar los pedidos solicitados por el camarero de estado
  * pedido, listo o servidos (en ese orden) al estado cancelar. Esa información
  * se propaga a los dispositivos destino que les resulte relevante la información.
@@ -59,6 +57,7 @@ public class ModificacionCamarero extends Thread {
 	 * para que ellos también los hagan.
 	 */
 	private void modificarYEnviar() {
+		/* Obtenemos la información del mensaje recibido */
 		Document dom = XML.stringToXml(recibido);
 		NodeList nodeListModificado = dom.getElementsByTagName("modificado");
 		Node nodeModificado = nodeListModificado.item(0);
@@ -69,6 +68,7 @@ public class ModificacionCamarero extends Thread {
 		int unidades = Integer.parseInt(nodeModificado.getChildNodes().item(2)
 				.getFirstChild().getNodeValue());
 
+		/* Vemos qué es lo que hay en la base de datos */
 		String[] idPedidos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu,
 				idComanda, "pedido");
 		String[] idListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu,
@@ -78,11 +78,15 @@ public class ModificacionCamarero extends Thread {
 
 		int total = idPedidos.length + idListos.length + idServidos.length;
 
+		/* Cancelamos los pedidos en el orden lógico */
 		int diferencia = total - unidades;
 		if (diferencia == total) { // cancelar todos los pedidos
-			modificador.modificarEstadoPedido(idPedidos, "cancelado");
-			modificador.modificarEstadoPedido(idListos, "cancelado");
-			modificador.modificarEstadoPedido(idServidos, "cancelado");
+			if(idPedidos.length > 0)
+				modificador.modificarEstadoPedido(idPedidos, "cancelado");
+			if(idListos.length > 0)
+				modificador.modificarEstadoPedido(idListos, "cancelado");
+			if(idServidos.length > 0)
+				modificador.modificarEstadoPedido(idServidos, "cancelado");
 		} else {
 			ArrayList<String> modificaciones = new ArrayList<>();
 			for (String id : idPedidos) {
@@ -147,7 +151,6 @@ public class ModificacionCamarero extends Thread {
 				 * Cambiamos el estado del dispositivo en la base de datos a
 				 * desconectado
 				 */
-				System.out.println("entro en no esta conectado");
 				Inserciones modificador = new Inserciones();
 				modificador.onOffDispositivo(0,
 						dispositivo.getIdDisp());

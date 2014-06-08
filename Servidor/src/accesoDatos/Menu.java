@@ -1,8 +1,6 @@
 package accesoDatos;
 
 /**
- * FINALIZADA
- * 
  * Clase que permite manejar toda la información referente a los menús en la base de datos
  * 
  * @author Juan G. Pérez Leo

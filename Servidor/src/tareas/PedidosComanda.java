@@ -21,8 +21,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * FINALIZADA
- * 
  * Esta clase es la encargada de recibir la comanda enviada por el camarero,
  * insertar la información correspondiente en la base de datos, divide los
  * pedidos según el destino (cocina, barra, etc), genera los mensajes y los
@@ -109,6 +107,7 @@ public class PedidosComanda extends Thread {
 						new Pedido(idMenu, unidades));
 				pedidos.add(new Pedido(idMenu, unidades));
 			}
+			
 			/* Comprobamos si la mesa está activa */
 			Inserciones insertor = new Inserciones();
 			int idComanda = 0;
@@ -143,7 +142,6 @@ public class PedidosComanda extends Thread {
 			} catch (NullPointerException | IOException e3) {
 				e3.printStackTrace();
 			}
-			System.out.println("Enviado");
 	
 			/* Intentamos conectar con el destino y enviarle la información */
 			for (int contadorDestino = 0; contadorDestino < dispositivos.size(); contadorDestino++) {
@@ -156,7 +154,6 @@ public class PedidosComanda extends Thread {
 						conexionDestino = new Conexion(dispositivo.getIp(), 27000);
 					} catch (NullPointerException | IOException e1) {
 						/* Cambiamos el estado del dispositivo en la base de datos a desconectado */
-						System.out.println("entro en no esta conectado");
 						Inserciones modificador = new Inserciones();
 						modificador.onOffDispositivo(0,dispositivo.getIdDisp());
 						new HiloInsistente(dispositivo).start();
@@ -186,7 +183,6 @@ public class PedidosComanda extends Thread {
 			} catch (NullPointerException | IOException e3) {
 				e3.printStackTrace();
 			}
-			System.out.println("Enviado else");
 		}
 	}
 }

@@ -18,17 +18,27 @@ import java.util.Locale;
 
 import servidor.Servidor;
 
+/**
+ * Clase encargada de los mensajes del log del servidor
+ * 
+ * @author Juan G. Pérez Leo
+ * @author Cristian Marín Honor
+ */
 public class Log {
 
     private String diaActual;
     private File log;
     private Servidor servidor;
-    public File getLog() {
-        return log;
-    }
     private BufferedReader lector;
     private BufferedWriter escritor;
-
+    
+    /**
+     * Constructor
+     * 
+     * @param servidor [Servidor] instancia del servidor
+     * @throws IOException excepción lanzada en caso de error al crear el fichero
+     * @throws ParseException excepción lanzada en caso de haber problemas de formateo
+     */
     public Log(Servidor servidor) throws IOException, ParseException {
         this.servidor = servidor;
         Locale formatoLocal = new Locale("ES");
@@ -56,6 +66,14 @@ public class Log {
         }
     }
 
+    /**
+     * Permite escribir un mensaje en el log
+     * 
+     * @param estado [Estados] estado al que pertence el mensaje que se va a escribir
+     * @param mensaje [String] mensaje que se desea escribir
+     * @throws FileNotFoundException excepción lanzada cuando no se encuentra el fichero del log
+     * @throws IOException excepción lanzada si ocurren problemas durante la escritura del mensaje
+     */
     public synchronized void escribir(Servidor.Estados estado, String mensaje) throws FileNotFoundException, IOException {
 		Calendar cal = Calendar.getInstance();
 		String fecha = formatearFecha(cal.get(Calendar.DAY_OF_MONTH), 2) + "/"
@@ -71,12 +89,28 @@ public class Log {
 		escritor.close();
     }
 
+    /**
+     * Permite formatear un fecha
+     * 
+     * @param data [int]
+     * @param digits [int]
+     * @return [String] fecha formateada
+     */
     private String formatearFecha(int data, int digits) {
         String ret = "" + data;
         while (ret.length() < digits) {
             ret = "0" + ret;
         }
         return ret;
+    }
+    
+    /**
+     * Permite obtener una instancia del fichero log
+     * 
+     * @return [File] instancia del fichero log
+     */
+    public File getLog() {
+        return log;
     }
 }
 

@@ -11,8 +11,6 @@ import XML.XML;
 import XMLServer.XMLResultadoLogoutCamarero;
 
 /**
- * FINALIZADA
- * 
  * Clase encargada de desloguear al camarero del sistema y poner su dispositivo como
  * apagado.
  * En caso de que tenga pedidos pendientes en el histórico, estos pedidos serán entregados
@@ -54,7 +52,6 @@ public class LogoutCamarero extends Thread{
 		String usuario = dom.getElementsByTagName("usuario").item(0).getFirstChild().getNodeValue();
 		String ip = socket.getInetAddress()+"";
 		ip = ip.substring(1);
-		System.out.println("ip logout: " + ip);
 		/* Desvincula camarero y dispositivo y apaga el dispositivo */
 		modificador.vinculoUsuarioDispositivo(usuario, ip, 0);
 		

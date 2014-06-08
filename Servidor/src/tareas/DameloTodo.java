@@ -8,8 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * FINALIZADA
- * 
  * Clase encargada de entregar la información necesaria para que la aplicación camarero
  * rellene la interfaz para poder realizar pedidos.
  * 

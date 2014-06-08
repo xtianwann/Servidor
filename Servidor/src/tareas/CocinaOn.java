@@ -11,8 +11,6 @@ import Conexion.Conexion;
 import XMLServer.XMLCocinaOn;
 
 /**
- * FINALIZADO
- * 
  * Clase encargada de ver si el dispositivo (tipo destino) que ha dado el aviso
  * de que está encendido, tiene información acumulada que deba necesitar.
  * 
@@ -70,7 +68,6 @@ public class CocinaOn extends Thread{
 		
 		/* Enviamos el mensaje al destinatario */
 		String mensaje = xmlCocinaOn.xmlToString(xmlCocinaOn.getDOM());
-		System.out.println(mensaje);
 		Conexion conexion;
 		try {
 			conexion = new Conexion(socket);
@@ -79,7 +76,6 @@ public class CocinaOn extends Thread{
 		} catch (NullPointerException | IOException e3) {
 			e3.printStackTrace();
 		}
-		System.out.println("Enviado");
 		
 	}
 

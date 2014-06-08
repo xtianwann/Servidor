@@ -4,6 +4,9 @@ import XML.XML;
 import accesoDatos.Oraculo;
 
 /**
+ * Clase encargada de generar el XML con toda la información necesaria para que un 
+ * dispositivo de tipo camarero esté operativo y pueda coger comandas.
+ * 
  * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
@@ -11,6 +14,9 @@ public class XMLDameloTodoServer extends XML{
     
     Oraculo consultas = new Oraculo();
     
+    /**
+     * Constructor: inserta en la estructura XML los nombres de todas las secciones, mesas, categorías, cantidades y productos
+     */
     public XMLDameloTodoServer(){
         String[] seccionesYMesas = consultas.getSeccionesYMesasTodo();
         String[] cantidadesYProductos = consultas.getCantidadesYProductosTodo();

@@ -3,8 +3,20 @@ package XMLServer;
 import accesoDatos.PedidoPendiente;
 import XML.XML;
 
+/**
+ * Clase encargada de generar la estructura del XML con todos los pedidos pendientes
+ * que pueda tener acumulados un dispositivo
+ * 
+ * @author Juan G. Pérez Leo
+ * @author Cristian Marín Honor
+ */
 public class XMLInfoAcumulada extends XML{
 	
+	/**
+	 * Constructor: genera la estructura del XML con la información necesaria
+	 * 
+	 * @param pedidos [PedidoPendiente[]] lista de pedidos pendientes que tiene el dispositivo
+	 */
 	public XMLInfoAcumulada(PedidoPendiente[] pedidos){
 		init();
 		addNodo("tipo", "InfoAcumulada", "paquete");

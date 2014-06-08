@@ -1,8 +1,6 @@
 package accesoDatos;
 
 /**
- * FINALIZADO
- * 
  * Clase que permite manejar información relativa a los pedidos listos
  * 
  * @author Juan G. Pérez Leo

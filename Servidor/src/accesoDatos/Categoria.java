@@ -1,7 +1,6 @@
 package accesoDatos;
 
 /**
- * FINALIZADO
  * 
  * Esta clase permite manejar la información relativa a las distintas categorías que 
  * haya en la base de datos.
@@ -60,7 +59,5 @@ public class Categoria {
     public void setNomCat(String nomCat) {
         this.nomCat = nomCat;
     }
-    
-    
-    
+
 }

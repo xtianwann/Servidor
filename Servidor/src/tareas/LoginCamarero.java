@@ -16,8 +16,6 @@ import XML.XML;
 import XMLServer.XMLResultadoLoginCamarero;
 
 /**
- * FINALIZADA
- * 
  * Esta clase se encarga de la identificación de un camarero. Tiene tres
  * funciones principales: 1.- Comprobar si es un nuevo usuario en un dispositivo
  * nuevo. 2.- Comprobar si es un nuevo camarero en un dispositivo en el que ya
@@ -39,10 +37,8 @@ public class LoginCamarero extends Thread {
 	/**
 	 * Constructor
 	 * 
-	 * @param socket
-	 *            [Socket] socket por el que se ha establecido la conexión
-	 * @param recibido
-	 *            [String] mensaje recibido
+	 * @param socket [Socket] socket por el que se ha establecido la conexión
+	 * @param recibido [String] mensaje recibido
 	 */
 	public LoginCamarero(Socket socket, String recibido) {
 		this.socket = socket;
@@ -83,7 +79,6 @@ public class LoginCamarero extends Thread {
 			/* Comprobamos si ya había otro usuario en ese dispositivo */
 			String ip = socket.getInetAddress() + "";
 			ip = ip.substring(1);
-			System.out.println("ip login: " + ip);
 			int[] idCamareros = oraculo.getCamarerosEnDispositivo(ip);
 			if (idCamareros != null && idCamareros.length > 0) {
 				/* Asignamos los pedidos de esos usuarios al nuevo */
@@ -123,7 +118,6 @@ public class LoginCamarero extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Enviado");
 
 	}
 

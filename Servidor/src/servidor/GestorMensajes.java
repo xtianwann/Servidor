@@ -32,7 +32,6 @@ import tareas.PedidosComanda;
 import tareas.PedidosListos;
 import tareas.PedidosServidos;
 import tareas.PendientesCamarero;
-import tareas.ResumenMesa;
 
 /**
  * Interpreta la cabecera del mensaje y lanza la tarea que le corresponde
@@ -44,7 +43,7 @@ import tareas.ResumenMesa;
 public class GestorMensajes extends Thread {
 
     private Socket socket;
-    Conexion conn;
+    private Conexion conn;
     private String mensaje;
 
     /**
@@ -81,7 +80,6 @@ public class GestorMensajes extends Thread {
             String tipo = nodo.item(0).getChildNodes().item(0).getNodeValue();
             
             System.out.println("Mensaje recibido tipo: " + tipo);
-            System.out.println(mensaje);
             switch (tipo) {
                 case "DameloTodo":
                     DameloTodo dameloTodo = new DameloTodo(socket);
@@ -90,10 +88,6 @@ public class GestorMensajes extends Thread {
                 case "PedidosComanda":
                     PedidosComanda pedidosComanda = new PedidosComanda(socket, mensaje);
                     pedidosComanda.start();
-                    break;
-                case "ResumenMesa":
-                    ResumenMesa resumenMesa = new ResumenMesa(socket, mensaje);
-                    resumenMesa.start();
                     break;
                 case "PedidosListos":
                 	PedidosListos pedidosListos = new PedidosListos(socket, mensaje);

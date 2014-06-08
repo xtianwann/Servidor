@@ -22,8 +22,6 @@ import XML.XML;
 import XMLServer.XMLAcuseReciboServer;
 
 /**
- * FINALIZADA
- * 
  * Imprime un ticket en caso de que exista una comanda en la mesa solicitada
  * Informa si no existe comanda o si la comanda no tiene pedidos
  * 
@@ -71,6 +69,7 @@ public class ImprimirTicket extends Thread {
 				/* Llegados aquí es que todo está correcto y se procede a imprimir el ticket */
 				acuse("OK" ,"");
 				
+				/* Obtenemos la información necesaria */
 				for(int contador = 0; contador < resultados.length; contador++){
 					int idMenu = Integer.parseInt(resultados[contador]);
 					int idComanda = oraculo.getIdComandaPorIdMesa(idMesa);
@@ -86,6 +85,7 @@ public class ImprimirTicket extends Thread {
 					pedidos.add(pedido);
 				}
 				
+				/* Preparamos los datos para el ticket */
 				String fechaTicket = oraculo.getFechaYHoraActual();
 				fechaTicket = fechaTicket.replace("-", "");
 				fechaTicket = fechaTicket.replace(":", "_");
@@ -93,9 +93,12 @@ public class ImprimirTicket extends Thread {
 				String nombreMesa = oraculo.getNombreMesaPorIdMesa(idMesa);
 				float totalTicket = 0;
 				try {
+					/* Creamos la carpeta si no existe en el destino */
 					File carpeta = new File("./Tickets/");
 					if(!carpeta.exists())
 						carpeta.mkdir();
+					
+					/* Creamos el fichero e introducimos los datos */
 					File fichero = new File(carpeta.getPath()+"/"+fechaTicket+" S_"+nombreSeccion+" M_"+nombreMesa+".txt");
 					BufferedWriter escritor = new BufferedWriter(new FileWriter(fichero));
 					String linea = "";

@@ -22,8 +22,6 @@ import XMLServer.XMLAcuseReciboServer;
 import XMLServer.XMLPedidosListosServer;
 
 /**
- * FINALIZADA
- * 
  * Esta clase se encarga de modificar en la base de datos los pedidos a 
  * estado listo, devuelve un acuse de recibo al emisor y propaga el mensaje
  * al dispositivo del camarero que originalmente envió la comanda a la 
@@ -100,10 +98,11 @@ public class PedidosListos extends Thread{
 			for(int pedido = 0; pedido < pedidosAModificar.length; pedido++){
 				pedidosAModificar[pedido] = pedidosPendientes[pedido];
 			}
-			modificador.modificarEstadoPedido(pedidosAModificar, "listo");
+			PedidoListo pedidoListo = new PedidoListo(idComanda, idMenu, listos);
+			modificador.modificarEstadoAListo(pedidoListo, pedidosAModificar.length);
 			
 			/* Lo añadimos a la lista de pedidos según la ip que le corresponda */
-			PedidoListo pedidoListo = new PedidoListo(idComanda, idMenu, listos);
+			
 			ipCamarero = oraculo.getCamareroPorComanda(pedidoListo.getIdComanda());
 			mapaDestino.get(ipCamarero).add(pedidoListo);
 		}
@@ -132,7 +131,6 @@ public class PedidosListos extends Thread{
 					conexion = new Conexion(dispositivo.getIp(), 27000);
 				} catch (NullPointerException | IOException e1) {
 					/* Cambiamos el estado del dispositivo en la base de datos a desconectado */
-					System.out.println("entro en no esta conectado");
 					modificador.onOffDispositivo(0, dispositivo.getIdDisp());
 					new HiloInsistente(dispositivo).start();
 					modificador.setHiloLanzado(dispositivo.getIp(), 1);

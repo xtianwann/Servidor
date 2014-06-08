@@ -4,10 +4,22 @@ import accesoDatos.Oraculo;
 import accesoDatos.Pedido;
 import XML.XML;
 
+/**
+ * Clase encargada de generar la estructura del XML con todos los pedidos que tiene pendientes
+ * un dispositivo del tipo camarero al encenderse.
+ * 
+ * @author Juan G. Pérez Leo
+ * @author Cristian Marín Honor
+ */
 public class XMLPendientesCamareroAlEncender extends XML{
 	
 	private Oraculo oraculo = new Oraculo();
 	
+	/**
+	 * Constructor: genera la estructura del XML con la información necesaria
+	 * 
+	 * @param pedidos [Pedido[]] lista de pedidos pendientes del dispositivo tipo camarero
+	 */
 	public XMLPendientesCamareroAlEncender(Pedido[] pedidos){
 		init();
 		addNodo("tipo", "PendientesAlEncender", "paquete");

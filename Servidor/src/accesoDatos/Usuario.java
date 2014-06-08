@@ -3,8 +3,6 @@ package accesoDatos;
 import java.net.Socket;
 
 /**
- * FINALIZADA
- * 
  * Permite manejar información relativa a los usuarios que hay en la base de datsos
  * 
  * @author Juan G. Pérez Leo

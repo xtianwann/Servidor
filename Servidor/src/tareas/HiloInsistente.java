@@ -13,8 +13,6 @@ import accesoDatos.PedidoPendiente;
 import accesoDatos.Usuario;
 
 /**
- * FINALIZADA
- * 
  * Esta clase se encarga de intentar conectar con un dispositivo que por algún
  * motivo ha perdido la conexión, ya que el hilo se llama cuando dicho
  * dispositivo aparece como conectado en la base de datos. Una vez consigue
@@ -35,9 +33,7 @@ public class HiloInsistente extends Thread {
 	/**
 	 * Constructor
 	 * 
-	 * @param dispositivo
-	 *            [Dispositivo] dispositivo con el que debe reintentar la
-	 *            conexión
+	 * @param dispositivo [Dispositivo] dispositivo con el que debe reintentar la conexión
 	 */
 	public HiloInsistente(Dispositivo dispositivo) {
 		this.dispositivo = dispositivo;
@@ -61,8 +57,6 @@ public class HiloInsistente extends Thread {
 			try {
 				conectado = new Conexion(dispositivo.getIp(), 27000);
 			} catch (NullPointerException | IOException e1) {
-				System.out.println(conectado + " Conectando con: "
-						+ dispositivo.getIp());
 				try {
 					contador++;
 					Thread.sleep(2000);
@@ -111,12 +105,12 @@ public class HiloInsistente extends Thread {
 			} catch (NullPointerException | IOException e1) {
 				e1.printStackTrace();
 			}
-
-			/*
-			 * Cambia el estado de hilo a no lanzado y enciende el dispositivo
-			 * en la base de datos
-			 */
 		}
+		
+		/*
+		 * Cambia el estado de hilo a no lanzado y enciende el dispositivo
+		 * en la base de datos
+		 */
 		modificador.setHiloLanzado(dispositivo.getIp(), 0);
 		modificador.onOffDispositivo(1, dispositivo.getIdDisp());
 	}

@@ -1,8 +1,6 @@
 package accesoDatos;
 
 /**
- * FINALIZADA
- * 
  * Clase que permite manejar información relativa a los pedidos pendientes
  * 
  * @author Juan G. Pérez Leo

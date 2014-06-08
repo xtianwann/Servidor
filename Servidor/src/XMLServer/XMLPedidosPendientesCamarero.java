@@ -3,12 +3,23 @@ package XMLServer;
 import accesoDatos.Pedido;
 import XML.XML;
 
-/*
+/**
+ * Calse encargada de generar la estructura del XML con los pedidos pendientes de un
+ * dispositivo del tipo camarero
+ * 
  * @author Juan Gabriel Pérez Leo
  * @author Cristian Marín Honor
  */
 public class XMLPedidosPendientesCamarero extends XML{
 	
+	/**
+	 * Constructor: genera la estructura del XML con la información necesaria
+	 * 
+	 * @param nombreMesa [String] nombre de la mesa 
+	 * @param nombreSeccion [String] nombre de la sección
+	 * @param idCom [int] id de la comanda
+	 * @param pedidos [Pedido[]] lsita con los pedidos pendientes del dispositivo
+	 */
 	public XMLPedidosPendientesCamarero(String nombreMesa, String nombreSeccion, int idCom, Pedido[] pedidos){
 		init();
 		addNodo("tipo", "PedidosPendientesCamarero", "paquete");

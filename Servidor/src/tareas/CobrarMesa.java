@@ -16,8 +16,6 @@ import XMLServer.XMLAcuseReciboServer;
 import XMLServer.XMLComandaAcabada;
 
 /**
- * FINALIZADA
- * 
  * Pone el estado de una comanda a pagada en caso de que exista para la mesa solicitada.
  * Informa si la comanda no existe, si la comanda no tiene pedidos o si los pedidos que
  * tiene aún no están totalmente servidos.

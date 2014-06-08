@@ -5,11 +5,22 @@ import accesoDatos.Mesa;
 import accesoDatos.Pedido;
 
 /**
+ * Clase encargada de generar la estructura XML con todos los pedidos que se han realizado
+ * desde un dispositivo de tipo camarero.
+ * 
  * @author Juan G. Pérez Leo
  * @author Cristian Marín Honor
  */
 public class XMLPedidoMesaServer extends XML{
 
+	/**
+	 * Constructor: genera la estructura XML con la información necesaria
+	 * 
+	 * @param mesa [Mesa] instancia de una mesa con toda la información necesaria
+	 * @param seccion [String] nombre de la sección
+	 * @param idComanda [int] id de la comanda a la que pertenecen todos los pedidos
+	 * @param pedidos [Pedido[]] lista con todos los pedidos que se han insertado en la comanda de la mesa
+	 */
     public XMLPedidoMesaServer(Mesa mesa, String seccion,int idComanda, Pedido[] pedidos) {
         init();
         addNodo("tipo", "PedidoMesa", "paquete");

@@ -3,14 +3,33 @@ package XMLServer;
 import accesoDatos.PedidoPendiente;
 import XML.XML;
 
+/**
+ * Clase encargada de generar el XML con la respuesta al encendido de los dispositivos
+ * del tipo destino.
+ * 
+ * @author Juan G. Pérez Leo
+ * @author Cristian Marín Honor
+ */
 public class XMLCocinaOn extends XML{
 	
+	/**
+	 * Constructor: genera la estructura del XML con la respuesta.
+	 * 
+	 * @param respuesta [String] tipo de respuesta
+	 */
 	public XMLCocinaOn(String respuesta){
 		init();
 		addNodo("tipo", "CocinaOn", "paquete");
 		addNodo("respuesta", respuesta, "paquete");
 	}
 	
+	/**
+	 * Constructor: genera la estructura del XML con la respuesta. Incluye una lista
+	 * con los pedidos pendientes que tiene el dispositivo.
+	 * 
+	 * @param respuesta [String] tipo de respuesta
+	 * @param pendientes [PedidoPendiente[]] lista de pedidos pendientes que tiene el dispositivo
+	 */
 	public XMLCocinaOn(String respuesta, PedidoPendiente[] pendientes){
 		init();
 		addNodo("tipo", "CocinaOn", "paquete");

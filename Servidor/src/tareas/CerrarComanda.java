@@ -16,8 +16,6 @@ import XMLServer.XMLAcuseReciboServer;
 import XMLServer.XMLComandaAcabada;
 
 /**
- * FINALIZADA
- * 
  * Pone el estado de una comanda a cerrada en caso de que exista para la mesa solicitada.
  * Informa si la comanda no existe.
  * 
@@ -66,7 +64,6 @@ public class CerrarComanda extends Thread{
 			XMLComandaAcabada xml = new XMLComandaAcabada(idComanda);
 			String[] ipDestinos = oraculo.getIpDestinos();
 			for(int contadorDestino = 0; contadorDestino < ipDestinos.length; contadorDestino++){
-				System.out.println(ipDestinos[contadorDestino]);
 				Dispositivo dispositivo = new Dispositivo(ipDestinos[contadorDestino]);
 				Conexion conexionDestino = null;
 				 /* Comprobamos en la base de datos si está conectado */

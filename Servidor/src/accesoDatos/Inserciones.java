@@ -1,8 +1,6 @@
 package accesoDatos;
 
 /**
- * FINALIZADA
- * 
  * Clase encargada de todas las operaciones del tipo INSERT y UPDATE en la base
  * de datos
  * 
@@ -25,10 +23,8 @@ public class Inserciones {
 	/**
 	 * Crea una nueva comanda en la base de datos.
 	 * 
-	 * @param mesa
-	 *            [Mesa] mesa a la que está asociada la comanda
-	 * @param dispositivo
-	 *            [Dispositivo] dispositivo desde el que se tomó la comanda
+	 * @param mesa [Mesa] mesa a la que está asociada la comanda
+	 * @param dispositivo [Dispositivo] dispositivo desde el que se tomó la comanda
 	 */
 	public void insertarNuevaComanda(Mesa mesa, Usuario usuario) {
 		String fechaComanda = oraculo.getFechaYHoraActual();
@@ -37,17 +33,15 @@ public class Inserciones {
 
 		String sentencia = "insert into COMANDAS (fechaCom, mesa, usuario, pagado, cerrada) values ('"
 				+ fechaComanda + "', " + idMesa + ", " + idUsuario + ", 0, 0)";
-		gestorBD.actualizar(sentencia);
+		gestorBD.ejecutarSentencia(sentencia);
 	}
 
 	/**
 	 * Inserta un grupo de pedidos de una mesa y devuelve la id de la comanda a
 	 * la que pertenecen.
 	 * 
-	 * @param mesa
-	 *            [Mesa] mesa para la que se han realizado los pedidos
-	 * @param pedidos
-	 *            [Pedido[ ]] lista de pedidos con los datos a insertar
+	 * @param mesa [Mesa] mesa para la que se han realizado los pedidos
+	 * @param pedidos [Pedido[ ]] lista de pedidos con los datos a insertar
 	 * 
 	 * @return [int] id de la comanda a la que pertenecen los pedidos
 	 */
@@ -55,53 +49,49 @@ public class Inserciones {
 		int idMenu;
 		int idCom = oraculo.getIdComandaPorIdMesa(mesa.getIdMes());
 		String estado = "pedido";
-
-		for (Pedido p : pedidos) {
-			idMenu = p.getIdMenu();
-			int unidades = p.getUnidades();
-			for (int unidad = 0; unidad < unidades; unidad++) {
-				String sentencia = "insert into PEDIDOS (menu, comanda, estado) values ('"
-						+ idMenu + "', '" + idCom + "', '" + estado + "')";
-				gestorBD.actualizar(sentencia);
-			}
-		}
-
+		gestorBD.insertarMultiple(idCom, pedidos);
 		return idCom;
 	}
 
 	/**
 	 * Cambia el estado de un pedido al que se le pase por parámetro
 	 * 
-	 * @param idPedidos
-	 *            [String[ ]] lista de id de pedidos a modificar
-	 * @param estado
-	 *            [String] nuevo estado que se le va a asignar a los pedidos de
-	 *            la lista
+	 * @param idPedidos [String[ ]] lista de id de pedidos a modificar
+	 * @param estado [String] nuevo estado que se le va a asignar a los pedidos de la lista
 	 */
-	public void modificarEstadoPedido(String[] idPedidos, String estado) {
-		String sentencia = "";
-
-		for (int pedido = 0; pedido < idPedidos.length; pedido++) {
-			sentencia = "update PEDIDOS set estado = '" + estado
-					+ "' where idPed = " + idPedidos[pedido];
-			gestorBD.actualizar(sentencia);
+	public void modificarEstadoAListo(PedidoListo pedido, int aModificar) {
+		String sentencia = "update PEDIDOS set estado = 'listo' where rowid in (select rowid from PEDIDOS where estado = 'pedido' and comanda = "
+				+ pedido.getIdComanda() + " and menu = " + pedido.getIdMenu() + " limit " + aModificar + ")";
+		gestorBD.ejecutarSentencia(sentencia);
+	}
+	
+	/**
+	 * Modifica el estado de los pedidos pasados por parámetro
+	 * 
+	 * @param idPedidos [int] id de los pedidos que se van a modificar
+	 * @param estado [String] estado que se le va a asignar a los pedidos
+	 */
+	public void modificarEstadoPedido(String[] idPedidos, String estado){
+		String sentencia = "update PEDIDOS set estado = '" + estado + "' where idPed in (";
+		for(String id : idPedidos){
+			sentencia += id + ", ";
 		}
+		sentencia = sentencia.substring(0, sentencia.length()-2) + ")";
+		
+		gestorBD.ejecutarSentencia(sentencia);
 	}
 
 	/**
 	 * Actualiza el estado de un dispositivo en la base de datos
 	 * 
-	 * @param estado
-	 *            [int] nuevo estado que se le va a asignar, 1 encendido, 0
-	 *            apagado
-	 * @param idDisp
-	 *            [int] id del dispositivo
+	 * @param estado [int] nuevo estado que se le va a asignar, 1 encendido, 0 apagado
+	 * @param idDisp [int] id del dispositivo
 	 */
 	public void onOffDispositivo(int estado, int idDisp) {
 		if (estado == 0 || estado == 1) {
 			String sentencia = "update DISPOSITIVOS set conectado = " + estado
 					+ " where idDisp = " + idDisp;
-			gestorBD.actualizar(sentencia);
+			gestorBD.ejecutarSentencia(sentencia);
 		} else {
 			System.err
 					.println("[Clase Inserciones] ActualizarEstadoDispositivo(): estado incorrecto, debe ser 0 o 1");
@@ -111,17 +101,14 @@ public class Inserciones {
 	/**
 	 * Cambia el estado de un dispositivo en la base de datos
 	 * 
-	 * @param ip
-	 *            [String] ip del dispositivo
-	 * @param estado
-	 *            [int] nuevo estado que se le va a asignar, 1 encendido, 0
-	 *            apagado
+	 * @param ip [String] ip del dispositivo
+	 * @param estado [int] nuevo estado que se le va a asignar, 1 encendido, 0 apagado
 	 */
 	public void onOffDispositivo(String ip, int estado) {
 		if (estado == 0 || estado == 1) {
 			String sentencia = "update DISPOSITIVOS set conectado = " + estado
 					+ " where ip = '" + ip + "'";
-			gestorBD.actualizar(sentencia);
+			gestorBD.ejecutarSentencia(sentencia);
 		} else {
 			System.err
 					.println("[Clase inserciones] onOffDispositivo(): estado incorrecto, debe ser 0 o 1");
@@ -131,36 +118,31 @@ public class Inserciones {
 	/**
 	 * Vincula o desvincula un dispositivo de un camarero
 	 * 
-	 * @param nomUsu
-	 *            [String] nombre del camarero
-	 * @param ip
-	 *            [String] ip del dispositivo
-	 * @param login
-	 *            [int] 1 para vinvular y 0 para desvincular
+	 * @param nomUsu [String] nombre del camarero
+	 * @param ip [String] ip del dispositivo
+	 * @param login [int] 1 para vinvular y 0 para desvincular
 	 */
 	public boolean vinculoUsuarioDispositivo(String nomUsu, String ip, int login) {
 		boolean retorno = true;
 		if (login == 0) { // caso deslogueo: desvincula y apaga el dispositivo
 			String sentencia = "update USUARIOS set dispositivo = null where nomUsu = '"
 					+ nomUsu + "'";
-			gestorBD.actualizar(sentencia);
+			gestorBD.ejecutarSentencia(sentencia);
 			onOffDispositivo(ip, login);
-		} else if (login == 1) { // caso login: vinvula y enciende el
-									// dispositivo
+		} else if (login == 1) { // caso login: vinvula y enciende el dispositivo
 			String consulta = "select idDisp from DISPOSITIVOS where ip = '"
 					+ ip + "'";
 			if (gestorBD.consulta(consulta).length > 0) {
 				String idDisp = gestorBD.consulta(consulta)[0];
 				String sentencia = "update USUARIOS set dispositivo = "
 						+ idDisp + " where nomUsu = '" + nomUsu + "'";
-				gestorBD.actualizar(sentencia);
+				gestorBD.ejecutarSentencia(sentencia);
 				onOffDispositivo(ip, login);
 			} else {
 				retorno = false;
 			}
 		} else {
-			System.err
-					.println("[Clase inserciones] vinvuloUsuarioDispositivo(): login incorrecto, debe ser 0 o 1");
+			System.err.println("[Clase inserciones] vinvuloUsuarioDispositivo(): login incorrecto, debe ser 0 o 1");
 		}
 		return retorno;
 	}
@@ -168,52 +150,45 @@ public class Inserciones {
 	/**
 	 * Asigna las comandas realizadas por un usuario a otro
 	 * 
-	 * @param idCamareros
-	 *            [int[ ]] id de los camareros que van a perder la propiedad de
-	 *            sus pedidos
-	 * @param idUsu
-	 *            [int] id del usuario que va a heredar los pedidos de otros
-	 *            usuarios
+	 * @param idCamareros [int[ ]] id de los camareros que van a perder la propiedad de sus pedidos
+	 * @param idUsu [int] id del usuario que va a heredar los pedidos de otros usuarios
 	 */
 	public void cambiarPedidosDeUsuario(int idUsuAnterior, int idUsu) {
 		String sentencia = "update COMANDAS set usuario = " + idUsu
 				+ " where usuario = " + idUsuAnterior + " and cerrada = 0";
-		gestorBD.actualizar(sentencia);
+		gestorBD.ejecutarSentencia(sentencia);
 	}
 
 	/**
 	 * Cambia el campo hilo lanzado en la base de datos
 	 * 
-	 * @param estado
-	 *            [int] 1 = lanzado, 0 = no lanzado
+	 * @param estado [int] 1 = lanzado, 0 = no lanzado
 	 */
 	public void setHiloLanzado(String ip, int estado) {
 		String sentencia = "update DISPOSITIVOS set hilo = " + estado
 				+ " where ip = '" + ip + "'";
-		gestorBD.actualizar(sentencia);
+		gestorBD.ejecutarSentencia(sentencia);
 	}
 
 	/**
 	 * Pone una comanda como pagada
 	 * 
-	 * @param idComanda
-	 *            [int] id de la comanda
+	 * @param idComanda [int] id de la comanda
 	 */
 	public void cobrarComanda(int idComanda) {
 		String sentencia = "update COMANDAS set pagado = 1 where idCom = "
 				+ idComanda;
-		gestorBD.actualizar(sentencia);
+		gestorBD.ejecutarSentencia(sentencia);
 	}
 
 	/**
 	 * Pone una comanda como cerrada sin pagar
 	 * 
-	 * @param idComanda
-	 *            [int] id de la comanda
+	 * @param idComanda [int] id de la comanda
 	 */
 	public void cerrarComanda(int idComanda) {
 		String sentencia = "update COMANDAS set cerrada = 1 where idCom = "
 				+ idComanda;
-		gestorBD.actualizar(sentencia);
+		gestorBD.ejecutarSentencia(sentencia);
 	}
 }

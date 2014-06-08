@@ -17,8 +17,6 @@ import accesoDatos.Oraculo;
 import accesoDatos.PedidoListo;
 
 /**
- * FINALIZADA
- * 
  * Clase encargada de cancelar los pedidos que solicite un camarero y ya estén servidos.
  * 
  * @author Juan G. Pérez Leo
@@ -90,7 +88,6 @@ public class CancelarPedido extends Thread {
 		PedidoListo pedido = new PedidoListo(idComanda, idMenu, unidades);
 		XMLDevolverServer xmlDevolver = new XMLDevolverServer(pedido);
 		String mensaje = xmlDevolver.xmlToString(xmlDevolver.getDOM());
-		System.out.println(pedido.getListos());
 		Dispositivo dispositivo = Dispositivo.getDispositivo(idMenu);
 		
 		Conexion conexion = null;
@@ -106,7 +103,6 @@ public class CancelarPedido extends Thread {
 				 * Cambiamos el estado del dispositivo en la base de datos a
 				 * desconectado
 				 */
-				System.out.println("Entro en no esta conectado");
 				Inserciones modificador = new Inserciones();
 				modificador.onOffDispositivo(0,
 						dispositivo.getIdDisp());

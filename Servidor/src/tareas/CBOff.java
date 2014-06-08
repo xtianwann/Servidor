@@ -6,8 +6,6 @@ import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
 
 /**
- * FINALIZADA
- * 
  * Clase encargada de poner en estado apagado a los dispositivos que ejercen la
  * función de destino.
  * 

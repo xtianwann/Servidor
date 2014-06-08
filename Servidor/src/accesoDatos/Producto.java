@@ -1,8 +1,6 @@
 package accesoDatos;
 
 /**
- * FINALIZADA
- * 
  * Clase que permite manejar información relativa a un producto de la base de datos
  * 
  * @author Juan G. Pérez Leo
@@ -80,7 +78,5 @@ public class Producto {
     public void setCategoria(int categoria) {
         this.categoria = categoria;
     }
-    
-    
     
 }

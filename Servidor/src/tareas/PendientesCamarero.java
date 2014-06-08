@@ -12,8 +12,6 @@ import accesoDatos.Oraculo;
 import accesoDatos.Pedido;
 
 /**
- * FINALIZADA
- * 
  * Clase encargada de ver si un camarero tiene pedidos pendientes y se los 
  * envía. En caso de no tener pedidos se le informa en el mensaje enviado
  * 

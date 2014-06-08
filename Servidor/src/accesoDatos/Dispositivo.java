@@ -1,8 +1,6 @@
 package accesoDatos;
 
 /**
- * FINALIZADA
- * 
  * Esta clase permite manejar la información relativa a los dispositivos.
  * 
  * @author Juan G. Pérez Leo

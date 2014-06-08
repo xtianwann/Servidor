@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * FINALIZADA
- * 
  * Clase que agrupa funciones condistintos tipos de consultas necesarias
  * para el servidor en distintas tareas.
  * 
@@ -21,7 +19,7 @@ public class Oraculo {
      * Obtiene todos los nombres de sección, nombres de mesa y la id de dicha mesa
      * ordenados por sección y luego por mesa en orden alfabético
      *
-     * @return String[] con los resultados de la consulta
+     * @return [String[]] resultados de la consulta
      */
     public String[] getSeccionesYMesasTodo(){
         String consulta = "select nomSec, nomMes, idMes from SECCIONES inner join MESAS on idSec = seccion order by nomSec, nomMes asc";
@@ -34,7 +32,7 @@ public class Oraculo {
      * menú correspondiente ordenado por cantidades y luego por productos en 
      * orden alfabético
      * 
-     * @return String[] con los resultados de la consulta
+     * @return [String[]] resultados de la consulta
      */
     public String[] getCantidadesYProductosTodo(){
         String consulta = "select nomCant, nomProd, idMenu from CANTIDADES inner join MENUS on cantidad = idCant inner join PRODUCTOS on idProd = producto order by nomCant, nomProd asc";
@@ -45,8 +43,8 @@ public class Oraculo {
     /**
      * Obtiene el nombre de un producto a partir de una id de Menu
      *
-     * @param idMenu id del menú por el que se quiere filtrar la consulta
-     * @return String con el resultado de la consulta
+     * @param idMenu [int] id del menú por el que se quiere filtrar la consulta
+     * @return [String] resultado de la consulta
      */
     public String getNombreProductoPorIdMenu(int idMenu){
         String consulta = "select nomProd from PRODUCTOS inner join MENUS on idProd = producto where idMenu = " + idMenu;
@@ -57,8 +55,8 @@ public class Oraculo {
     /**
      * Obtiene el nombre de una cantidad a partir de una id de Menu
      *
-     * @param idMenu id del menú por el que se quiere filtrar la consulta
-     * @return String con el resultado de la consulta
+     * @param idMenu [int] id del menú por el que se quiere filtrar la consulta
+     * @return [String] resultado de la consulta
      */
     public String getNombreCantidadPorIdMenu(int idMenu){
         String consulta = "select nomCant from CANTIDADES inner join MENUS on idCant = cantidad where idMenu = " + idMenu;
@@ -69,8 +67,8 @@ public class Oraculo {
     /**
      * Obtiene el id de un destino a partir de una id de Menu
      *
-     * @param idMenu id del menú por el que se quiere filtrar la consulta
-     * @return String con el resultado de la consulta
+     * @param idMenu [int] id del menú por el que se quiere filtrar la consulta
+     * @return [String] resultado de la consulta
      */
     public String getIdDestinoPorIdMenu(int idMenu){
         String consulta = "select destino from MENUS where idMenu = " + idMenu;
@@ -81,8 +79,8 @@ public class Oraculo {
     /**
      * Obtiene el nombre de un destino a partir de una id de Menu
      *
-     * @param idMenu id del menú por el que se quiere filtrar la consulta
-     * @return String con el resultado de la consulta
+     * @param idMenu [int] id del menú por el que se quiere filtrar la consulta
+     * @return [String] resultado de la consulta
      */
     public String getNombreDestinoPorIdMenu(int idMenu){
         String consulta = "select nomDest from DESTINOS inner join MENUS on idDest = destino where idMenu = " + idMenu;
@@ -93,8 +91,8 @@ public class Oraculo {
     /**
      * Obtiene el nombre de una mesa a partir de su id
      *
-     * @param idMes id de la mesa de la que se quiere obtener el nombre
-     * @return String con el resultado de la consulta
+     * @param idMes [int] id de la mesa de la que se quiere obtener el nombre
+     * @return [String] resultado de la consulta
      */
     public String getNombreMesaPorIdMesa(int idMes){
         String consulta = "select nomMes from MESAS where idMes = " + idMes;
@@ -106,8 +104,8 @@ public class Oraculo {
      * Obtiene la id de la sección a la que pertenece una mesa a partir de la id
      * de la mesa
      *
-     * @param idMes id de la mesa de la que se quiere obtener su sección
-     * @return String con el resultado de la consulta
+     * @param idMes [int] id de la mesa de la que se quiere obtener su sección
+     * @return [String] resultado de la consulta
      */
     public String getIdSeccionPorIdMesa(int idMes){
         String consulta = "select seccion from MESAS where idMes = " + idMes;
@@ -119,8 +117,8 @@ public class Oraculo {
      * Dice si una mesa está activa o no, se considera activa si no está pagada y
      * no está cerrada
      *
-     * @param idMes id de la mesa de la que se quiere saber si está activa
-     * @return true si la mesa está sin pagar y sin cerrar
+     * @param idMes [int] id de la mesa de la que se quiere saber si está activa
+     * @return [boolean] true si la mesa está sin pagar y sin cerrar
      */
     public boolean getIsMesaActiva(int idMes){
         boolean isActiva = false;
@@ -167,7 +165,7 @@ public class Oraculo {
     /**
      * Devuelve fecha y hora actual en el siguiente formato YYYY-MM-DD hh:mm
      *
-     * @return fecha y hora actual (YYYY-MM-DD hh:mm)
+     * @return [String] fecha y hora actual (YYYY-MM-DD hh:mm)
      */
     public String getFechaYHoraActual(){
         String resultado = gestorBD.consulta("select datetime('now')")[0];
@@ -178,8 +176,8 @@ public class Oraculo {
     /**
      * Obtiene la id de un dispositivo a partir de su ip
      *
-     * @param ip ip del dispositivo 
-     * @return int con la id del dispositivo
+     * @param ip [String] ip del dispositivo 
+     * @return [int] id del dispositivo
      */
     public int getIdDispositivoPorIp(String ip){
         String consulta = "select idDisp from DISPOSITIVOS where ip = '" + ip + "'";
@@ -190,8 +188,8 @@ public class Oraculo {
     /**
      * Genera una lista con los pedidos de una mesa
      *
-     * @param idMesa id de la mesa de la que queremos obtener los pedidos
-     * @return Pedido[] de la mesa pasada por parámetro
+     * @param idMesa [int] id de la mesa de la que queremos obtener los pedidos
+     * @return [Pedido[]] lista de pedidos de la mesa pasada por parámetro
      */
     public Pedido[] getPedidosPorIdMesa(int idMesa){
         ArrayList<Pedido> listaPedidos = new ArrayList<>();
@@ -209,8 +207,8 @@ public class Oraculo {
     /**
      * Obtiene el nombre de una sección a partir de su id
      *
-     * @param idSec id de la sección
-     * @return String con el nombre de la sección
+     * @param idSec [int] id de la sección
+     * @return [String] nombre de la sección
      */
     public String getNombreSeccionPorIdSeccion(int idSec){
         String consulta = "select nomSec from SECCIONES where idSec = " + idSec;
@@ -222,8 +220,9 @@ public class Oraculo {
      * Obtiene una lista de pedidos pertenecientes a una comanda y de unos
      * productos concretos que se encuentren en estado "pedido"
      * 
-     * @param idMenu id del producto por el que se quiere filtrar
-     * @param idComanda id de la comanda por la que se quiere filtrar
+     * @param idMenu [int] id del producto por el que se quiere filtrar
+     * @param idComanda [int] id de la comanda por la que se quiere filtrar
+     * @param estado [String] estado por el que se quiere filtrar
      * @return lista con las id de los pedidos que coincidan con la búsqueda
      */
     public String[] getIdPedidoPorIdMenuYIdComanda(int idMenu, int idComanda, String estado){
@@ -235,8 +234,8 @@ public class Oraculo {
     /**
      * Obtiene el dispositivo desde el que se emitió una comanda
      * 
-     * @param idComanda id de la comanda de la que se quiere conocer el camarero que la creó
-     * @return ip del dispositivo del camarero
+     * @param idComanda [int] id de la comanda de la que se quiere conocer el camarero que la creó
+     * @return [String] ip del dispositivo del camarero
      */
     public String getCamareroPorComanda(int idComanda){
     	String consulta = "select idUsu from USUARIOS inner join COMANDAS on idUsu = usuario where idCom = " + idComanda;
@@ -248,8 +247,8 @@ public class Oraculo {
     /**
      * Obtiene la ip del dispositivo en el que se encuentra un camarero
      * 
-     * @param idUsu id de usuario que queremos saber su dispositivo
-     * @return ip del dispositivo que esté usando, null si no está usando ninguno
+     * @param idUsu [int] id de usuario que queremos saber su dispositivo
+     * @return [String] ip del dispositivo que esté usando, null si no está usando ninguno
      */
     public String getIpPorIdUsuario(int idUsu){
     	String consulta = "select ip from DISPOSITIVOS inner join USUARIOS on idDisp = dispositivo where idUsu = " + idUsu;
@@ -263,8 +262,8 @@ public class Oraculo {
     /**
      * Obtiene un objeto usuario a partir de una id de usuario
      * 
-     * @param idUsu int id del usuario del que vamos a crear el objeto
-     * @return Usuario con toda la información necesaria
+     * @param idUsu [int] id del usuario del que vamos a crear el objeto
+     * @return [Usuario] objeto con toda la información necesaria
      */
     public Usuario getUsuarioById(int idUsu){
     	String consulta = "select idUsu, nomUsu, dispositivo from USUARIOS where idUsu = " + idUsu;
@@ -277,8 +276,8 @@ public class Oraculo {
     /**
      * Obtiene un usuario a partir de la ip que se extrae del socket
      * 
-     * @param socket socket por el que el usuario estableció conexión
-     * @return Usuario con toda la información
+     * @param socket [Socket] socket por el que el usuario estableció conexión
+     * @return [Usuario] objeto con toda la información necesaria
      */
     public Usuario getUsuarioByIp(Socket socket){
     	String ip = socket.getInetAddress()+"";
@@ -294,8 +293,8 @@ public class Oraculo {
     /**
      * Obtiene un usuario a partir de la ip de un dispositivo
      * 
-     * @param ip String ip del dispositivo
-     * @return Usuario con toda la información
+     * @param ip [String] ip del dispositivo
+     * @return [Usuario] objeto con toda la información necesaria
      */
     public Usuario getUsuarioByIp(String ip){
     	String consulta = "select * from USUARIOS inner join DISPOSITIVOS on idDisp = dispositivo where ip = '" + ip + "'";
@@ -309,8 +308,8 @@ public class Oraculo {
     /**
      * Devuelve un objeto dispositivo del tipo destino a partir de una id de menú
      * 
-     * @param idMenu int id de menú
-     * @return Dispositivo del tipo destino
+     * @param idMenu [int] id de menú
+     * @return [Dispositivo] dispositivo de tipo destino
      */
     public Dispositivo getDispositivoPorIdMenu(int idMenu){
     	String consulta = "select idDisp, conectado, ip, nomDest from DISPOSITIVOS d inner join DESTINOS on d.destino = idDest inner join MENUS m on m.destino = idDest where idMenu = " + idMenu;
@@ -336,7 +335,7 @@ public class Oraculo {
     /**
      * Devuelve una lista de pedidos pendientes de un dispositivo tipo destino (cocina o barra)
      * 
-     * @param dispositivo Dispositivo del que se quiere obtener la lista
+     * @param dispositivo [Dispositivo] del que se quiere obtener la lista
      * @return PedidoPendiente[] lista de todos los pedidos pendientes de ese dispositivo
      */
     public PedidoPendiente[] getPedidosPendientes(Dispositivo dispositivo){
@@ -393,8 +392,8 @@ public class Oraculo {
     /**
      * Obtiene el nombre de una mesa a partir de una comanda
      * 
-     * @param idComanda comanda que pertenece a la mesa de la que queremos obtener el nombre
-     * @return nombre de la mesa
+     * @param idComanda [int] comanda que pertenece a la mesa de la que queremos obtener el nombre
+     * @return [String] nombre de la mesa
      */
     public String getNombreMesa(int idComanda){
     	String consulta = "select nomMes from MESAS inner join COMANDAS on mesa = idMes where idCom = " + idComanda;
@@ -405,8 +404,8 @@ public class Oraculo {
     /**
      * Obtiene el nombre de una sección a partir de una comanda
      * 
-     * @param idComanda comanda que pertenece a una mesa y sección concreta
-     * @return nombre de la sección
+     * @param idComanda [int] comanda que pertenece a una mesa y sección concreta
+     * @return [String] nombre de la sección
      */
     public String getNombreSeccion(int idComanda){
     	String consulta = "select nomSec from SECCIONES inner join MESAS on idSec = seccion inner join COMANDAS on mesa = idMes where idCom = " + idComanda;
@@ -417,8 +416,8 @@ public class Oraculo {
     /**
      * Obtiene el nombre de una sección a partir de la id de una mesa
      * 
-     * @param idMesa int id de la mesa
-     * @return String nombre de la sección
+     * @param idMesa [int] id de la mesa
+     * @return [String] nombre de la sección
      */
     public String getNombreSeccionPorIdMesa(int idMesa){
     	String consulta = "select nomSec from SECCIONES inner join MESAS on idSec = seccion where idMes = " + idMesa;
@@ -429,7 +428,7 @@ public class Oraculo {
     /**
      * Obtiene todos los usuarios registrados en la base de datos
      * 
-     * @return String[] con los nombres de todos los usuarios obtenidos
+     * @return [String[]] lista con los nombres de todos los usuarios obtenidos
      */
     public String[] getCamareros(){
     	String consulta = "select nomUsu from USUARIOS";
@@ -440,8 +439,8 @@ public class Oraculo {
     /**
      * Obtiene la id de un usuario a partir de su nombre
      * 
-     * @param nomUsu - String nombre del usuario
-     * @return int id del usuario
+     * @param nomUsu [String] nombre del usuario
+     * @return [int] id del usuario
      */
     public int getIdUsuario(String nomUsu){
     	String consulta = "select idUsu from USUARIOS where nomUsu = '" + nomUsu + "'";
@@ -452,8 +451,8 @@ public class Oraculo {
     /**
      * Obtiene la id de los camareros que se encuentran vinculados a un dispositivo
      * 
-     * @param ip String ip del dipositivo en cuestión
-     * @return int[] con la id de los camareros
+     * @param ip [String] ip del dipositivo en cuestión
+     * @return [int[]] lista con la id de los camareros
      */
     public int[] getCamarerosEnDispositivo(String ip){
     	int[] idUsuarios = null;
@@ -469,13 +468,11 @@ public class Oraculo {
     }
     
     /**
-     * revisar
-     * 
      * Obtiene una lista de todos los pedidos de las comandas de un usuario que se
      * encuentren en estado "pedido" y "listo"
      * 
-     * @param idUsu int id del usuario del que queremos saber sus pedidos pendientes
-     * @return PedidoPendiente[] lista de los pedidos pendientes
+     * @param idUsu [int] id del usuario del que queremos saber sus pedidos pendientes
+     * @return [PedidoPendiente[]] lista de los pedidos pendientes
      */
     public Pedido[] getPedidosPendientes(int idUsu){
     	ArrayList<Pedido> listaPedidos = new ArrayList<>();
@@ -528,8 +525,8 @@ public class Oraculo {
     /**
      * Obtiene si un dispositivo está conectado o no a partir de su id
      * 
-     * @param idDisp int id del dispositivo
-     * @return int 1 = conectado, 0 = desconectado
+     * @param idDisp [int] id del dispositivo
+     * @return [int] 1 = conectado, 0 = desconectado
      */
     public int getConectado(int idDisp){
     	String consulta = "select conectado from DISPOSITIVOS where idDisp = " + idDisp;
@@ -540,8 +537,8 @@ public class Oraculo {
     /**
      * Obtiene si un dispositivo está conectado o no a partir de su ip
      * 
-     * @param ip String ip del dispositivo
-     * @return int 1 = conectado, 0 = desconectado
+     * @param ip [String] ip del dispositivo
+     * @return [int] 1 = conectado, 0 = desconectado
      */
     public int getConectado(String ip){
     	String consulta = "select conectado from DISPOSITIVOS where ip = '" + ip + "'";
@@ -552,8 +549,8 @@ public class Oraculo {
     /**
      * Comprueba si se ha lanzado un hilo para intentar conectar con un dispositivo
      * 
-     * @param ip String ip del dispositivo
-     * @return boolean true si está lanzado, false en caso contrario
+     * @param ip [String] ip del dispositivo
+     * @return [boolean] true si está lanzado, false en caso contrario
      */
     public boolean isHiloLanzado(String ip){
     	boolean hiloLanzado = false;
@@ -567,8 +564,8 @@ public class Oraculo {
     /**
      * Obtiene el nombre de un destino a partir del dispositivo vinculado
      * 
-     * @param idDisp id del dispositivo vinculado
-     * @return String nombre del destino
+     * @param idDisp [int] id del dispositivo vinculado
+     * @return [String] nombre del destino
      */
     public String getNombreDestino(int idDisp){
     	String resultado = null;
@@ -582,8 +579,8 @@ public class Oraculo {
     /**
      * Obtiene una id de comanda a partir de la id de una mesa
      * 
-     * @param idMesa int id de la mesa de la que se quiere obtener la comanda
-     * @return id de la comanda, en caso de no haber ninguna comanda abierta y sin pagar devuelve 0
+     * @param idMesa [int] id de la mesa de la que se quiere obtener la comanda
+     * @return [int] id de la comanda, en caso de no haber ninguna comanda abierta y sin pagar devuelve 0
      */
     public int getIdComandaActiva(int idMesa){
     	String consulta = "select idCom from COMANDAS where mesa = " + idMesa + " and pagado = 0 and cerrada = 0";
@@ -598,8 +595,8 @@ public class Oraculo {
      * Obtiene todas las idMenu distintas de una mesa pasada por parámetro en caso de que
      * tenga alguna comanda abierta
      * 
-     * @param idMesa int id de la mesa de la que se va a extraer la información
-     * @return una lista con todas las idMenu distintas que haya encontrado en esa mesa, null en caso de que no haya ninguna comanda abierta en esa mesa
+     * @param idMesa [int] id de la mesa de la que se va a extraer la información
+     * @return [String] lista con todas las idMenu distintas que haya encontrado en esa mesa, null en caso de que no haya ninguna comanda abierta en esa mesa
      */
     public String[] getMenusPorIdMesa(int idMesa){
     	int idCom = getIdComandaActiva(idMesa);
@@ -614,8 +611,8 @@ public class Oraculo {
     /**
      * Obtiene el precio de un menú
      * 
-     * @param idMenu int id del menú del que se quiere obtener el precio
-     * @return float con el valor del precio
+     * @param idMenu [int] id del menú del que se quiere obtener el precio
+     * @return [float] valor del precio
      */
     public float getPrecio(int idMenu){
     	String consulta = "select precio from MENUS where idMenu = " + idMenu;

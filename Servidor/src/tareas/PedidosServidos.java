@@ -22,8 +22,6 @@ import accesoDatos.Oraculo;
 import accesoDatos.PedidoListo;
 
 /**
- * FINALIZADA
- * 
  * Se encarga de cambiar el estado de los pedidos a servido en la base de datos
  * y comunica al destino que le interese si están todos las unidades de un pedido
  * servidas.
@@ -77,20 +75,18 @@ public class PedidosServidos extends Thread {
 		ArrayList<Dispositivo> dispositivos = new ArrayList<>();
 		HashMap<Integer, ArrayList<PedidoListo>> mapaServidos = new HashMap<>();
 
+		/* Extraemos la información del mensaje recibido */
 		Document dom = XML.stringToXml(recibido);
 		NodeList nodeListFinalizados = dom.getElementsByTagName("pedido");
 		for (int pedido = 0; pedido < nodeListFinalizados.getLength(); pedido++) {
 			Node nodePedido = nodeListFinalizados.item(pedido);
 			Element elementoPedido = (Element) nodePedido;
-			int idComanda = Integer.parseInt(elementoPedido
-					.getAttribute("idCom"));
-			int idMenu = Integer.parseInt(nodePedido.getChildNodes().item(0)
-					.getFirstChild().getNodeValue());
-			int servidos = Integer.parseInt(nodePedido.getChildNodes().item(1)
-					.getFirstChild().getNodeValue());
+			int idComanda = Integer.parseInt(elementoPedido.getAttribute("idCom"));
+			int idMenu = Integer.parseInt(nodePedido.getChildNodes().item(0).getFirstChild().getNodeValue());
+			int servidos = Integer.parseInt(nodePedido.getChildNodes().item(1).getFirstChild().getNodeValue());
 
-			String[] idServido = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu,
-					idComanda, "servido");
+			/* Vemós qué hay en la base de datos y procedemos a cambiar el estado de los pedidos */
+			String[] idServido = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "servido");
 			
 			if (servidos < idServido.length) { // rectificacion
 				int diferencia = idServido.length - servidos;
@@ -104,7 +100,6 @@ public class PedidosServidos extends Thread {
 						idMenu, idComanda, "listo");
 				int nuevos = servidos - idServido.length;
 				if (nuevos > idListos.length) { // no debería darse nunca
-					System.out.println("No debo entrar aqui");
 					modificador.modificarEstadoPedido(idListos, "servido");
 					todosListos = true;
 				} else {
@@ -152,7 +147,6 @@ public class PedidosServidos extends Thread {
 						conexion = new Conexion(dispositivo.getIp(), 27000);
 					} catch (NullPointerException | IOException e1) {
 						/* Cambiamos el estado del dispositivo en la base de datos a desconectado */
-						System.out.println("entro en no esta conectado");
 						Inserciones modificador = new Inserciones();
 						modificador.onOffDispositivo(0,dispositivo.getIdDisp());
 						new HiloInsistente(dispositivo).start();

@@ -72,7 +72,6 @@ public class Servidor {
 				| IllegalAccessException | UnsupportedLookAndFeelException e) {
 			escribirLog(Estados.error,
 					"No se puedo cargar la interfaz del servidor");
-
 		}
 		
 		UIManager.put("swing.boldMetal", Boolean.FALSE);
@@ -96,6 +95,9 @@ public class Servidor {
 
 	/**
 	 *  Hilo principal del servidor
+	 *  
+	 *  @author Juan G. Pérez Leo
+	 *  @author Cristian Marín Honor
 	 */
 	public class HiloPrincipal extends Thread {
 
@@ -300,7 +302,6 @@ public class Servidor {
 		URL imageURL = Servidor.class.getResource(path);
 
 		if (imageURL == null) {
-			// log.addMsg("No encuentro imagen para el tray: " + path);
 			return null;
 		} else {
 			return (new ImageIcon(imageURL, description)).getImage();

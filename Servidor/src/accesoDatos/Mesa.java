@@ -1,8 +1,6 @@
 package accesoDatos;
 
 /**
- * FINALIZADA
- * 
  * Clase que permite manejar todos los datos relativos a una mesa en la base de datos 
  * 
  * @author Juan G. Pérez Leo
@@ -107,7 +105,5 @@ public class Mesa {
     public void setSeccion(int seccion) {
         this.seccion = seccion;
     }
-    
-    
     
 }

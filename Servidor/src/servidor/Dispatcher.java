@@ -33,7 +33,7 @@ public class Dispatcher extends Thread{
     /**
      * Constructor
      * 
-     * @param hiloPrincipal [Servidos.HiloPrincipal] instancia del hilo principal
+     * @param hiloPrincipal [Servidor.HiloPrincipal] instancia del hilo principal
      */
     public Dispatcher(Servidor.HiloPrincipal hiloPrincipal){
         this.hiloPrincipal = hiloPrincipal;
@@ -61,7 +61,6 @@ public class Dispatcher extends Thread{
         while(!parado){
             if(!cola.isListaVacia()){
                 try {
-                    System.out.println("Dispatcher: Socket!");
                     Socket socket = cola.getSocket();
                     new GestorMensajes(socket).start();
                 } catch (TimeoutException ex) {

@@ -1,8 +1,6 @@
 package accesoDatos;
 
 /**
- * FINALIZADA
- * 
  * Clase que permite manejar la información referente a las secciones en la base de datos
  * 
  * @author Juan G. Pérez Leo
@@ -57,7 +55,5 @@ public class Seccion {
     public void setNomSec(String nomSec) {
         this.nomSec = nomSec;
     }
-    
-    
     
 }
