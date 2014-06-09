@@ -98,9 +98,7 @@ public class LoginCamarero extends Thread {
 			 * encendido en la base de datos si no lo estaba ya
 			 */
 			if(!modificador.vinculoUsuarioDispositivo(usuario, ip, 1)){
-				resultado = "NO";
-				Servidor.escribirLog(Estados.error, "La ip del camarero "+usuario+" no esta registrada.");
-			}
+				resultado = "NO";			}
 		} else
 			resultado = "NO";
 		Servidor.escribirLog(Estados.error, "El usuario "+usuario+" no existe.");

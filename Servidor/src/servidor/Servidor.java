@@ -176,7 +176,6 @@ public class Servidor {
 
 	private void createAndShowGUI() {
 		if (!SystemTray.isSupported()) {
-			System.out.println("SystemTray no soportado");
 			return;
 		}
 		final PopupMenu popup = new PopupMenu();

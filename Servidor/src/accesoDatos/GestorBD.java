@@ -27,7 +27,7 @@ public class GestorBD {
 	public GestorBD() {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			cadenaConexion = "jdbc:sqlite:basedatos/restaurante.db";
+			cadenaConexion = "jdbc:sqlite:restaurante.db";
 
 		} catch (ClassNotFoundException ex) {
 			Logger.getLogger(GestorBD.class.getName()).log(Level.SEVERE, null,
