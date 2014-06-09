@@ -7,6 +7,9 @@ import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import accesoDatos.Dispositivo;
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
@@ -58,6 +61,7 @@ public class CerrarComanda extends Thread{
 		int idComanda = oraculo.getIdComandaActiva(idMesa);
 		if(idComanda != 0){
 			acuse("SI", idComanda+"");
+			Servidor.escribirLog(Estados.info, "Se ha cerrado la comanda "+idComanda);
 			modificador.cerrarComanda(idComanda);
 			
 			/* Avisamos a los destinos que la comanda se ha cobrado */
@@ -89,6 +93,7 @@ public class CerrarComanda extends Thread{
 				}
 			}
 		} else {
+			Servidor.escribirLog(Estados.error, "La comanda "+idComanda+" no se pudo cerrar porque noe sta abierta.");
 			acuse("NO", "No hay ninguna comanda abierta para esa mesa");
 		}
 	}

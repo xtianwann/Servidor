@@ -5,6 +5,9 @@ import java.net.Socket;
 
 import org.w3c.dom.Document;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import accesoDatos.Inserciones;
 import Conexion.Conexion;
 import XML.XML;
@@ -54,7 +57,7 @@ public class LogoutCamarero extends Thread{
 		ip = ip.substring(1);
 		/* Desvincula camarero y dispositivo y apaga el dispositivo */
 		modificador.vinculoUsuarioDispositivo(usuario, ip, 0);
-		
+		Servidor.escribirLog(Estados.info, "El camarero "+usuario+" se ha desconectado.");
 		/* Acuse para el camarero para que pueda cerrar la aplicación correctamente */
 		XMLResultadoLogoutCamarero xmlLogout = new XMLResultadoLogoutCamarero("OK");
 		String mensaje = xmlLogout.xmlToString(xmlLogout.getDOM());

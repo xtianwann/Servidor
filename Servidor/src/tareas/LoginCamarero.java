@@ -99,10 +99,11 @@ public class LoginCamarero extends Thread {
 			 */
 			if(!modificador.vinculoUsuarioDispositivo(usuario, ip, 1)){
 				resultado = "NO";
-				Servidor.escribirLog(Estados.error, "La ip del dispositivo no esta registrada.");
+				Servidor.escribirLog(Estados.error, "La ip del camarero "+usuario+" no esta registrada.");
 			}
 		} else
 			resultado = "NO";
+		Servidor.escribirLog(Estados.error, "El usuario "+usuario+" no existe.");
 
 		/* Finalmente enviamos el mensaje con el resultado del login */
 		XMLResultadoLoginCamarero xmlResultado = new XMLResultadoLoginCamarero(

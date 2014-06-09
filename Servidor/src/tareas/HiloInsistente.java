@@ -2,6 +2,9 @@ package tareas;
 
 import java.io.IOException;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import Conexion.Conexion;
 import XMLServer.XMLInfoAcumulada;
 import XMLServer.XMLPendientesCamareroAlEncender;
@@ -52,10 +55,12 @@ public class HiloInsistente extends Thread {
 	 * trbajar correctamente.
 	 */
 	private void reconexion() {
+		Servidor.escribirLog(Estados.error, "El dispositivo "+dispositivo.getIdDisp()+" esta desconectado.");
 		int contador = 0;
 		do {
 			try {
 				conectado = new Conexion(dispositivo.getIp(), 27000);
+				Servidor.escribirLog(Estados.info, "Intentando conectar con el dispositivo "+dispositivo.getIdDisp());
 			} catch (NullPointerException | IOException e1) {
 				try {
 					contador++;
@@ -68,7 +73,7 @@ public class HiloInsistente extends Thread {
 		if (contador < intentos) {
 			/* Ponemos el dispositivo como conectado en la base de datos */
 			modificador.onOffDispositivo(1, dispositivo.getIdDisp());
-
+			Servidor.escribirLog(Estados.info, "El dispositivo "+dispositivo.getIdDisp()+"se ha conectado.");
 			/* Consultamos los pedidos pendientes del destino */
 			PedidoPendiente[] pedidosPendientes = null;
 			Pedido[] pendientesCamarero = null;

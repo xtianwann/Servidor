@@ -12,6 +12,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import accesoDatos.Dispositivo;
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
@@ -81,7 +84,7 @@ public class PedidosListos extends Thread{
 				listaIp.add(ipCamarero);
 			}
 		}
-		
+		int comandaAnterior = 0;
 		/* Obtenemos los datos de cada pedido */
 		for(int contadorPedidos = 0; contadorPedidos < nodeListPedidos.getLength(); contadorPedidos++){
 			nodePedido = nodeListPedidos.item(contadorPedidos);
@@ -89,7 +92,6 @@ public class PedidosListos extends Thread{
 			idComanda = Integer.parseInt(elementoPedido.getAttribute("idCom"));
 			int idMenu = Integer.parseInt(nodePedido.getChildNodes().item(0).getFirstChild().getNodeValue());
 			int listos = Integer.parseInt(nodePedido.getChildNodes().item(1).getFirstChild().getNodeValue());
-			
 			/* Con estos datos modificamos el estado de lo que corresponda en la base de datos */
 			String[] pedidosListos = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "listo");
 			String[] pedidosPendientes = oraculo.getIdPedidoPorIdMenuYIdComanda(idMenu, idComanda, "pedido");
@@ -105,6 +107,10 @@ public class PedidosListos extends Thread{
 			
 			ipCamarero = oraculo.getCamareroPorComanda(pedidoListo.getIdComanda());
 			mapaDestino.get(ipCamarero).add(pedidoListo);
+			if(comandaAnterior != idComanda){
+				comandaAnterior = idComanda;
+				Servidor.escribirLog(Estados.info, "Existen pedidos listos de la comanda "+idComanda);
+			}
 		}
 		
 		/* Enviamos un acuse de recibo al emisor del mensaje recibido */
@@ -117,7 +123,6 @@ public class PedidosListos extends Thread{
         } catch (IOException ex) {
             Logger.getLogger(PedidosComanda.class.getName()).log(Level.SEVERE, null, ex);
         }
-		
 		/* Generamos los mensajes para cada destino y lo enviamos */
 		for(int destino = 0; destino < listaIp.size(); destino++){
 			PedidoListo[] pedidos = mapaDestino.get(listaIp.get(destino)).toArray(new PedidoListo[0]);

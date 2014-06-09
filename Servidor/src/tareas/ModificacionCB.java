@@ -10,6 +10,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import accesoDatos.Dispositivo;
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
@@ -93,6 +96,7 @@ public class ModificacionCB extends Thread {
 				idPedidosAModificar[pedido] = idListos[pedido];
 			}
 			modificador.modificarEstadoPedido(idPedidosAModificar, "pedido");
+			Servidor.escribirLog(Estados.info, "Se han modificado algunos pedidos de la comanda "+idComanda);
 		} else {
 			/* Acuse de recibo para el emisor */
 			XMLAcuseReciboServer xmlAcuse = new XMLAcuseReciboServer("NO",

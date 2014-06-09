@@ -14,6 +14,9 @@ import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import accesoDatos.Oraculo;
 import accesoDatos.Pedido;
 
@@ -68,11 +71,11 @@ public class ImprimirTicket extends Thread {
 			if(resultados.length > 0){
 				/* Llegados aquí es que todo está correcto y se procede a imprimir el ticket */
 				acuse("OK" ,"");
-				
+				int idComanda = 0;
 				/* Obtenemos la información necesaria */
 				for(int contador = 0; contador < resultados.length; contador++){
 					int idMenu = Integer.parseInt(resultados[contador]);
-					int idComanda = oraculo.getIdComandaPorIdMesa(idMesa);
+					idComanda = oraculo.getIdComandaPorIdMesa(idMesa);
 					int unidades = oraculo.contarResultados(idMenu, idComanda);
 					mapaUnidades.put(idMenu, unidades);
 				}
@@ -125,6 +128,7 @@ public class ImprimirTicket extends Thread {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				Servidor.escribirLog(Estados.info, "Se ha impreso el ticket de la comanda "+idComanda);
 			} else {
 				/* En este caso hay comanda pero no tiene pedidos */
 				acuse("NO", "No hay pedidos en la comanda");

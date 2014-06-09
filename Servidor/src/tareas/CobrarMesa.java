@@ -7,6 +7,9 @@ import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import accesoDatos.Dispositivo;
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
@@ -66,6 +69,7 @@ public class CobrarMesa extends Thread{
 					acuse("NO", "Hay pedidos sin servir");
 				} else {
 					acuse("SI", idComanda+"");
+					Servidor.escribirLog(Estados.info, "Se ha cobrado la comanda "+idComanda);
 					modificador.cobrarComanda(idComanda);
 					
 					/* Avisamos a los destinos que la comanda se ha cobrado */

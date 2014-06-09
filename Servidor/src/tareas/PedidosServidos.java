@@ -12,6 +12,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import Conexion.Conexion;
 import XML.XML;
 import XMLServer.XMLAcuseReciboServer;
@@ -74,7 +77,7 @@ public class PedidosServidos extends Thread {
 		boolean todosListos = false;
 		ArrayList<Dispositivo> dispositivos = new ArrayList<>();
 		HashMap<Integer, ArrayList<PedidoListo>> mapaServidos = new HashMap<>();
-
+		int comandaAnterior = 0;
 		/* Extraemos la información del mensaje recibido */
 		Document dom = XML.stringToXml(recibido);
 		NodeList nodeListFinalizados = dom.getElementsByTagName("pedido");
@@ -131,8 +134,11 @@ public class PedidosServidos extends Thread {
 					}
 				}
 			}
+			if(comandaAnterior != idComanda){
+				comandaAnterior = idComanda;
+				Servidor.escribirLog(Estados.info, "Existen pedidos servidos de la comanda "+idComanda);
+			}
 		}
-
 		/* Si están todos servidos se lo comunica al destino */
 		if (todosListos) {
 			for (int contador = 0; contador < dispositivos.size(); contador++) {

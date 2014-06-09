@@ -3,6 +3,9 @@ package tareas;
 import java.io.IOException;
 import java.net.Socket;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import accesoDatos.Dispositivo;
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
@@ -52,6 +55,7 @@ public class CocinaOn extends Thread{
 		if(!oraculo.isHiloLanzado(ip)){
 			/* Encendemos el dispositivo en la base de datos */
 			int idDisp = oraculo.getIdDispositivoPorIp(ip);
+			Servidor.escribirLog(Estados.info, "Se ha encendido del dispositivo "+idDisp);
 			modificador.onOffDispositivo(1, idDisp);
 			
 			/* Comprobamos si tiene algo pendiente */

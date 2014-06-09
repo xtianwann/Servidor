@@ -5,6 +5,9 @@ import java.net.Socket;
 
 import org.w3c.dom.Document;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import Conexion.Conexion;
 import XML.XML;
 import XMLServer.XMLPendientesCamareroAlEncender;
@@ -51,7 +54,6 @@ public class PendientesCamarero extends Thread{
 		/* Obtenemos la información proporcionada en el mensaje */
 		Document dom = XML.stringToXml(recibido);
 		String nomUsu = dom.getElementsByTagName("usuario").item(0).getFirstChild().getNodeValue();
-		
 		/* Vemos si ya hay un hilo lanzado intentando conectar con el camarero */
 		Pedido[] pedidos = null;
 		String ip = socket.getInetAddress()+"";

@@ -10,6 +10,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import Conexion.Conexion;
 import XML.XML;
 import XMLServer.XMLAcuseReciboServer;
@@ -137,7 +140,7 @@ public class ModificacionCamarero extends Thread {
 				pedido, finalizado);
 		String mensaje = xmlModificacion.xmlToString(xmlModificacion.getDOM());
 		Dispositivo dispositivo = Dispositivo.getDispositivo(idMenu);
-
+		Servidor.escribirLog(Estados.info, "Se han modificado algunos pedidos de la comanda "+idComanda);
 		Conexion conexion = null;
 		/* Comprobamos en la base de datos si está conectado */
 		if (dispositivo.getConectado()) {

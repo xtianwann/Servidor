@@ -2,6 +2,9 @@ package tareas;
 
 import java.net.Socket;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import accesoDatos.Inserciones;
 import accesoDatos.Oraculo;
 
@@ -42,6 +45,7 @@ public class CBOff extends Thread {
 		String ip = socket.getInetAddress() + "";
 		ip = ip.substring(1);
 		int idDisp = oraculo.getIdDispositivoPorIp(ip);
+		Servidor.escribirLog(Estados.info, "El dispositivo "+idDisp+" se ha desconectado.");
 		modificador.onOffDispositivo(0, idDisp);
 	}
 

@@ -20,6 +20,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 /**
  * Esta clase es la encargada de recibir la comanda enviada por el camarero,
  * insertar la información correspondiente en la base de datos, divide los
@@ -114,10 +117,12 @@ public class PedidosComanda extends Thread {
 			if (mesa.isActiva()) {
 				idComanda = insertor.insertarPedidos(mesa,
 						pedidos.toArray(new Pedido[0]));
+				Servidor.escribirLog(Estados.info, "Se han añadido pedidos a la comanda "+idComanda);
 			} else {
 				insertor.insertarNuevaComanda(mesa, usuario);
 				idComanda = insertor.insertarPedidos(mesa,
 						pedidos.toArray(new Pedido[0]));
+				Servidor.escribirLog(Estados.info, "Se ha abierto la comanda "+idComanda);
 			}
 	
 			/* Generamos una lista de xml según destinos */
@@ -172,6 +177,7 @@ public class PedidosComanda extends Thread {
 					}
 				}
 			}
+			
 		} else {
 			XMLPedidosPendientesCamarero xmlPendientes = new XMLPedidosPendientesCamarero("nopuedeshacerunpedido", "0", 0, new Pedido[0]);
 			String acuse = xmlPendientes.xmlToString(xmlPendientes.getDOM());

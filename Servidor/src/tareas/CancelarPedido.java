@@ -7,6 +7,9 @@ import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 import Conexion.Conexion;
 import XML.XML;
 import XMLServer.XMLAcuseReciboServer;
@@ -89,7 +92,7 @@ public class CancelarPedido extends Thread {
 		XMLDevolverServer xmlDevolver = new XMLDevolverServer(pedido);
 		String mensaje = xmlDevolver.xmlToString(xmlDevolver.getDOM());
 		Dispositivo dispositivo = Dispositivo.getDispositivo(idMenu);
-		
+		Servidor.escribirLog(Estados.info, "Se han devuelto pedidos de la comanda "+idComanda);
 		Conexion conexion = null;
 		/* Comprobamos en la base de datos si está conectado */
 		if (dispositivo.getConectado()) {
