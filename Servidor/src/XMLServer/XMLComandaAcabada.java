@@ -14,7 +14,7 @@ public class XMLComandaAcabada extends XML{
 	/**
 	 * Constructor: genera la estructura del XML con la información necesaria.
 	 * 
-	 * @param respuesta [int] id de la comanda acabada
+	 * @param idComanda [int] id de la comanda acabada
 	 */
 	public XMLComandaAcabada(int idComanda){
 		init();

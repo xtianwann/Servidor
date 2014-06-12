@@ -67,7 +67,6 @@ public class GestorBD {
 	 * Permite realizar consultas de un solo campo a la base de datos
 	 * 
 	 * @param consulta [String] sentencia que ejecutará la consulta
-	 * @param numeroCampos [int] indica cuantos campos hay en la selección
 	 * @return [String[ ]] conjunto de resultados de la consulta en forma de array
 	 */
 	public String[] consulta(String consulta) {
@@ -93,7 +92,6 @@ public class GestorBD {
 	/**
 	 * Permite realizar inserciones masivas en la entrada de pedidos
 	 * 
-	 * @param tablaYCols
 	 * @param idCom
 	 * @param pedidos
 	 */

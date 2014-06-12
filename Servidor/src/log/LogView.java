@@ -26,7 +26,6 @@ public class LogView extends javax.swing.JFrame {
 
     private Servidor principal;
     private BufferedReader lector;
-
     /**
      * Constructor
      * 
@@ -181,14 +180,14 @@ public class LogView extends javax.swing.JFrame {
      * 
      * @param linea [String] línea que se quiere mostrar
      */
-    public void escribirLinea(String linea) {
+    public static void escribirLinea(String linea) {
         jTextPane1.setText( jTextPane1.getText()+linea+"\n" );
     }
     
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextPane jTextPane1;
+    private static javax.swing.JTextPane jTextPane1;
     
     public JTextPane getjTextPane1() {
         return jTextPane1;
@@ -196,5 +195,10 @@ public class LogView extends javax.swing.JFrame {
 
     public void setjTextPane1(JTextPane jTextPane1) {
         this.jTextPane1 = jTextPane1;
+    }
+    public static void escribirLog(String linea){
+    	if(jTextPane1.isVisible()){
+    		escribirLinea(linea);
+    	}
     }
 }

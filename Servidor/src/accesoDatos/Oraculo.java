@@ -169,7 +169,7 @@ public class Oraculo {
      */
     public String getFechaYHoraActual(){
         String resultado = gestorBD.consulta("select datetime('now')")[0];
-        resultado = resultado.substring(0, resultado.length()-3);
+        resultado = resultado.substring(0, resultado.length());
         return resultado;
     }
     
@@ -362,8 +362,8 @@ public class Oraculo {
     /**
      * Devuelve todos los pedidos de una lista de comandas activas.
      * 
-     * @param idMenus [int[ ]] lista de id de menú
-     * @return [Pedido[ ]] lista de pedidos que coinciden con los pasados por parámetro
+     * @param idComandas [int[ ]] lista de id de las comandas
+     * @return [PedidoPendiente[ ]] lista de pedidos que coinciden con los pasados por parámetro
      */
     public PedidoPendiente[] getPedidos(int[] idComandas){
     	ArrayList<PedidoPendiente> pedidosPendientes = new ArrayList<>();

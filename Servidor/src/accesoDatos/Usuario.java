@@ -47,7 +47,7 @@ public class Usuario {
 	 * de datos.
 	 * 
 	 * @param socket
-	 * @return
+	 * @return Usuario
 	 */
 	public static Usuario getUsuario(Socket socket){
 		return oraculo.getUsuarioByIp(socket);

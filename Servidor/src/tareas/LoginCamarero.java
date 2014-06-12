@@ -93,15 +93,17 @@ public class LoginCamarero extends Thread {
 							usuarioAnterior.getNombre(), ip, 0);
 				}
 			}
+			Servidor.escribirLog(Estados.info, "El usuario "+usuario+" se ha conectado.");
 			/*
 			 * Asignamos el dispositivo al nuevo camarero y lo ponemos como
 			 * encendido en la base de datos si no lo estaba ya
 			 */
 			if(!modificador.vinculoUsuarioDispositivo(usuario, ip, 1)){
 				resultado = "NO";			}
-		} else
+		} else{
 			resultado = "NO";
-		Servidor.escribirLog(Estados.error, "El usuario "+usuario+" no existe.");
+			Servidor.escribirLog(Estados.error, "El usuario "+usuario+" no existe.");
+		}
 
 		/* Finalmente enviamos el mensaje con el resultado del login */
 		XMLResultadoLoginCamarero xmlResultado = new XMLResultadoLoginCamarero(

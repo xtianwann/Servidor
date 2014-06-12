@@ -1,5 +1,8 @@
 package accesoDatos;
 
+import servidor.Servidor;
+import servidor.Servidor.Estados;
+
 /**
  * Clase encargada de todas las operaciones del tipo INSERT y UPDATE en la base
  * de datos
@@ -24,13 +27,12 @@ public class Inserciones {
 	 * Crea una nueva comanda en la base de datos.
 	 * 
 	 * @param mesa [Mesa] mesa a la que está asociada la comanda
-	 * @param dispositivo [Dispositivo] dispositivo desde el que se tomó la comanda
+	 * @param usuario [Usuario] usuario que tomó la comanda
 	 */
 	public void insertarNuevaComanda(Mesa mesa, Usuario usuario) {
 		String fechaComanda = oraculo.getFechaYHoraActual();
 		int idMesa = mesa.getIdMes();
 		int idUsuario = usuario.getIdUsu();
-
 		String sentencia = "insert into COMANDAS (fechaCom, mesa, usuario, pagado, cerrada) values ('"
 				+ fechaComanda + "', " + idMesa + ", " + idUsuario + ", 0, 0)";
 		gestorBD.ejecutarSentencia(sentencia);
@@ -56,8 +58,8 @@ public class Inserciones {
 	/**
 	 * Cambia el estado de un pedido al que se le pase por parámetro
 	 * 
-	 * @param idPedidos [String[ ]] lista de id de pedidos a modificar
-	 * @param estado [String] nuevo estado que se le va a asignar a los pedidos de la lista
+	 * @param pedido [PedidoListo] Pedido a modificar
+	 * @param aModificar [int] Numero de pedidos a modificar
 	 */
 	public void modificarEstadoAListo(PedidoListo pedido, int aModificar) {
 		String sentencia = "update PEDIDOS set estado = 'listo' where rowid in (select rowid from PEDIDOS where estado = 'pedido' and comanda = "
@@ -150,7 +152,7 @@ public class Inserciones {
 	/**
 	 * Asigna las comandas realizadas por un usuario a otro
 	 * 
-	 * @param idCamareros [int[ ]] id de los camareros que van a perder la propiedad de sus pedidos
+	 * @param idUsuAnterior [int] id de los camarero que va a perder la propiedad de sus pedidos
 	 * @param idUsu [int] id del usuario que va a heredar los pedidos de otros usuarios
 	 */
 	public void cambiarPedidosDeUsuario(int idUsuAnterior, int idUsu) {

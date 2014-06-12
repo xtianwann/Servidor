@@ -86,6 +86,7 @@ public class Log {
 				new FileOutputStream(log.getName(), true), "UTF-8"));
 		String linea = "[" + estado + "]"+" [" + fecha + "] [" + mensaje + "]";
 		escritor.append(linea + "\n");
+		LogView.escribirLog(linea);
 		escritor.close();
     }
 
