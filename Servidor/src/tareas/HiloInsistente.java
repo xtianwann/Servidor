@@ -1,6 +1,7 @@
 package tareas;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import servidor.Servidor;
 import servidor.Servidor.Estados;
@@ -31,12 +32,14 @@ public class HiloInsistente extends Thread {
 	private Conexion conectado;
 	private Oraculo oraculo;
 	private Inserciones modificador;
-	private int intentos = 30;
+	private int intentos = 150;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param dispositivo [Dispositivo] dispositivo con el que debe reintentar la conexión
+	 * @param dispositivo
+	 *            [Dispositivo] dispositivo con el que debe reintentar la
+	 *            conexión
 	 */
 	public HiloInsistente(Dispositivo dispositivo) {
 		this.dispositivo = dispositivo;
@@ -55,12 +58,24 @@ public class HiloInsistente extends Thread {
 	 * trbajar correctamente.
 	 */
 	private void reconexion() {
-		Servidor.escribirLog(Estados.error, "El dispositivo "+dispositivo.getIdDisp()+" esta desconectado.");
+		Servidor.escribirLog(Estados.error,
+				"El dispositivo " + dispositivo.getIdDisp()
+						+ " esta desconectado.");
+		Servidor.escribirLog(
+				Estados.info,
+				"Intentando conectar con el dispositivo "
+						+ dispositivo.getIdDisp());
 		int contador = 0;
 		do {
 			try {
-				conectado = new Conexion(dispositivo.getIp(), 27000);
-				Servidor.escribirLog(Estados.info, "Intentando conectar con el dispositivo "+dispositivo.getIdDisp());
+				InetAddress address = InetAddress
+						.getByName(dispositivo.getIp());
+				boolean reachable = address.isReachable(27000);
+				if (reachable) {
+					conectado = new Conexion(dispositivo.getIp(), 27000);
+				} else {
+					throw new NullPointerException();
+				}
 			} catch (NullPointerException | IOException e1) {
 				try {
 					contador++;
@@ -73,7 +88,9 @@ public class HiloInsistente extends Thread {
 		if (contador < intentos) {
 			/* Ponemos el dispositivo como conectado en la base de datos */
 			modificador.onOffDispositivo(1, dispositivo.getIdDisp());
-			Servidor.escribirLog(Estados.info, "El dispositivo "+dispositivo.getIdDisp()+"se ha conectado.");
+			Servidor.escribirLog(Estados.info,
+					"El dispositivo " + dispositivo.getIdDisp()
+							+ " se ha conectado.");
 			/* Consultamos los pedidos pendientes del destino */
 			PedidoPendiente[] pedidosPendientes = null;
 			Pedido[] pendientesCamarero = null;
@@ -108,13 +125,13 @@ public class HiloInsistente extends Thread {
 				conectado.escribirMensaje(mensaje);
 				conectado.cerrarConexion();
 			} catch (NullPointerException | IOException e1) {
-				e1.printStackTrace();
+				
 			}
 		}
-		
+
 		/*
-		 * Cambia el estado de hilo a no lanzado y enciende el dispositivo
-		 * en la base de datos
+		 * Cambia el estado de hilo a no lanzado y enciende el dispositivo en la
+		 * base de datos
 		 */
 		modificador.setHiloLanzado(dispositivo.getIp(), 0);
 		modificador.onOffDispositivo(1, dispositivo.getIdDisp());

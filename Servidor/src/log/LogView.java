@@ -196,6 +196,11 @@ public class LogView extends javax.swing.JFrame {
     public void setjTextPane1(JTextPane jTextPane1) {
         this.jTextPane1 = jTextPane1;
     }
+    /**
+     * Escribe una línea en el log del servidor si se encuentra visibñe
+     * 
+     * @param linea [String] línea que se quiere mostrar
+     */
     public static void escribirLog(String linea){
     	if(jTextPane1.isVisible()){
     		escribirLinea(linea);
